@@ -9,7 +9,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.soldierofheaven.SoldierOfHeavenGame
 import com.soldierofheaven.ecs.PlayerInputHandler
+import com.soldierofheaven.ecs.components.Player
+import com.soldierofheaven.ecs.components.Transform
 import com.soldierofheaven.ecs.systems.RenderSystem
+import com.soldierofheaven.ui.Crosshair
 import com.soldierofheaven.ui.HealthBar
 import com.soldierofheaven.util.EcsWorld
 import com.soldierofheaven.util.PhysicsWorld
@@ -18,6 +21,7 @@ import com.soldierofheaven.util.widthF
 import net.mostlyoriginal.api.event.common.Event
 import net.mostlyoriginal.api.event.common.EventSystem
 import net.mostlyoriginal.api.event.common.Subscribe
+import kotlin.properties.Delegates
 
 class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: EcsWorld, private val physicsWorld: PhysicsWorld) : ScreenAdapter() {
 
@@ -32,8 +36,12 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private val defaultSkin = Skin(Gdx.files.internal("skins/uiskin.json"))
     private lateinit var healthBar: HealthBar
 
+    private var playerEntityId by Delegates.notNull<Int>()
+
     init {
         initUi()
+        playerEntityId = ecsWorld.create()
+        ecsWorld.edit(playerEntityId).add(Transform()).add(Player())
     }
 
     private fun initUi() {
@@ -46,6 +54,9 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             setPosition(healthPad, Gdx.graphics.heightF() - healthHeight - healthPad)
         }
         stage.addActor(healthBar)
+
+        val crosshair = Crosshair(game.assetManager.get("gfx/crosshair.png"))
+        stage.addActor(crosshair)
     }
 
     override fun show() {

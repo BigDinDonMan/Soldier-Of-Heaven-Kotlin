@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Box2D
@@ -34,6 +35,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         Box2D.init()
         batch = SpriteBatch()
         camera = OrthographicCamera(Gdx.graphics.widthF(), Gdx.graphics.heightF())
+        assetManager = AssetManager()
         // we do not need any gravity in this game
         physicsWorld = PhysicsWorld(Vector2.Zero, false)
 
@@ -44,6 +46,9 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         eventBus = EventSystem()
         ecsWorldConfig.setSystem(eventBus)
         ecsWorld = EcsWorld(ecsWorldConfig)
+
+        assetManager.load("gfx/crosshair.png", Texture::class.java)
+        assetManager.finishLoading()
 
         addScreen(MenuScene(this))
         addScreen(GameScene(this, ecsWorld, physicsWorld))
