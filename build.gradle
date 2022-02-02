@@ -27,6 +27,7 @@ allprojects {
         aiVersion = '1.8.2'
         artemisVersion = '2.3.0'
         gdxControllersVersion = '2.1.0'
+        ktxVersion = '1.10.0-b1'
     }
 
     repositories {
@@ -54,6 +55,7 @@ project(":desktop") {
         api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
         compile "net.onedaybeard.artemis:artemis-odb:$artemisVersion"
         compile "net.mostlyoriginal.artemis-odb:contrib-eventbus:$artemisVersion"
+        implementation "io.github.libktx:ktx-app:$ktxVersion"
     }
 }
 
@@ -71,5 +73,6 @@ project(":core") {
         api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
         compile "net.onedaybeard.artemis:artemis-odb:$artemisVersion"
         compile "net.mostlyoriginal.artemis-odb:contrib-eventbus:$artemisVersion"
+        implementation "io.github.libktx:ktx-app:$ktxVersion"
     }
 }
