@@ -72,5 +72,6 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
     override fun dispose() {
         stage.dispose()
+        healthBar.dispose()
     }
 }

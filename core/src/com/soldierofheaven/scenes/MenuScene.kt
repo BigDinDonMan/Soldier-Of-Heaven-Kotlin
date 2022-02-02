@@ -66,16 +66,14 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
             }
         )
 
-        //todo: set buttons to have fixed width and height
-
         val titlePadding = 75f
 
         rootTable.center().top()
         rootTable.add(titleLabel).center().top().padTop(titlePadding).padBottom(titlePadding)
 
-        val padding = 20f
+        val padding = 25f
         val buttonWidth = 250f
-        val buttonHeight = 50f
+        val buttonHeight = 55f
         for (button in buttons) {
             rootTable.row()
             rootTable.add(button).center().top().padBottom(padding).padTop(padding).width(buttonWidth).height(buttonHeight)
