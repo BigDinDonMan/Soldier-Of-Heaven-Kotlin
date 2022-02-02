@@ -54,5 +54,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
     override fun dispose() {
         batch.dispose()
         physicsWorld.dispose()
+        ecsWorld.dispose()
+        assetManager.dispose()
     }
 }

@@ -13,7 +13,7 @@ import com.soldierofheaven.util.widthF
 class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: EcsWorld, private val physicsWorld: PhysicsWorld) : ScreenAdapter() {
 
     private val viewport = StretchViewport(Gdx.graphics.widthF(), Gdx.graphics.heightF())
-    private val stage = Stage()
+    private val stage = Stage(viewport)
 
     override fun dispose() {
         stage.dispose()
@@ -23,7 +23,5 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         super.render(delta)
     }
 
-    override fun resize(width: Int, height: Int) {
-        super.resize(width, height)
-    }
+    override fun resize(width: Int, height: Int) = viewport.update(width, height)
 }
