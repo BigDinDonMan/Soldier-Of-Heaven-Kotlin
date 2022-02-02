@@ -10,7 +10,9 @@ import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.soldierofheaven.SoldierOfHeavenGame
 import com.soldierofheaven.ecs.PlayerInputHandler
 import com.soldierofheaven.ecs.components.Player
+import com.soldierofheaven.ecs.components.RigidBody
 import com.soldierofheaven.ecs.components.Transform
+import com.soldierofheaven.ecs.events.PlayerHealthChangeEvent
 import com.soldierofheaven.ecs.systems.RenderSystem
 import com.soldierofheaven.ui.Crosshair
 import com.soldierofheaven.ui.HealthBar
@@ -22,6 +24,8 @@ import net.mostlyoriginal.api.event.common.Event
 import net.mostlyoriginal.api.event.common.EventSystem
 import net.mostlyoriginal.api.event.common.Subscribe
 import kotlin.properties.Delegates
+
+//todo: add removal service so that we can remove entities from the game later
 
 class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: EcsWorld, private val physicsWorld: PhysicsWorld) : ScreenAdapter() {
 
@@ -41,7 +45,9 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     init {
         initUi()
         playerEntityId = ecsWorld.create()
-        ecsWorld.edit(playerEntityId).add(Transform()).add(Player())
+        ecsWorld.edit(playerEntityId).add(Transform()).add(Player()).add(RigidBody().apply {
+            //todo: create and add a physics body here
+        })
     }
 
     private fun initUi() {
@@ -64,7 +70,12 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     }
 
     @Subscribe
-    private fun updateHealthBar(e: Event) {
+    private fun updateHealthBar(e: PlayerHealthChangeEvent) {
+
+    }
+
+    @Subscribe
+    private fun spawnBulletEntity(e: Event) {
 
     }
 

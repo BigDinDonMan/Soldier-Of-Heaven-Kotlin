@@ -6,12 +6,15 @@ import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Box2D
 import com.badlogic.gdx.utils.ScreenUtils
+import com.soldierofheaven.ecs.systems.CameraPositioningSystem
+import com.soldierofheaven.ecs.systems.InputSystem
 import com.soldierofheaven.ecs.systems.PhysicsSystem
 import com.soldierofheaven.ecs.systems.RenderSystem
 import com.soldierofheaven.scenes.GameScene
@@ -41,6 +44,8 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
 
         val ecsWorldConfig = WorldConfigurationBuilder().with(
             PhysicsSystem(physicsWorld),
+            InputSystem(),
+            CameraPositioningSystem(camera),
             RenderSystem(batch, camera)
         ).build()
         eventBus = EventSystem()
@@ -48,6 +53,13 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         ecsWorld = EcsWorld(ecsWorldConfig)
 
         assetManager.load("gfx/crosshair.png", Texture::class.java)
+        assetManager.load("gfx/bullet-basic.png", Texture::class.java)
+        assetManager.load("sfx/pistol-reload.wav", Sound::class.java)
+        assetManager.load("sfx/pistol-shot.wav", Sound::class.java)
+        assetManager.load("sfx/shotgun-shot.wav", Sound::class.java)
+        assetManager.load("sfx/shotgun-reload.wav", Sound::class.java)
+        assetManager.load("sfx/rifle-shot.wav", Sound::class.java)
+        assetManager.load("sfx/rifle-reload.wav", Sound::class.java)
         assetManager.finishLoading()
 
         addScreen(MenuScene(this))

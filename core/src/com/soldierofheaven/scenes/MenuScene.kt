@@ -1,7 +1,6 @@
 package com.soldierofheaven.scenes
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
@@ -12,10 +11,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.soldierofheaven.SoldierOfHeavenGame
-import com.soldierofheaven.ui.HealthBar
+import com.soldierofheaven.ecs.events.WeaponChangeEvent
 import com.soldierofheaven.util.heightF
 import com.soldierofheaven.util.widthF
-import net.mostlyoriginal.api.event.common.Event
 import net.mostlyoriginal.api.event.common.Subscribe
 import kotlin.system.exitProcess
 
@@ -26,24 +24,17 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
 
     private val defaultSkin = Skin(Gdx.files.internal("skins/uiskin.json"))
 
-//    private val healthBar = HealthBar(150, defaultSkin)
-
     init {
         initUi()
     }
 
     private fun initUi() {
-//        val healthBarPadding = 10f
-//        val height = 50f
-//        val width = 250f
-//        stage.addActor(healthBar.apply {
-//            setPosition(healthBarPadding, Gdx.graphics.heightF() - healthBarPadding - height)
-//            this.width = width
-//            this.height = height
-//        })
-
         val rootTable = Table().apply { setFillParent(true) }
         stage.addActor(rootTable)
+
+        //todo: add a window with "how to play" instructions and show it on button click (or maybe a separate scene?)
+        //todo: add return button
+        //todo: add "about" window with author and game (?) info
 
         val titleLabel = Label("Soldier of Heaven", defaultSkin)
         val buttons = arrayOf(
@@ -81,7 +72,7 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
     }
 
     @Subscribe
-    private fun updateWeaponUi(e: Event){
+    private fun updateWeaponUi(e: WeaponChangeEvent){
 
     }
 
@@ -91,7 +82,6 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
 
     override fun dispose() {
         stage.dispose()
-//        healthBar.dispose()
     }
 
     override fun render(delta: Float) {

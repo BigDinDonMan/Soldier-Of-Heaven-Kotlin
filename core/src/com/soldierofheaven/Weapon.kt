@@ -22,8 +22,8 @@ class Weapon(
     var bulletSpread: Float = 0f,
     var bulletsPerShot: Int = 1
 ) {
-    private var shotCooldown = 0f
-    private var reloadCooldown = 0f
+    var shotCooldown = 0f
+    var reloadCooldown = 0f
 
     fun update(delta: Float) {
 
@@ -34,6 +34,10 @@ class Weapon(
     }
 
     fun tryFire(): Boolean {
+        return false
+    }
+
+    fun tryReload(): Boolean {
         return false
     }
 }
