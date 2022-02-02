@@ -1,4 +1,4 @@
-package com.soldierofheaven.ecs.components.weapons
+package com.soldierofheaven.ecs.components
 
 class Player {
 }

@@ -2,6 +2,7 @@ package com.soldierofheaven.ecs.systems
 
 import com.artemis.ComponentMapper
 import com.artemis.annotations.All
+import com.artemis.annotations.Wire
 import com.artemis.systems.IteratingSystem
 import com.badlogic.gdx.Gdx
 import com.soldierofheaven.ecs.components.RigidBody
@@ -14,7 +15,9 @@ class PhysicsSystem(private val physicsWorld: PhysicsWorld, private val velocity
     val TIME_STEP = 1 / 300f
     var accumulator = 0f
 
+    @Wire
     var transformMapper: ComponentMapper<Transform>? = null
+    @Wire
     var rigidBodyMapper: ComponentMapper<RigidBody>? = null
 
     override fun begin() {
