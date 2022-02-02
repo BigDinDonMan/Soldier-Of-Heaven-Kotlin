@@ -2,8 +2,7 @@ package com.soldierofheaven.ecs.events
 
 import net.mostlyoriginal.api.event.common.Event
 
-data class InputEvent(
+data class MoveEvent(
     val moveDirectionX: Float,
-    val moveDirectionY: Float,
-    val leftMouseDown: Boolean
+    val moveDirectionY: Float
 ) : Event

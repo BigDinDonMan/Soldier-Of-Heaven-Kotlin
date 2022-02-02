@@ -4,7 +4,8 @@ import com.artemis.BaseSystem
 import com.artemis.annotations.Wire
 import com.badlogic.gdx.Gdx
 import com.soldierofheaven.Weapon
-import com.soldierofheaven.ecs.events.InputEvent
+import com.soldierofheaven.ecs.events.MoveEvent
+import com.soldierofheaven.ecs.events.WeaponChangeEvent
 import net.mostlyoriginal.api.event.common.EventSystem
 import net.mostlyoriginal.api.event.common.Subscribe
 
@@ -16,8 +17,7 @@ class WeaponSystem(private val weapons: ArrayList<Weapon>) : BaseSystem() {
     var shooting = false
 
     @Subscribe
-    private fun receiveInput(e: InputEvent) {
-        shooting = e.leftMouseDown
+    private fun receiveInput(e: WeaponChangeEvent) {
     }
 
     override fun processSystem() {

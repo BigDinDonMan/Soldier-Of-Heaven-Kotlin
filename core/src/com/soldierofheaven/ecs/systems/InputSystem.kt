@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Vector2
 import com.soldierofheaven.ecs.components.Player
 import com.soldierofheaven.ecs.components.RigidBody
 import com.soldierofheaven.ecs.components.Transform
-import com.soldierofheaven.ecs.events.InputEvent
+import com.soldierofheaven.ecs.events.MoveEvent
 import net.mostlyoriginal.api.event.common.EventSystem
 import net.mostlyoriginal.api.event.common.Subscribe
 
@@ -26,7 +26,7 @@ class InputSystem : IteratingSystem() {
     private val moveDirection = Vector2()
 
     @Subscribe
-    private fun updateMoveDirection(e: InputEvent) {
+    private fun updateMoveDirection(e: MoveEvent) {
         moveDirection.set(e.moveDirectionX, e.moveDirectionY)
     }
 
