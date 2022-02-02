@@ -27,8 +27,8 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
     private lateinit var physicsWorld: PhysicsWorld
     private lateinit var ecsWorld: EcsWorld
     private lateinit var eventBus: EventSystem
-    private lateinit var assetManager: AssetManager
     private lateinit var camera: OrthographicCamera
+    lateinit var assetManager: AssetManager
 
     override fun create() {
         Box2D.init()
