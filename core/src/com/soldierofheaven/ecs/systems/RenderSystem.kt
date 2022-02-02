@@ -11,7 +11,7 @@ import com.soldierofheaven.ecs.components.Transform
 import java.util.*
 
 @All(Transform::class, TextureDisplay::class)
-class RenderSystem(private val spriteBatch: SpriteBatch, private val gameCamera: Camera) : IteratingSystem() {
+class RenderSystem(val spriteBatch: SpriteBatch, private val gameCamera: Camera) : IteratingSystem() {
 
     @Wire
     var transformMapper: ComponentMapper<Transform>? = null
