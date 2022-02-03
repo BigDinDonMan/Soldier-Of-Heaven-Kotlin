@@ -5,10 +5,9 @@ import com.badlogic.gdx.Input
 import com.soldierofheaven.EventQueue
 import com.soldierofheaven.ecs.events.MoveEvent
 import com.soldierofheaven.ecs.events.ReloadRequestEvent
-import com.soldierofheaven.ecs.events.ShootEvent
+import com.soldierofheaven.ecs.events.ShotRequestEvent
 import com.soldierofheaven.ecs.events.WeaponChangeEvent
 import ktx.app.KtxInputAdapter
-import net.mostlyoriginal.api.event.common.EventSystem
 
 class PlayerInputHandler() : KtxInputAdapter {
     private var enabled = true
@@ -59,7 +58,7 @@ class PlayerInputHandler() : KtxInputAdapter {
         if (!enabled) return false
 
         return if (button == Input.Buttons.LEFT){
-            EventQueue.dispatch(ShootEvent(true))
+            EventQueue.dispatch(ShotRequestEvent(true))
             true
         } else false
     }
@@ -68,7 +67,7 @@ class PlayerInputHandler() : KtxInputAdapter {
         if (!enabled) return false
 
         return if (button == Input.Buttons.LEFT){
-            EventQueue.dispatch(ShootEvent(false))
+            EventQueue.dispatch(ShotRequestEvent(false))
             true
         } else false
     }

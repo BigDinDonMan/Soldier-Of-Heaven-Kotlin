@@ -8,6 +8,7 @@ open class GameTimer(val time: Float, val looping: Boolean = false, val elapsedC
         if (!started) return
         counter += delta
         if (counter >= time) {
+            elapsedCallback.invoke()
             if (looping) {
                 counter = 0f
             } else {
@@ -28,4 +29,6 @@ open class GameTimer(val time: Float, val looping: Boolean = false, val elapsedC
     fun resume() {
         started = true
     }
+
+    fun isRunning() = started
 }

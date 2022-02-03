@@ -26,6 +26,7 @@ import com.soldierofheaven.util.widthF
 import ktx.app.KtxGame
 import net.mostlyoriginal.api.event.common.EventSystem
 
+//todo: monitor performance of the game with the current amount of event dispatching; if it suffers, implement pooling or switch to callbacks
 class SoldierOfHeavenGame : KtxGame<Screen>() {
     private lateinit var batch: SpriteBatch
     private lateinit var physicsWorld: PhysicsWorld

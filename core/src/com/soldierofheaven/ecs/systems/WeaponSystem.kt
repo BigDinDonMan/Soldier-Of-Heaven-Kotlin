@@ -3,9 +3,12 @@ package com.soldierofheaven.ecs.systems
 import com.artemis.BaseSystem
 import com.artemis.annotations.Wire
 import com.badlogic.gdx.Gdx
+import com.soldierofheaven.EventQueue
 import com.soldierofheaven.Weapon
-import com.soldierofheaven.ecs.events.ShootEvent
+import com.soldierofheaven.ecs.events.ShotEvent
+import com.soldierofheaven.ecs.events.ShotRequestEvent
 import com.soldierofheaven.ecs.events.WeaponChangeEvent
+import com.soldierofheaven.ecs.events.ui.WeaponChangedUiEvent
 import net.mostlyoriginal.api.event.common.EventSystem
 import net.mostlyoriginal.api.event.common.Subscribe
 
@@ -26,10 +29,11 @@ class WeaponSystem(private val weapons: ArrayList<Weapon>) : BaseSystem() {
         if (!targetWeapon.unlocked) return
 
         currentWeapon = targetWeapon
+        EventQueue.dispatch(WeaponChangedUiEvent(currentWeapon, e.weaponIndex))
     }
 
     @Subscribe
-    private fun receiveShotState(e: ShootEvent) {
+    private fun receiveShotState(e: ShotRequestEvent) {
         shooting = e.start
     }
 
@@ -37,16 +41,10 @@ class WeaponSystem(private val weapons: ArrayList<Weapon>) : BaseSystem() {
         val delta = Gdx.graphics.deltaTime
 
         currentWeapon.update(delta)
-//        if (shooting) {
-//            if (currentWeapon.tryFire()) {
-//                //dispatch event for bullet instantiation
-//            }
-//        }
-//
-//        if (currentWeapon.isReloading()) {
-//            currentWeapon.reloadCooldown -= delta
-//        } else {
-//            if (currentWeapon.shotCooldown > 0) currentWeapon.shotCooldown -= delta
-//        }
+        if (shooting) {
+            if (currentWeapon.tryFire()) {
+                EventQueue.dispatch(ShotEvent(currentWeapon))
+            }
+        }
     }
 }

@@ -3,6 +3,8 @@ package com.soldierofheaven
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Texture
 import com.soldierofheaven.ecs.components.Bullet
+import com.soldierofheaven.ecs.events.ReloadFinishedEvent
+import com.soldierofheaven.util.GameTimer
 
 // this class might turn out as a bit of a code smell but eh, whatever goes
 class Weapon(
@@ -21,8 +23,8 @@ class Weapon(
     var bulletSpread: Float = 0f,
     var bulletsPerShot: Int = 1
 ) {
+    var reloadTimer = GameTimer(reloadTime, false) { EventQueue.dispatch(ReloadFinishedEvent()) }
     var shotCooldown = 0f
-    var reloadCooldown = 0f
     var currentAmmo = clipSize
     var storedAmmo: Int
 
@@ -35,16 +37,13 @@ class Weapon(
     }
 
     fun update(delta: Float) {
-        if (isReloading()) {
-            reloadCooldown -= delta
-        } else {
-            if (shotCooldown > 0) {
-                shotCooldown -= delta
-            }
+        reloadTimer.update(delta)
+        if (shotCooldown > 0) {
+            shotCooldown -= delta
         }
     }
 
-    fun isReloading(): Boolean = reloadCooldown > 0f
+    fun isReloading(): Boolean = reloadTimer.isRunning()
 
     fun tryFire(): Boolean {
         if (!canShoot() || isReloading()) return false
@@ -61,7 +60,7 @@ class Weapon(
         }
         if (maxStoredAmmo == INFINITE_AMMO) {
             currentAmmo = clipSize
-            reloadCooldown = reloadTime
+            reloadTimer.start()
             reloadSound.play()
             return true
         }
@@ -73,7 +72,7 @@ class Weapon(
             currentAmmo = clipSize
             storedAmmo -= removed
         }
-        reloadCooldown = reloadTime
+        reloadTimer.start()
         reloadSound.play()
         return true
     }
