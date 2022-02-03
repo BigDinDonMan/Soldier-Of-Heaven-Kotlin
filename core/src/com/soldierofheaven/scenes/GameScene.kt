@@ -3,7 +3,10 @@ package com.soldierofheaven.scenes
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.ScreenAdapter
+import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
+import com.badlogic.gdx.physics.box2d.FixtureDef
+import com.badlogic.gdx.physics.box2d.PolygonShape
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.viewport.StretchViewport
@@ -45,8 +48,20 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     init {
         initUi()
         playerEntityId = ecsWorld.create()
+        val playerWidth = 48f
+        val playerHeight = 48f
         ecsWorld.edit(playerEntityId).add(Transform()).add(Player()).add(RigidBody().apply {
-            //todo: create and add a physics body here
+            val playerBodyDef = BodyDef().apply {
+                gravityScale = 0f
+                linearDamping = 5f
+            }
+            val playerBodyShape = PolygonShape().apply { setAsBox(playerWidth / 2, playerHeight / 2) }
+            val playerBodyFixtureDef = FixtureDef().apply {
+                shape = playerBodyShape
+                friction = 2f
+            }
+            physicsBody = physicsWorld.createBody(playerBodyDef).apply { createFixture(playerBodyFixtureDef) }
+            playerBodyShape.dispose()
         })
     }
 
