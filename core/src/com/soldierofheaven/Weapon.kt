@@ -8,7 +8,6 @@ import com.soldierofheaven.ecs.components.Bullet
 class Weapon(
     val name: String,
     var clipSize: Int,
-    var storedAmmo: Int,
     var maxStoredAmmo: Int,
     var reloadTime: Float,
     var damage: Float,
@@ -24,20 +23,62 @@ class Weapon(
 ) {
     var shotCooldown = 0f
     var reloadCooldown = 0f
+    var currentAmmo = clipSize
+    var storedAmmo: Int
+
+    init {
+        storedAmmo = if (maxStoredAmmo == INFINITE_AMMO) INFINITE_AMMO else maxStoredAmmo / 2
+    }
+
+    companion object {
+        const val INFINITE_AMMO = -1
+    }
 
     fun update(delta: Float) {
-
+        if (isReloading()) {
+            reloadCooldown -= delta
+        } else {
+            if (shotCooldown > 0) {
+                shotCooldown -= delta
+            }
+        }
     }
 
-    fun isReloading(): Boolean {
-        return false
-    }
+    fun isReloading(): Boolean = reloadCooldown > 0f
 
     fun tryFire(): Boolean {
-        return false
+        if (!canShoot() || isReloading()) return false
+        if (isEmpty()) return tryReload()
+        currentAmmo--
+        shotCooldown = fireRate
+        shotSound.play()
+        return true
     }
 
     fun tryReload(): Boolean {
-        return false
+        if (isReloading() || currentAmmo == clipSize) {
+            return false
+        }
+        if (maxStoredAmmo == INFINITE_AMMO) {
+            currentAmmo = clipSize
+            reloadCooldown = reloadTime
+            reloadSound.play()
+            return true
+        }
+        val removed = clipSize - currentAmmo
+        if (storedAmmo <= removed) {
+            currentAmmo += storedAmmo
+            storedAmmo = 0
+        } else {
+            currentAmmo = clipSize
+            storedAmmo -= removed
+        }
+        reloadCooldown = reloadTime
+        reloadSound.play()
+        return true
     }
+
+    fun isEmpty(): Boolean = currentAmmo <= 0
+
+    fun canShoot(): Boolean = shotCooldown <= 0f
 }

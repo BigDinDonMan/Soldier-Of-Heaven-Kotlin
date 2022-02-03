@@ -2,13 +2,15 @@ package com.soldierofheaven.ecs
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.soldierofheaven.EventQueue
 import com.soldierofheaven.ecs.events.MoveEvent
-import com.soldierofheaven.ecs.events.ReloadEvent
+import com.soldierofheaven.ecs.events.ReloadRequestEvent
 import com.soldierofheaven.ecs.events.ShootEvent
+import com.soldierofheaven.ecs.events.WeaponChangeEvent
 import ktx.app.KtxInputAdapter
 import net.mostlyoriginal.api.event.common.EventSystem
 
-class PlayerInputHandler(private val eventBus: EventSystem) : KtxInputAdapter {
+class PlayerInputHandler() : KtxInputAdapter {
     private var enabled = true
 
     private var x = 0f
@@ -24,10 +26,15 @@ class PlayerInputHandler(private val eventBus: EventSystem) : KtxInputAdapter {
             Input.Keys.D -> x = 1f
         }
 
-        eventBus.dispatch(MoveEvent(x, y))
+        EventQueue.dispatch(MoveEvent(x, y))
 
         if (keycode == Input.Keys.R) {
-            eventBus.dispatch(ReloadEvent())
+            EventQueue.dispatch(ReloadRequestEvent())
+        }
+
+        if (keycode in (Input.Keys.NUM_1..Input.Keys.NUM_9)) {
+            // subtracting like this will give us actual index
+            EventQueue.dispatch(WeaponChangeEvent(keycode - Input.Keys.NUM_0))
         }
 
         return true
@@ -43,7 +50,7 @@ class PlayerInputHandler(private val eventBus: EventSystem) : KtxInputAdapter {
             Input.Keys.D -> x = if (Gdx.input.isKeyPressed(Input.Keys.A)) x else 0f
         }
 
-        eventBus.dispatch(MoveEvent(x,y))
+        EventQueue.dispatch(MoveEvent(x,y))
 
         return true
     }
@@ -52,7 +59,7 @@ class PlayerInputHandler(private val eventBus: EventSystem) : KtxInputAdapter {
         if (!enabled) return false
 
         return if (button == Input.Buttons.LEFT){
-            eventBus.dispatch(ShootEvent(true))
+            EventQueue.dispatch(ShootEvent(true))
             true
         } else false
     }
@@ -61,7 +68,7 @@ class PlayerInputHandler(private val eventBus: EventSystem) : KtxInputAdapter {
         if (!enabled) return false
 
         return if (button == Input.Buttons.LEFT){
-            eventBus.dispatch(ShootEvent(false))
+            EventQueue.dispatch(ShootEvent(false))
             true
         } else false
     }

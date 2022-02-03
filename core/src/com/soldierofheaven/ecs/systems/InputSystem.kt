@@ -20,8 +20,6 @@ class InputSystem : IteratingSystem() {
     var rigidBodyMapper: ComponentMapper<RigidBody>? = null
     @Wire
     var playerMapper: ComponentMapper<Player>? = null
-    @Wire
-    var eventSystem: EventSystem? = null
 
     private val moveDirection = Vector2()
 

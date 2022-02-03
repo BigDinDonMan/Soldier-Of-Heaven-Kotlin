@@ -1,8 +1,10 @@
 package com.soldierofheaven.scenes
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.ScreenAdapter
+import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
 import com.badlogic.gdx.physics.box2d.FixtureDef
@@ -39,7 +41,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private var debug = true
     private val debugRenderer = Box2DDebugRenderer()
 
-    private val inputHandler = PlayerInputHandler(ecsWorld.getSystem(EventSystem::class.java))
+    private val inputHandler = PlayerInputHandler()
 
     private val defaultSkin = Skin(Gdx.files.internal("skins/uiskin.json"))
     private lateinit var healthBar: HealthBar
@@ -84,6 +86,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
     override fun show() {
         Gdx.input.inputProcessor = InputMultiplexer(stage, inputHandler)
+
+        //todo: instantiate weapons here
     }
 
     @Subscribe
@@ -104,6 +108,10 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         stage.draw()
         if (debug) {
             debugRenderer.render(physicsWorld, ecsWorld.getSystem(RenderSystem::class.java).spriteBatch.projectionMatrix)
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            game.assetManager.get("sfx/pistol-shot.wav", Sound::class.java).play()
         }
     }
 
