@@ -1,4 +1,5 @@
 package com.soldierofheaven.ecs.events
 
-class WeaponChangeEvent {
-}
+import net.mostlyoriginal.api.event.common.Event
+
+data class WeaponChangeEvent(val weaponIndex: Int) : Event
