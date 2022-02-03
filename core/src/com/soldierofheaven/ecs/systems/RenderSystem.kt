@@ -26,6 +26,7 @@ class RenderSystem(val spriteBatch: SpriteBatch, private val gameCamera: Camera)
 
     override fun begin() {
         queue.clear()
+        gameCamera.update()
         spriteBatch.projectionMatrix = gameCamera.combined
         spriteBatch.begin()
     }

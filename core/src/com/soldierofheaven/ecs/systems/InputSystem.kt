@@ -31,7 +31,13 @@ class InputSystem : IteratingSystem() {
     }
 
     override fun process(entityId: Int) {
-        val transform = transformMapper!!.get(entityId)
         val rigidBody = rigidBodyMapper!!.get(entityId)
+        val player = playerMapper!!.get(entityId)
+        rigidBody.physicsBody!!.applyLinearImpulse(
+            moveDirection.x * player.speed,
+            moveDirection.y * player.speed,
+            rigidBody.physicsBody!!.position.x,
+            rigidBody.physicsBody!!.position.y,
+            true)
     }
 }

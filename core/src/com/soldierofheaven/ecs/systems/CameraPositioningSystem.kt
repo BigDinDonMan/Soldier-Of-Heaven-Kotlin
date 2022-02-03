@@ -23,8 +23,6 @@ class CameraPositioningSystem(private val gameCamera: Camera) : BaseSystem() {
         val z = gameCamera.position.z
         val mx = Gdx.input.x.toFloat()
         val my = Gdx.input.y.toFloat()
-        println("mouse coords: ${mx}, ${my}")
-        println("player coords: ${transform.position.x}, ${transform.position.y}")
         screenCoordsVector.set(mx, my, z)
         gameCamera.unproject(screenCoordsVector)
         gameCamera.position.set(

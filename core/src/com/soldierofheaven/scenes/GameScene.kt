@@ -16,6 +16,7 @@ import com.soldierofheaven.ecs.components.Player
 import com.soldierofheaven.ecs.components.RigidBody
 import com.soldierofheaven.ecs.components.Transform
 import com.soldierofheaven.ecs.events.PlayerHealthChangeEvent
+import com.soldierofheaven.ecs.systems.CameraPositioningSystem
 import com.soldierofheaven.ecs.systems.RenderSystem
 import com.soldierofheaven.ui.Crosshair
 import com.soldierofheaven.ui.HealthBar
@@ -48,6 +49,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     init {
         initUi()
         playerEntityId = ecsWorld.create()
+        ecsWorld.getSystem(CameraPositioningSystem::class.java).playerEntityId = playerEntityId
         val playerWidth = 48f
         val playerHeight = 48f
         ecsWorld.edit(playerEntityId).add(Transform()).add(Player()).add(RigidBody().apply {

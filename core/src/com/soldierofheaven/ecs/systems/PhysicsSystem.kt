@@ -30,6 +30,13 @@ class PhysicsSystem(private val physicsWorld: PhysicsWorld, private val velocity
     }
 
     override fun process(entityId: Int) {
+        val entityRigidBody = rigidBodyMapper!!.get(entityId)
+        val entityTransform = transformMapper!!.get(entityId)
 
+        entityTransform.position.set(
+            entityRigidBody.physicsBody!!.position.x - entityTransform.size.x / 2,
+            entityRigidBody.physicsBody!!.position.y - entityTransform.size.y / 2,
+            entityTransform.position.z
+        )
     }
 }
