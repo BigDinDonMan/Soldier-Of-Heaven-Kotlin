@@ -84,7 +84,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
             Weapon("Peacemaker", 10, Weapon.INFINITE_AMMO, 1f, 10f,
                 0.25f, -1, true,
                 assetManager.get("gfx/bullet-basic.png"),
-                BulletData(5f, 8f, 8f, assetManager.get("gfx/bullet-basic.png")),
+                BulletData(5f, 10f, assetManager.get("gfx/bullet-basic.png")),
                 assetManager.get("sfx/pistol-shot.wav"),
                 assetManager.get("sfx/pistol-reload.wav"))
         ))

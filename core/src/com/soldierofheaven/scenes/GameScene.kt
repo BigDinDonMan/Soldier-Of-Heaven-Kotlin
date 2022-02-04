@@ -26,12 +26,11 @@ import com.soldierofheaven.ui.AmmoDisplay
 import com.soldierofheaven.ui.Crosshair
 import com.soldierofheaven.ui.HealthBar
 import com.soldierofheaven.ui.ReloadBar
-import com.soldierofheaven.util.EcsWorld
-import com.soldierofheaven.util.PhysicsWorld
-import com.soldierofheaven.util.heightF
-import com.soldierofheaven.util.widthF
+import com.soldierofheaven.util.*
 import net.mostlyoriginal.api.event.common.Subscribe
+import kotlin.math.abs
 import kotlin.properties.Delegates
+import kotlin.random.Random
 
 class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: EcsWorld, private val physicsWorld: PhysicsWorld) : ScreenAdapter() {
 
@@ -62,6 +61,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             val playerBodyDef = BodyDef().apply {
                 gravityScale = 0f
                 linearDamping = 5f
+                type = BodyDef.BodyType.DynamicBody
             }
             val playerBodyShape = PolygonShape().apply { setAsBox(playerWidth / 2, playerHeight / 2) }
             val playerBodyFixtureDef = FixtureDef().apply {
@@ -138,18 +138,43 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     @Subscribe
     private fun spawnBulletEntity(e: ShotEvent) {
         ammoDisplay.update(e.weapon)
-        val bulletId = ecsWorld.create()
-        val editor = ecsWorld.edit(bulletId)
-        editor.add(RigidBody().apply {
+        for (i in (0 until e.weapon.bulletsPerShot)) {
+            val bulletId = ecsWorld.create()
+            val editor = ecsWorld.edit(bulletId)
+            editor.add(RigidBody().apply {
+                val bulletBodyDef = BodyDef().apply {
+                    gravityScale = 0f
+                    linearDamping = 5f
+                    type = BodyDef.BodyType.DynamicBody
+                }
+                val bulletBodyShape = PolygonShape().apply { setAsBox(e.weapon.bulletData.icon.width / 2f, e.weapon.bulletData.icon.height / 2f) }
+                val bulletFixtureDef = FixtureDef().apply {
+                    shape = bulletBodyShape
+                    friction = 0f
+                    isSensor = true
+                }
+                physicsBody = physicsWorld.createBody(bulletBodyDef).apply { createFixture(bulletFixtureDef) }
+                physicsBody!!.setTransform(e.x, e.y, 0f)
+                bulletBodyShape.dispose()
+            }).add(TextureDisplay().apply {
+                texture = e.weapon.bulletData.icon
+            }).create(Bullet::class.java).apply {
+                if (e.weapon.bulletSpread.isCloseTo(0f)) {
+                    moveDirection.set(e.directionX, e.directionY)
+                } else {
+                    moveDirection.set(
+                        (e.directionX + Random.nextDouble((-e.weapon.bulletSpread).toDouble(), e.weapon.bulletSpread.toDouble())).toFloat(),
+                        (e.directionY + Random.nextDouble((-e.weapon.bulletSpread).toDouble(), e.weapon.bulletSpread.toDouble())).toFloat()
+                    )
+                }
 
-        }).add(TextureDisplay().apply {
-            texture = e.weapon.bulletData.icon
-        }).create(Bullet::class.java).apply {
-            moveDirection.set(e.directionX, e.directionY)
-        }
-        editor.create(LifeCycle::class.java).apply { lifeTime = 2.5f }
-        editor.create(Transform::class.java).apply {
-            position.set(e.x, e.y, 0f)
+                speed = e.weapon.bulletData.speed
+            }
+            editor.create(LifeCycle::class.java).apply { lifeTime = 2.5f }
+            editor.create(Transform::class.java).apply {
+                size.set(e.weapon.bulletData.icon.width.toFloat(), e.weapon.bulletData.icon.height.toFloat())
+                position.set(e.x - size.x / 2, e.y - size.y / 2, 0f)
+            }
         }
     }
 

@@ -15,7 +15,6 @@ class HealthBar(private val maxHealth: Int, labelSkin: Skin) : Actor(), Disposab
             field = value
             label.setText("${displayValue}/${maxHealth}")
             widthMultiplier = displayValue.toFloat() / maxHealth
-            println("${widthMultiplier}, ${displayValue}, ${maxHealth}")
         }
     private val label = Label("${displayValue}/${maxHealth}", labelSkin)
     private val shapeRenderer = ShapeRenderer()

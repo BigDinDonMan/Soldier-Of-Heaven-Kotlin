@@ -7,6 +7,7 @@ class Bullet : PooledComponent() {
 
     val moveDirection = Vector2()
     var damage = 0f
+    var speed = 0f
 
     override fun reset() {
         moveDirection.set(Vector2.Zero)

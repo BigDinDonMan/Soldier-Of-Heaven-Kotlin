@@ -40,5 +40,7 @@ class PhysicsSystem(private val physicsWorld: PhysicsWorld, private val velocity
             entityRigidBody.physicsBody!!.position.y - entityTransform.size.y / 2,
             entityTransform.position.z
         )
+
+        println(entityRigidBody.physicsBody!!.position)
     }
 }

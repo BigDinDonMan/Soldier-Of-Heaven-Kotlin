@@ -44,8 +44,12 @@ class WeaponSystem(val weapons: List<Weapon> = ArrayList()) : BaseSystem() {
                 val rotation = rotationTowards(moveDirectionVector.x, moveDirectionVector.y)
                 moveDirectionVector.nor()
                 EventQueue.dispatch(ShotEvent(
-                    currentWeapon, playerBodyPosition.x, playerBodyPosition.y,
-                    moveDirectionVector.x, moveDirectionVector.y, rotation)
+                    currentWeapon,
+                    playerBodyPosition.x + moveDirectionVector.x,
+                    playerBodyPosition.y + moveDirectionVector.y,
+                    moveDirectionVector.x,
+                    moveDirectionVector.y,
+                    rotation)
                 )
             } else if (currentWeapon.isEmpty() && currentWeapon.canShoot()) {
                 currentWeapon.tryReload()
@@ -55,7 +59,7 @@ class WeaponSystem(val weapons: List<Weapon> = ArrayList()) : BaseSystem() {
     }
 
     fun setPlayerEntityId(id: Int) {
-
+        this.playerEntityId = id
     }
 
     //<editor-fold desc="Event listeners">
