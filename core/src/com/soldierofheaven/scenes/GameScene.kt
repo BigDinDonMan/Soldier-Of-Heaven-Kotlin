@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.audio.Sound
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
@@ -28,6 +29,7 @@ import com.soldierofheaven.ecs.events.ShotEvent
 import com.soldierofheaven.ecs.systems.CameraPositioningSystem
 import com.soldierofheaven.ecs.systems.RenderSystem
 import com.soldierofheaven.ecs.systems.WeaponSystem
+import com.soldierofheaven.ui.AmmoDisplay
 import com.soldierofheaven.ui.Crosshair
 import com.soldierofheaven.ui.HealthBar
 import com.soldierofheaven.ui.ReloadBar
@@ -57,6 +59,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private val gameCamera = ecsWorld.getSystem(RenderSystem::class.java).gameCamera
     private lateinit var healthBar: HealthBar
     private lateinit var reloadBar: ReloadBar
+    private lateinit var ammoDisplay: AmmoDisplay
 
     private var playerEntityId by Delegates.notNull<Int>()
 
@@ -101,6 +104,13 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         }
 
         stage.addActor(reloadBar)
+
+        val ammoIcon = game.assetManager.get("gfx/bullet-basic.png", Texture::class.java)
+        ammoDisplay = AmmoDisplay(ammoIcon, defaultSkin).apply {
+            setPosition(healthPad, Gdx.graphics.heightF() - healthHeight - healthPad * 2 - ammoIcon.height)
+        }
+        ammoDisplay.update(ecsWorld.getSystem(WeaponSystem::class.java).weapons.first())
+        stage.addActor(ammoDisplay)
     }
 
     override fun show() {
@@ -141,12 +151,11 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
     @Subscribe
     private fun spawnBulletEntity(e: ShotEvent) {
-
+        ammoDisplay.update(e.weapon)
     }
 
     @Subscribe
     private fun showReloadBar(e: ReloadSuccessEvent) {
-        println("hej here")
         reloadBar.setWeapon(e.weapon)
         reloadBar.setEnabled(true)
     }

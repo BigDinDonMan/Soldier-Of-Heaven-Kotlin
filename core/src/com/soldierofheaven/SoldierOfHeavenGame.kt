@@ -78,10 +78,10 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         assetManager.dispose()
     }
 
-    override fun render() {
-        ScreenUtils.clear(Color.CYAN)
-        currentScreen.render(Gdx.graphics.deltaTime)
-    }
+//    override fun render() {
+//        ScreenUtils.clear(Color.CYAN)
+//        currentScreen.render(Gdx.graphics.deltaTime)
+//    }
 
     private fun buildWeapons(): List<Weapon> {
         return ArrayList(listOf(
