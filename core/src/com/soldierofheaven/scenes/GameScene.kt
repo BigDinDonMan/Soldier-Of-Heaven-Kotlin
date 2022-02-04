@@ -125,10 +125,6 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
         stage.act()
         stage.draw()
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            game.assetManager.get("sfx/pistol-shot.wav", Sound::class.java).play()
-        }
     }
 
     override fun resize(width: Int, height: Int) = viewport.update(width, height)
@@ -144,7 +140,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
     @Subscribe
     private fun updateHealthBar(e: PlayerHealthChangeEvent) {
-
+        healthBar.updateDisplay(e.currentHealth)
     }
 
     @Subscribe
@@ -161,6 +157,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     @Subscribe
     private fun hideReloadBar(e: ReloadFinishedEvent) {
         reloadBar.setEnabled(false)
+        ammoDisplay.update(e.weapon)
     }
 
     //</editor-fold>

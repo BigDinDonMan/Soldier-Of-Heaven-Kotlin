@@ -7,7 +7,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.soldierofheaven.Weapon
 
-class AmmoDisplay(private val ammoIcon: Texture, private val skin: Skin) : Actor() {
+class AmmoDisplay(private val ammoIcon: Texture, skin: Skin) : Actor() {
+
+    companion object {
+        val INFINITE_AMMO_STR = "N/A"//'\u221e'.toString()
+    }
 
     private val clipLabel = Label("", skin)
     private val storedAmmoLabel = Label("", skin)
@@ -18,15 +22,16 @@ class AmmoDisplay(private val ammoIcon: Texture, private val skin: Skin) : Actor
         storedAmmoLabel.draw(batch, parentAlpha)
     }
 
-    fun update(weapon: Weapon) {
-        clipLabel.setText("${weapon.currentAmmo}/${weapon.clipSize}")
-        storedAmmoLabel.setText(if (weapon.maxStoredAmmo == Weapon.INFINITE_AMMO) "∞" else "${weapon.storedAmmo}/${weapon.maxStoredAmmo}")
-    }
-
-    override fun positionChanged() {
+    override fun act(delta: Float) {
+        super.act(delta)
         val padding = 5f
         val xPos = x + ammoIcon.width + padding
-        clipLabel.setPosition(xPos, y + height - clipLabel.height)
         storedAmmoLabel.setPosition(xPos, y)
+        clipLabel.setPosition(xPos, y + ammoIcon.height)
+    }
+
+    fun update(weapon: Weapon) {
+        clipLabel.setText("${weapon.currentAmmo}/${weapon.clipSize}")
+        storedAmmoLabel.setText(if (weapon.maxStoredAmmo == Weapon.INFINITE_AMMO) INFINITE_AMMO_STR else "${weapon.storedAmmo}/${weapon.maxStoredAmmo}")
     }
 }
