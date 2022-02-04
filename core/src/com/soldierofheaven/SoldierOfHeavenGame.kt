@@ -55,9 +55,11 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
             CameraPositioningSystem(camera),
             RenderSystem(batch, camera),
             WeaponSystem(buildWeapons()),
+            BulletSystem(),
             RemovalSystem()
         ).build()
         ecsWorldConfig.register("physicsWorld", physicsWorld)
+        ecsWorldConfig.register("gameCamera", camera)
         EventQueue.init(ecsWorldConfig)
 
         ecsWorld = EcsWorld(ecsWorldConfig)

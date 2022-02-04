@@ -11,7 +11,7 @@ class Transform : PooledComponent() {
     val scale = Vector2(1f, 1f)
     val center = Vector2()
         get() {
-            center.set(position.x + size.x / 2, position.y + size.y / 2)
+            field.set(position.x + size.x / 2, position.y + size.y / 2)
             return field
         }
     var rotation = 0f

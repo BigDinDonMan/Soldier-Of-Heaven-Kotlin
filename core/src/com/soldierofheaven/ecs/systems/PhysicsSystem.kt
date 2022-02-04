@@ -33,6 +33,8 @@ class PhysicsSystem(private val physicsWorld: PhysicsWorld, private val velocity
         val entityRigidBody = rigidBodyMapper!!.get(entityId)
         val entityTransform = transformMapper!!.get(entityId)
 
+        if (entityRigidBody.physicsBody == null) return
+
         entityTransform.position.set(
             entityRigidBody.physicsBody!!.position.x - entityTransform.size.x / 2,
             entityRigidBody.physicsBody!!.position.y - entityTransform.size.y / 2,

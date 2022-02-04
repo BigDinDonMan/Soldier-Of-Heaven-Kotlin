@@ -55,6 +55,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     init {
         playerEntityId = ecsWorld.create()
         ecsWorld.getSystem(CameraPositioningSystem::class.java).playerEntityId = playerEntityId
+        ecsWorld.getSystem(WeaponSystem::class.java).setPlayerEntityId(playerEntityId)
         val playerWidth = 48f
         val playerHeight = 48f
         ecsWorld.edit(playerEntityId).add(Player()).add(RigidBody().apply {
@@ -139,16 +140,17 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         ammoDisplay.update(e.weapon)
         val bulletId = ecsWorld.create()
         val editor = ecsWorld.edit(bulletId)
-        editor.add(Transform().apply {
-
-        }).add(RigidBody().apply {
+        editor.add(RigidBody().apply {
 
         }).add(TextureDisplay().apply {
-
+            texture = e.weapon.bulletData.icon
         }).create(Bullet::class.java).apply {
-
+            moveDirection.set(e.directionX, e.directionY)
         }
-        editor.create(LifeCycle::class.java).apply {  }
+        editor.create(LifeCycle::class.java).apply { lifeTime = 2.5f }
+        editor.create(Transform::class.java).apply {
+            position.set(e.x, e.y, 0f)
+        }
     }
 
     @Subscribe
