@@ -1,10 +1,8 @@
 package com.soldierofheaven.scenes
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.ScreenAdapter
-import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.physics.box2d.BodyDef
@@ -14,14 +12,9 @@ import com.badlogic.gdx.physics.box2d.PolygonShape
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.viewport.StretchViewport
-import com.soldierofheaven.EventQueue
 import com.soldierofheaven.SoldierOfHeavenGame
-import com.soldierofheaven.Weapon
 import com.soldierofheaven.ecs.PlayerInputHandler
-import com.soldierofheaven.ecs.components.Bullet
-import com.soldierofheaven.ecs.components.Player
-import com.soldierofheaven.ecs.components.RigidBody
-import com.soldierofheaven.ecs.components.Transform
+import com.soldierofheaven.ecs.components.*
 import com.soldierofheaven.ecs.events.PlayerHealthChangeEvent
 import com.soldierofheaven.ecs.events.ReloadFinishedEvent
 import com.soldierofheaven.ecs.events.ReloadSuccessEvent
@@ -37,8 +30,6 @@ import com.soldierofheaven.util.EcsWorld
 import com.soldierofheaven.util.PhysicsWorld
 import com.soldierofheaven.util.heightF
 import com.soldierofheaven.util.widthF
-import net.mostlyoriginal.api.event.common.Event
-import net.mostlyoriginal.api.event.common.EventSystem
 import net.mostlyoriginal.api.event.common.Subscribe
 import kotlin.properties.Delegates
 
@@ -66,7 +57,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         ecsWorld.getSystem(CameraPositioningSystem::class.java).playerEntityId = playerEntityId
         val playerWidth = 48f
         val playerHeight = 48f
-        ecsWorld.edit(playerEntityId).add(Transform()).add(Player()).add(RigidBody().apply {
+        ecsWorld.edit(playerEntityId).add(Player()).add(RigidBody().apply {
             val playerBodyDef = BodyDef().apply {
                 gravityScale = 0f
                 linearDamping = 5f
@@ -78,7 +69,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             }
             physicsBody = physicsWorld.createBody(playerBodyDef).apply { createFixture(playerBodyFixtureDef) }
             playerBodyShape.dispose()
-        })
+        }).create(Transform::class.java)
         initUi(ecsWorld.getEntity(playerEntityId).getComponent(Transform::class.java).position)
     }
 
@@ -146,6 +137,18 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     @Subscribe
     private fun spawnBulletEntity(e: ShotEvent) {
         ammoDisplay.update(e.weapon)
+        val bulletId = ecsWorld.create()
+        val editor = ecsWorld.edit(bulletId)
+        editor.add(Transform().apply {
+
+        }).add(RigidBody().apply {
+
+        }).add(TextureDisplay().apply {
+
+        }).create(Bullet::class.java).apply {
+
+        }
+        editor.create(LifeCycle::class.java).apply {  }
     }
 
     @Subscribe

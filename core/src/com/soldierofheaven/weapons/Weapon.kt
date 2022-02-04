@@ -1,8 +1,8 @@
-package com.soldierofheaven
+package com.soldierofheaven.weapons
 
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Texture
-import com.soldierofheaven.ecs.components.Bullet
+import com.soldierofheaven.EventQueue
 import com.soldierofheaven.ecs.events.ReloadFinishedEvent
 import com.soldierofheaven.util.GameTimer
 
@@ -18,7 +18,7 @@ class Weapon(
     val price: Int,
     var unlocked: Boolean,
     val weaponIcon: Texture,
-    val bulletPrototype: Bullet,
+    val bulletData: BulletData,
     val shotSound: Sound,
     val reloadSound: Sound,
     var bulletSpread: Float = 0f,

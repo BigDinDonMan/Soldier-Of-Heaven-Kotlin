@@ -1,19 +1,15 @@
 package com.soldierofheaven
 
-import com.artemis.WorldConfiguration
 import com.artemis.WorldConfigurationBuilder
-import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.audio.Sound
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Box2D
-import com.badlogic.gdx.utils.ScreenUtils
 import com.soldierofheaven.ecs.components.Bullet
 import com.soldierofheaven.ecs.systems.*
 import com.soldierofheaven.scenes.GameScene
@@ -22,8 +18,9 @@ import com.soldierofheaven.util.EcsWorld
 import com.soldierofheaven.util.PhysicsWorld
 import com.soldierofheaven.util.heightF
 import com.soldierofheaven.util.widthF
+import com.soldierofheaven.weapons.BulletData
+import com.soldierofheaven.weapons.Weapon
 import ktx.app.KtxGame
-import net.mostlyoriginal.api.event.common.EventSystem
 
 //todo: monitor performance of the game with the current amount of event dispatching; if it suffers, implement pooling or switch to callbacks
 class SoldierOfHeavenGame : KtxGame<Screen>() {
@@ -60,7 +57,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
             WeaponSystem(buildWeapons()),
             RemovalSystem()
         ).build()
-
+        ecsWorldConfig.register("physicsWorld", physicsWorld)
         EventQueue.init(ecsWorldConfig)
 
         ecsWorld = EcsWorld(ecsWorldConfig)
@@ -80,17 +77,12 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         assetManager.dispose()
     }
 
-//    override fun render() {
-//        ScreenUtils.clear(Color.CYAN)
-//        currentScreen.render(Gdx.graphics.deltaTime)
-//    }
-
     private fun buildWeapons(): List<Weapon> {
         return ArrayList(listOf(
             Weapon("Peacemaker", 10, Weapon.INFINITE_AMMO, 1f, 10f,
                 0.25f, -1, true,
                 assetManager.get("gfx/bullet-basic.png"),
-                Bullet(),
+                BulletData(5f, 8f, 8f, assetManager.get("gfx/bullet-basic.png")),
                 assetManager.get("sfx/pistol-shot.wav"),
                 assetManager.get("sfx/pistol-reload.wav"))
         ))

@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.utils.Disposable
-import com.soldierofheaven.Weapon
+import com.soldierofheaven.weapons.Weapon
 
 //todo: change interpolated colors to be darker (dark red & dark green, or something else)
 class ReloadBar(private val outlineTexture: Texture, private val playerPositionVector: Vector3, private val gameCamera: Camera, private val yOffset: Float) : Actor(), Disposable {

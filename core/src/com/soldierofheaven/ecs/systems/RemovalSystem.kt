@@ -7,13 +7,21 @@ import com.artemis.annotations.Wire
 import com.artemis.systems.IteratingSystem
 import com.badlogic.gdx.Gdx
 import com.soldierofheaven.ecs.components.LifeCycle
+import com.soldierofheaven.ecs.components.RigidBody
+import com.soldierofheaven.util.PhysicsWorld
 import java.util.*
 
 @All(LifeCycle::class)
-class RemovalSystem : IteratingSystem() {
+class RemovalSystem() : IteratingSystem() {
+
+    @Wire(name = "physicsWorld")
+    private var physicsWorld: PhysicsWorld? = null
 
     @Wire
     var lifeCycleMapper: ComponentMapper<LifeCycle>? = null
+
+    @Wire
+    var rigidBodyMapper: ComponentMapper<RigidBody>? = null
 
     private val removalQueue = LinkedList<Int>()
 
@@ -26,7 +34,13 @@ class RemovalSystem : IteratingSystem() {
     }
 
     override fun end() {
-        removalQueue.forEach(world::delete)
+        removalQueue.forEach { id -> kotlin.run {
+            world.delete(id)
+            val rigidBody = rigidBodyMapper!!.get(id)
+            if (rigidBody?.physicsBody != null) {
+                physicsWorld!!.destroyBody(rigidBody.physicsBody)
+            }
+        } }
         removalQueue.clear()
     }
 }
