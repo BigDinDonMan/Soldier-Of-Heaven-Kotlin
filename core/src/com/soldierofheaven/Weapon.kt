@@ -23,7 +23,7 @@ class Weapon(
     var bulletSpread: Float = 0f,
     var bulletsPerShot: Int = 1
 ) {
-    var reloadTimer = GameTimer(reloadTime, false) { EventQueue.dispatch(ReloadFinishedEvent()) }
+    var reloadTimer = GameTimer(reloadTime, false) { EventQueue.dispatch(ReloadFinishedEvent(this)) }
     var shotCooldown = 0f
     var currentAmmo = clipSize
     var storedAmmo: Int
@@ -80,4 +80,6 @@ class Weapon(
     fun isEmpty(): Boolean = currentAmmo <= 0
 
     fun canShoot(): Boolean = shotCooldown <= 0f
+
+    fun reloadProgress(): Float = reloadTimer.timeElapsed() / reloadTime
 }

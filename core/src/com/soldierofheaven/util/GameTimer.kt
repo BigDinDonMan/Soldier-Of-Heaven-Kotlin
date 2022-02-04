@@ -31,4 +31,6 @@ open class GameTimer(val time: Float, val looping: Boolean = false, val elapsedC
     }
 
     fun isRunning() = started
+
+    fun timeElapsed() = counter
 }

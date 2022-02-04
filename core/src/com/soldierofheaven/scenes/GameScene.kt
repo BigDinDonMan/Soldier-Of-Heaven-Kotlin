@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.audio.Sound
+import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
 import com.badlogic.gdx.physics.box2d.FixtureDef
@@ -18,10 +19,14 @@ import com.soldierofheaven.ecs.components.Player
 import com.soldierofheaven.ecs.components.RigidBody
 import com.soldierofheaven.ecs.components.Transform
 import com.soldierofheaven.ecs.events.PlayerHealthChangeEvent
+import com.soldierofheaven.ecs.events.ReloadFinishedEvent
+import com.soldierofheaven.ecs.events.ReloadSuccessEvent
+import com.soldierofheaven.ecs.events.ShotEvent
 import com.soldierofheaven.ecs.systems.CameraPositioningSystem
 import com.soldierofheaven.ecs.systems.RenderSystem
 import com.soldierofheaven.ui.Crosshair
 import com.soldierofheaven.ui.HealthBar
+import com.soldierofheaven.ui.ReloadBar
 import com.soldierofheaven.util.EcsWorld
 import com.soldierofheaven.util.PhysicsWorld
 import com.soldierofheaven.util.heightF
@@ -44,12 +49,14 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private val inputHandler = PlayerInputHandler()
 
     private val defaultSkin = Skin(Gdx.files.internal("skins/uiskin.json"))
+
+    private val gameCamera = ecsWorld.getSystem(RenderSystem::class.java).gameCamera
     private lateinit var healthBar: HealthBar
+    private lateinit var reloadBar: ReloadBar
 
     private var playerEntityId by Delegates.notNull<Int>()
 
     init {
-        initUi()
         playerEntityId = ecsWorld.create()
         ecsWorld.getSystem(CameraPositioningSystem::class.java).playerEntityId = playerEntityId
         val playerWidth = 48f
@@ -67,9 +74,10 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             physicsBody = physicsWorld.createBody(playerBodyDef).apply { createFixture(playerBodyFixtureDef) }
             playerBodyShape.dispose()
         })
+        initUi(ecsWorld.getEntity(playerEntityId).getComponent(Transform::class.java).position)
     }
 
-    private fun initUi() {
+    private fun initUi(playerPositionVector: Vector3) {
         val healthPad = 10f
         val healthHeight = 50f
         val healthWidth = 250f
@@ -82,6 +90,11 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
         val crosshair = Crosshair(game.assetManager.get("gfx/crosshair.png"))
         stage.addActor(crosshair)
+
+        reloadBar = ReloadBar(playerPositionVector, gameCamera, 50f).apply {
+            width = 50f
+            height = 8f
+        }
     }
 
     override fun show() {
@@ -90,25 +103,16 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         //todo: instantiate weapons here
     }
 
-    @Subscribe
-    private fun updateHealthBar(e: PlayerHealthChangeEvent) {
-
-    }
-
-    @Subscribe
-    private fun spawnBulletEntity(e: Event) {
-
-    }
-
     override fun render(delta: Float) {
         ecsWorld.setDelta(delta)
         ecsWorld.process()
 
-        stage.act()
-        stage.draw()
         if (debug) {
             debugRenderer.render(physicsWorld, ecsWorld.getSystem(RenderSystem::class.java).spriteBatch.projectionMatrix)
         }
+
+        stage.act()
+        stage.draw()
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             game.assetManager.get("sfx/pistol-shot.wav", Sound::class.java).play()
@@ -118,7 +122,33 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     override fun resize(width: Int, height: Int) = viewport.update(width, height)
 
     override fun dispose() {
-        stage.dispose()
+        reloadBar.dispose()
         healthBar.dispose()
+        stage.dispose()
     }
+
+    //<editor-fold desc="Event listeners">
+
+    @Subscribe
+    private fun updateHealthBar(e: PlayerHealthChangeEvent) {
+
+    }
+
+    @Subscribe
+    private fun spawnBulletEntity(e: ShotEvent) {
+
+    }
+
+    @Subscribe
+    private fun showReloadBar(e: ReloadSuccessEvent) {
+        reloadBar.setWeapon(e.weapon)
+        reloadBar.setEnabled(true)
+    }
+
+    @Subscribe
+    private fun hideReloadBar(e: ReloadFinishedEvent) {
+        reloadBar.setEnabled(false)
+    }
+
+    //</editor-fold>
 }
