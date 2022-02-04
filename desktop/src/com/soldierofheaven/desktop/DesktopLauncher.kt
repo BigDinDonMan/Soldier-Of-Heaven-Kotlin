@@ -10,8 +10,8 @@ object DesktopLauncher {
     fun main(arg: Array<String>) {
         val config = LwjglApplicationConfiguration().apply {
             title = "Soldier of Heaven"
-            width = 1024
-            height = 768
+            width = 1280
+            height = 784
         }
         LwjglApplication(SoldierOfHeavenGame(), config)
     }

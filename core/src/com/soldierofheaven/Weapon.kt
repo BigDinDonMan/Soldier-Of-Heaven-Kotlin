@@ -7,6 +7,7 @@ import com.soldierofheaven.ecs.events.ReloadFinishedEvent
 import com.soldierofheaven.util.GameTimer
 
 // this class might turn out as a bit of a code smell but eh, whatever goes
+//todo: if implementing upgrades: add added[VarName] fields that will store added parameters (e.g. increased fire rate)
 class Weapon(
     val name: String,
     var clipSize: Int,

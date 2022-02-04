@@ -8,10 +8,6 @@ import com.soldierofheaven.util.heightF
 
 class Crosshair(private val crosshairTexture: Texture) : Actor() {
 
-    fun disable() {
-
-    }
-
     override fun act(delta: Float) {
         super.act(delta)
         setPosition(

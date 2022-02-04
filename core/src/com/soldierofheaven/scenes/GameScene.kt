@@ -96,8 +96,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         stage.addActor(crosshair)
 
         reloadBar = ReloadBar(playerPositionVector, gameCamera, 50f).apply {
-            width = 50f
-            height = 8f
+            width = 80f
+            height = 10f
         }
 
         stage.addActor(reloadBar)
@@ -105,8 +105,6 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
     override fun show() {
         Gdx.input.inputProcessor = InputMultiplexer(inputHandler, stage)
-
-        //todo: instantiate weapons here
     }
 
     override fun render(delta: Float) {

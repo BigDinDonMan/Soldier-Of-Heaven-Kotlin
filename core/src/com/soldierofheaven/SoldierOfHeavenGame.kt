@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.audio.Sound
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -75,6 +76,11 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         physicsWorld.dispose()
         ecsWorld.dispose()
         assetManager.dispose()
+    }
+
+    override fun render() {
+        ScreenUtils.clear(Color.CYAN)
+        currentScreen.render(Gdx.graphics.deltaTime)
     }
 
     private fun buildWeapons(): List<Weapon> {
