@@ -5,17 +5,12 @@ import com.artemis.annotations.Wire
 import com.badlogic.gdx.Gdx
 import com.soldierofheaven.EventQueue
 import com.soldierofheaven.Weapon
-import com.soldierofheaven.ecs.events.ShotEvent
-import com.soldierofheaven.ecs.events.ShotRequestEvent
-import com.soldierofheaven.ecs.events.WeaponChangeEvent
+import com.soldierofheaven.ecs.events.*
 import com.soldierofheaven.ecs.events.ui.WeaponChangedUiEvent
 import net.mostlyoriginal.api.event.common.EventSystem
 import net.mostlyoriginal.api.event.common.Subscribe
 
-class WeaponSystem(private val weapons: ArrayList<Weapon>) : BaseSystem() {
-
-    @Wire
-    var eventSystem: EventSystem? = null
+class WeaponSystem(val weapons: List<Weapon> = ArrayList()) : BaseSystem() {
 
     private var shooting = false
     private var currentWeapon: Weapon = weapons.first()
@@ -35,6 +30,14 @@ class WeaponSystem(private val weapons: ArrayList<Weapon>) : BaseSystem() {
     @Subscribe
     private fun receiveShotState(e: ShotRequestEvent) {
         shooting = e.start
+    }
+
+    @Subscribe
+    private fun receiveReloadRequest(e: ReloadRequestEvent) {
+        val success = currentWeapon.tryReload()
+        if (success) {
+            EventQueue.dispatch(ReloadSuccessEvent(currentWeapon))
+        }
     }
 
     override fun processSystem() {

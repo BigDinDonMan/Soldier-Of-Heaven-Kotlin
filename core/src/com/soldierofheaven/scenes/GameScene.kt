@@ -13,8 +13,11 @@ import com.badlogic.gdx.physics.box2d.PolygonShape
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.viewport.StretchViewport
+import com.soldierofheaven.EventQueue
 import com.soldierofheaven.SoldierOfHeavenGame
+import com.soldierofheaven.Weapon
 import com.soldierofheaven.ecs.PlayerInputHandler
+import com.soldierofheaven.ecs.components.Bullet
 import com.soldierofheaven.ecs.components.Player
 import com.soldierofheaven.ecs.components.RigidBody
 import com.soldierofheaven.ecs.components.Transform
@@ -24,6 +27,7 @@ import com.soldierofheaven.ecs.events.ReloadSuccessEvent
 import com.soldierofheaven.ecs.events.ShotEvent
 import com.soldierofheaven.ecs.systems.CameraPositioningSystem
 import com.soldierofheaven.ecs.systems.RenderSystem
+import com.soldierofheaven.ecs.systems.WeaponSystem
 import com.soldierofheaven.ui.Crosshair
 import com.soldierofheaven.ui.HealthBar
 import com.soldierofheaven.ui.ReloadBar
@@ -95,10 +99,12 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             width = 50f
             height = 8f
         }
+
+        stage.addActor(reloadBar)
     }
 
     override fun show() {
-        Gdx.input.inputProcessor = InputMultiplexer(stage, inputHandler)
+        Gdx.input.inputProcessor = InputMultiplexer(inputHandler, stage)
 
         //todo: instantiate weapons here
     }
@@ -124,6 +130,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     override fun dispose() {
         reloadBar.dispose()
         healthBar.dispose()
+        defaultSkin.dispose()
         stage.dispose()
     }
 
@@ -141,6 +148,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
     @Subscribe
     private fun showReloadBar(e: ReloadSuccessEvent) {
+        println("hej here")
         reloadBar.setWeapon(e.weapon)
         reloadBar.setEnabled(true)
     }

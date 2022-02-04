@@ -13,10 +13,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Box2D
 import com.badlogic.gdx.utils.ScreenUtils
-import com.soldierofheaven.ecs.systems.CameraPositioningSystem
-import com.soldierofheaven.ecs.systems.InputSystem
-import com.soldierofheaven.ecs.systems.PhysicsSystem
-import com.soldierofheaven.ecs.systems.RenderSystem
+import com.soldierofheaven.ecs.components.Bullet
+import com.soldierofheaven.ecs.systems.*
 import com.soldierofheaven.scenes.GameScene
 import com.soldierofheaven.scenes.MenuScene
 import com.soldierofheaven.util.EcsWorld
@@ -42,14 +40,6 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         // we do not need any gravity in this game
         physicsWorld = PhysicsWorld(Vector2.Zero, false)
 
-        val ecsWorldConfig = WorldConfigurationBuilder().with(
-            PhysicsSystem(physicsWorld),
-            InputSystem(),
-            CameraPositioningSystem(camera),
-            RenderSystem(batch, camera)
-        ).build()
-        ecsWorld = EcsWorld(ecsWorldConfig)
-
         assetManager.load("gfx/crosshair.png", Texture::class.java)
         assetManager.load("gfx/bullet-basic.png", Texture::class.java)
         assetManager.load("sfx/pistol-reload.wav", Sound::class.java)
@@ -60,8 +50,22 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         assetManager.load("sfx/rifle-reload.wav", Sound::class.java)
         assetManager.finishLoading()
 
+        val ecsWorldConfig = WorldConfigurationBuilder().with(
+            PhysicsSystem(physicsWorld),
+            InputSystem(),
+            CameraPositioningSystem(camera),
+            RenderSystem(batch, camera),
+            WeaponSystem(buildWeapons())
+        ).build()
+
+        EventQueue.init(ecsWorldConfig)
+
+        ecsWorld = EcsWorld(ecsWorldConfig)
+
         addScreen(MenuScene(this))
         addScreen(GameScene(this, ecsWorld, physicsWorld))
+
+        screens.forEach { e -> EventQueue.register(e.value) }
 
         setScreen<MenuScene>()
     }
@@ -71,5 +75,16 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         physicsWorld.dispose()
         ecsWorld.dispose()
         assetManager.dispose()
+    }
+
+    private fun buildWeapons(): List<Weapon> {
+        return ArrayList(listOf(
+            Weapon("Peacemaker", 10, Weapon.INFINITE_AMMO, 1f, 10f,
+                0.25f, -1, true,
+                assetManager.get("gfx/bullet-basic.png"),
+                Bullet(),
+                assetManager.get("sfx/pistol-shot.wav"),
+                assetManager.get("sfx/pistol-reload.wav"))
+        ))
     }
 }
