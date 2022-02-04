@@ -48,7 +48,7 @@ class Weapon(
 
     fun tryFire(): Boolean {
         if (!canShoot() || isReloading()) return false
-        if (isEmpty()) return tryReload()
+        if (isEmpty()) return false
         currentAmmo--
         shotCooldown = fireRate
         shotSound.play()

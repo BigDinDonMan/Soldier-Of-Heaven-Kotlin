@@ -42,11 +42,14 @@ class WeaponSystem(val weapons: List<Weapon> = ArrayList()) : BaseSystem() {
 
     override fun processSystem() {
         val delta = Gdx.graphics.deltaTime
-
         currentWeapon.update(delta)
+
         if (shooting) {
             if (currentWeapon.tryFire()) {
                 EventQueue.dispatch(ShotEvent(currentWeapon))
+            } else if (currentWeapon.isEmpty() && currentWeapon.canShoot()) {
+                currentWeapon.tryReload()
+                EventQueue.dispatch(ReloadSuccessEvent(currentWeapon))
             }
         }
     }
