@@ -2,6 +2,7 @@ package com.soldierofheaven.ui
 
 import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector3
@@ -9,15 +10,24 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.utils.Disposable
 import com.soldierofheaven.Weapon
 
-//todo: add bar outline texture
 //todo: change interpolated colors to be darker (dark red & dark green, or something else)
-class ReloadBar(private val playerPositionVector: Vector3, private val gameCamera: Camera, private val yOffset: Float) : Actor(), Disposable {
+class ReloadBar(private val outlineTexture: Texture, private val playerPositionVector: Vector3, private val gameCamera: Camera, private val yOffset: Float) : Actor(), Disposable {
 
     private val projectionVector = Vector3()
     private val shapeRenderer = ShapeRenderer()
     private var enabled = false
     private var weapon: Weapon? = null
     private var barColor = Color(1f, 0f, 0f, 1f)
+    var barWidth: Float
+    var barHeight: Float
+    var barPaddingX: Float = 0f
+
+    init {
+        width = outlineTexture.width.toFloat()
+        height = outlineTexture.height.toFloat()
+        barWidth = width
+        barHeight = height
+    }
 
     override fun act(delta: Float) {
         super.act(delta)
@@ -31,33 +41,21 @@ class ReloadBar(private val playerPositionVector: Vector3, private val gameCamer
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
-        super.draw(batch, parentAlpha)
         if (!enabled) return
         barColor.set(Color.RED)
 
+        batch.end()
+
+        val barX = x
+        val barY = y + height / 2 - barHeight / 2
         val reloadProgress = weapon?.reloadProgress() ?: 0f
-
-        //side rects' borders
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
-
-        shapeRenderer.end()
-
-        //actual bar border
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
-        shapeRenderer.rect(x, y - height / 2, width, height, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK)
-        shapeRenderer.end()
-
-        //actual bar fills
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
         val color = barColor.lerp(Color.GREEN, reloadProgress)
-        val border = 2
-        val barX = x + border / 2
-        val barY = y + border / 2 - height / 2
-        val baseBarWidth = width - border
-        val barHeight = height - border
-        shapeRenderer.rect(barX, barY, baseBarWidth , barHeight, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE)
-        shapeRenderer.rect(barX, barY, baseBarWidth * reloadProgress, barHeight, color, color, color, color)
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
+        shapeRenderer.rect(barX + barPaddingX, barY, (barWidth - barPaddingX * 2) * reloadProgress, barHeight, color, color, color, color)
         shapeRenderer.end()
+        batch.begin()
+        batch.draw(outlineTexture, x, y)
     }
 
     override fun dispose() {
@@ -70,5 +68,14 @@ class ReloadBar(private val playerPositionVector: Vector3, private val gameCamer
 
     fun setEnabled(b: Boolean) {
         enabled = b
+    }
+
+    fun setBarSize(w: Float, h: Float) {
+        barWidth = w
+        barHeight = h
+    }
+
+    fun setPadding(x: Float, y: Float) {
+
     }
 }

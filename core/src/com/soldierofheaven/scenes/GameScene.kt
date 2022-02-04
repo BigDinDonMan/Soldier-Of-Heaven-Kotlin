@@ -42,8 +42,6 @@ import net.mostlyoriginal.api.event.common.EventSystem
 import net.mostlyoriginal.api.event.common.Subscribe
 import kotlin.properties.Delegates
 
-//todo: add removal service so that we can remove entities from the game later
-
 class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: EcsWorld, private val physicsWorld: PhysicsWorld) : ScreenAdapter() {
 
     private val viewport = StretchViewport(Gdx.graphics.widthF(), Gdx.graphics.heightF())
@@ -98,10 +96,10 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         val crosshair = Crosshair(game.assetManager.get("gfx/crosshair.png"))
         stage.addActor(crosshair)
 
-        reloadBar = ReloadBar(playerPositionVector, gameCamera, 50f).apply {
-            width = 80f
-            height = 10f
-        }
+        val reloadIcon = game.assetManager.get("gfx/reload-bar.png", Texture::class.java)
+        reloadBar = ReloadBar(reloadIcon, playerPositionVector, gameCamera, 50f)
+        reloadBar.setBarSize(reloadBar.barWidth, 15f)
+        reloadBar.barPaddingX = 5f
 
         stage.addActor(reloadBar)
 

@@ -42,6 +42,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         physicsWorld = PhysicsWorld(Vector2.Zero, false)
 
         assetManager.load("gfx/crosshair.png", Texture::class.java)
+        assetManager.load("gfx/reload-bar.png", Texture::class.java)
         assetManager.load("gfx/bullet-basic.png", Texture::class.java)
         assetManager.load("sfx/pistol-reload.wav", Sound::class.java)
         assetManager.load("sfx/pistol-shot.wav", Sound::class.java)
@@ -56,7 +57,8 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
             InputSystem(),
             CameraPositioningSystem(camera),
             RenderSystem(batch, camera),
-            WeaponSystem(buildWeapons())
+            WeaponSystem(buildWeapons()),
+            RemovalSystem()
         ).build()
 
         EventQueue.init(ecsWorldConfig)
