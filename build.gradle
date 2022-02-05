@@ -28,6 +28,7 @@ allprojects {
         artemisVersion = '2.3.0'
         gdxControllersVersion = '2.1.0'
         ktxVersion = '1.10.0-b1'
+        gsonVersion = "2.8.9"
     }
 
     repositories {
@@ -58,6 +59,7 @@ project(":desktop") {
         compile "net.onedaybeard.artemis:artemis-odb-serializer-json-libgdx:$artemisVersion"
         compile "net.onedaybeard.artemis:artemis-odb-serializer-json:$artemisVersion"
         implementation "io.github.libktx:ktx-app:$ktxVersion"
+        implementation "com.google.code.gson:gson:$gsonVersion"
     }
 }
 
@@ -78,5 +80,6 @@ project(":core") {
         compile "net.onedaybeard.artemis:artemis-odb-serializer-json-libgdx:$artemisVersion"
         compile "net.onedaybeard.artemis:artemis-odb-serializer-json:$artemisVersion"
         implementation "io.github.libktx:ktx-app:$ktxVersion"
+        implementation "com.google.code.gson:gson:$gsonVersion"
     }
 }

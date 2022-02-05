@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Box2D
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.soldierofheaven.ecs.components.Bullet
 import com.soldierofheaven.ecs.systems.*
 import com.soldierofheaven.scenes.GameScene
@@ -17,10 +19,12 @@ import com.soldierofheaven.scenes.MenuScene
 import com.soldierofheaven.util.EcsWorld
 import com.soldierofheaven.util.PhysicsWorld
 import com.soldierofheaven.util.heightF
+import com.soldierofheaven.util.serialization.WeaponJsonConverter
 import com.soldierofheaven.util.widthF
 import com.soldierofheaven.weapons.BulletData
 import com.soldierofheaven.weapons.Weapon
 import ktx.app.KtxGame
+import java.io.File
 
 //todo: monitor performance of the game with the current amount of event dispatching; if it suffers, implement pooling or switch to callbacks
 class SoldierOfHeavenGame : KtxGame<Screen>() {
@@ -54,7 +58,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
             InputSystem(),
             CameraPositioningSystem(camera),
             RenderSystem(batch, camera),
-            WeaponSystem(buildWeapons()),
+            WeaponSystem(loadWeaponDefs()),
             BulletSystem(),
             RemovalSystem()
         ).build()
@@ -87,5 +91,18 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
                 assetManager.get("sfx/pistol-shot.wav"),
                 assetManager.get("sfx/pistol-reload.wav")).apply { unlocked = true }
         ))
+    }
+
+    //todo: use Gdx.files.internal to get file locations after moving json into assets
+    private fun dumpWeaponDefinitions() {
+        val weaponDefs = buildWeapons()
+        val converter = WeaponJsonConverter(assetManager)
+        val json = converter.toJson(weaponDefs)
+        File("weapon-defs.json").writeText(json, Charsets.UTF_8)
+    }
+
+    private fun loadWeaponDefs(): List<Weapon> {
+        val text = Gdx.files.internal("weapon-defs.json").file().readText(Charsets.UTF_8)
+        return WeaponJsonConverter(assetManager).fromJson(text)
     }
 }
