@@ -16,7 +16,6 @@ class Weapon(
     var damage: Float,
     var fireRate: Float,
     val price: Int,
-    var unlocked: Boolean,
     val weaponIcon: Texture,
     val bulletData: BulletData,
     val shotSound: Sound,
@@ -28,6 +27,7 @@ class Weapon(
     var shotCooldown = 0f
     var currentAmmo = clipSize
     var storedAmmo: Int
+    var unlocked: Boolean = false
 
     init {
         storedAmmo = if (maxStoredAmmo == INFINITE_AMMO) INFINITE_AMMO else maxStoredAmmo / 2
@@ -83,4 +83,12 @@ class Weapon(
     fun canShoot(): Boolean = shotCooldown <= 0f
 
     fun reloadProgress(): Float = reloadTimer.timeElapsed() / reloadTime
+
+    fun reset() {
+        reloadTimer.stop()
+        storedAmmo = if (maxStoredAmmo == INFINITE_AMMO) -1 else maxStoredAmmo / 2
+        shotCooldown = 0f
+        currentAmmo = clipSize
+        unlocked = false
+    }
 }

@@ -82,11 +82,10 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
     private fun buildWeapons(): List<Weapon> {
         return ArrayList(listOf(
             Weapon("Peacemaker", 10, Weapon.INFINITE_AMMO, 1f, 10f,
-                0.25f, -1, true,
-                assetManager.get("gfx/bullet-basic.png"),
+                0.25f, -1, assetManager.get("gfx/bullet-basic.png"),
                 BulletData(5f, 10f, assetManager.get("gfx/bullet-basic.png")),
                 assetManager.get("sfx/pistol-shot.wav"),
-                assetManager.get("sfx/pistol-reload.wav"))
+                assetManager.get("sfx/pistol-reload.wav")).apply { unlocked = true }
         ))
     }
 }
