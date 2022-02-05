@@ -18,6 +18,7 @@ class Weapon(
     var fireRate: Float,
     val price: Int,
     val weaponIcon: Texture,
+    val ammoIcon: Texture,
     val bulletData: BulletData,
     val shotSound: Sound,
     val reloadSound: Sound,

@@ -87,10 +87,17 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
     private fun buildWeapons(): List<Weapon> {
         return ArrayList(listOf(
             Weapon("Peacemaker", 10, Weapon.INFINITE_AMMO, 1f, 10f,
-                0.25f, -1, assetManager.get("gfx/bullet-basic.png"),
-                BulletData(5f, 10f, assetManager.get("gfx/bullet-basic.png")),
+                0.25f, -1, assetManager.get(Resources.BASIC_BULLET),
+                assetManager.get(Resources.BASIC_BULLET),
+                BulletData(5f, 10f, assetManager.get(Resources.BASIC_BULLET)),
                 assetManager.get("sfx/pistol-shot.wav"),
-                assetManager.get("sfx/pistol-reload.wav")).apply { unlocked = true }
+                assetManager.get("sfx/pistol-reload.wav")).apply { unlocked = true },
+            Weapon("The Absolver", 30, 600, 2.5f, 6f,
+                0.05f, 800, assetManager.get(Resources.BASIC_BULLET),
+                assetManager.get(Resources.BASIC_BULLET),
+                BulletData(5f, 10f, assetManager.get(Resources.BASIC_BULLET)),
+                assetManager.get("sfx/rifle-shot.wav"), assetManager.get("sfx/rifle-reload.wav")
+            )
         ))
     }
 
@@ -102,7 +109,8 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
     }
 
     private fun loadWeaponDefs(): List<Weapon> {
-        val text = Gdx.files.internal("weapon-defs.json").file().readText(Charsets.UTF_8)
+        val handle = Gdx.files.internal("resources/weapon-defs.json")
+        val text = handle.readString("UTF-8")
         return WeaponJsonConverter(assetManager).fromJson(text)
     }
 }

@@ -19,6 +19,7 @@ import com.soldierofheaven.ecs.events.PlayerHealthChangeEvent
 import com.soldierofheaven.ecs.events.ReloadFinishedEvent
 import com.soldierofheaven.ecs.events.ReloadSuccessEvent
 import com.soldierofheaven.ecs.events.ShotEvent
+import com.soldierofheaven.ecs.events.ui.WeaponChangedUiEvent
 import com.soldierofheaven.ecs.systems.CameraPositioningSystem
 import com.soldierofheaven.ecs.systems.RenderSystem
 import com.soldierofheaven.ecs.systems.WeaponSystem
@@ -133,6 +134,11 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     @Subscribe
     private fun updateHealthBar(e: PlayerHealthChangeEvent) {
         healthBar.updateDisplay(e.currentHealth)
+    }
+
+    @Subscribe
+    private fun updateSelectedWeapon(e: WeaponChangedUiEvent) {
+        ammoDisplay.update(e.weapon)
     }
 
     @Subscribe
