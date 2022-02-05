@@ -83,6 +83,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         assetManager.dispose()
     }
 
+    //this should be removed before final build
     private fun buildWeapons(): List<Weapon> {
         return ArrayList(listOf(
             Weapon("Peacemaker", 10, Weapon.INFINITE_AMMO, 1f, 10f,
@@ -93,7 +94,6 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         ))
     }
 
-    //todo: use Gdx.files.internal to get file locations after moving json into assets
     private fun dumpWeaponDefinitions() {
         val weaponDefs = buildWeapons()
         val converter = WeaponJsonConverter(assetManager)
