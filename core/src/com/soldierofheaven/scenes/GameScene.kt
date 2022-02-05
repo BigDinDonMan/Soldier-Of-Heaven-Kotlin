@@ -58,7 +58,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         ecsWorld.getSystem(WeaponSystem::class.java).setPlayerEntityId(playerEntityId)
         val playerWidth = 48f
         val playerHeight = 48f
-        ecsWorld.edit(playerEntityId).add(Player()).add(RigidBody().apply {
+        val editor = ecsWorld.edit(playerEntityId)
+        editor.add(Player()).add(Tag().apply { value = "Player" }).add(RigidBody().apply {
             val playerBodyDef = BodyDef().apply {
                 gravityScale = 0f
                 linearDamping = 5f
@@ -69,9 +70,13 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
                 shape = playerBodyShape
                 friction = 2f
             }
-            physicsBody = physicsWorld.createBody(playerBodyDef).apply { createFixture(playerBodyFixtureDef) }
+            physicsBody = physicsWorld.createBody(playerBodyDef).apply {
+                createFixture(playerBodyFixtureDef)
+                userData = playerEntityId
+            }
             playerBodyShape.dispose()
         }).create(Transform::class.java)
+        editor.create(Health::class.java)
         initUi(ecsWorld.getEntity(playerEntityId).getComponent(Transform::class.java).position)
     }
 

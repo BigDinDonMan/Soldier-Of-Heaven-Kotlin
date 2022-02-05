@@ -4,8 +4,9 @@ import com.badlogic.gdx.physics.box2d.Contact
 import com.badlogic.gdx.physics.box2d.ContactImpulse
 import com.badlogic.gdx.physics.box2d.ContactListener
 import com.badlogic.gdx.physics.box2d.Manifold
+import com.soldierofheaven.util.EcsWorld
 
-class GameContactListener : ContactListener {
+class GameContactListener(private val ecsWorld: EcsWorld) : ContactListener {
     override fun beginContact(contact: Contact?) {
         TODO("Not yet implemented")
     }
