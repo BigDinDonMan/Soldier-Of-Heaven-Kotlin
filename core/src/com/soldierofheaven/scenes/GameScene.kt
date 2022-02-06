@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.ParticleEffect
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.physics.box2d.*
 import com.badlogic.gdx.scenes.scene2d.Stage
@@ -33,6 +35,7 @@ import kotlin.math.abs
 import kotlin.properties.Delegates
 import kotlin.random.Random
 
+//todo: explosion particle effect should have more emitters (so that middle isnt empty)
 class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: EcsWorld, private val physicsWorld: PhysicsWorld) : ScreenAdapter() {
 
     private val viewport = StretchViewport(Gdx.graphics.widthF(), Gdx.graphics.heightF())
@@ -50,11 +53,17 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private lateinit var reloadBar: ReloadBar
     private lateinit var ammoDisplay: AmmoDisplay
 
+//    private val testBatch = SpriteBatch()
+//    private val explosion = ParticleEffect()
+
     private val tracker = StatisticsTracker()
 
     private var playerEntityId by Delegates.notNull<Int>()
 
     init {
+//        explosion.load(Gdx.files.internal("gfx/particles/explosion.particle"), Gdx.files.internal(""))
+//        explosion.start()
+//        explosion.emitters.get(0).setPosition(0f, 0f)
         playerEntityId = ecsWorld.create()
         ecsWorld.getSystem(CameraPositioningSystem::class.java).playerEntityId = playerEntityId
         ecsWorld.getSystem(WeaponSystem::class.java).setPlayerEntityId(playerEntityId)
@@ -129,6 +138,14 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
         if (debug) {
             debugRenderer.render(physicsWorld, ecsWorld.getSystem(RenderSystem::class.java).spriteBatch.projectionMatrix)
+//            explosion.update(delta)
+//            testBatch.projectionMatrix = ecsWorld.getSystem(RenderSystem::class.java).spriteBatch.projectionMatrix
+//            testBatch.begin()
+//            explosion.draw(testBatch)
+//            if (explosion.isComplete) {
+//                explosion.start()
+//            }
+//            testBatch.end()
         }
 
         stage.act()
