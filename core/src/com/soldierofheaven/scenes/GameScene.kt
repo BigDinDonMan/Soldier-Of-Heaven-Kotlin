@@ -5,16 +5,15 @@ import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector3
-import com.badlogic.gdx.physics.box2d.BodyDef
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
-import com.badlogic.gdx.physics.box2d.FixtureDef
-import com.badlogic.gdx.physics.box2d.PolygonShape
+import com.badlogic.gdx.physics.box2d.*
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.viewport.StretchViewport
+import com.soldierofheaven.Resources
 import com.soldierofheaven.SoldierOfHeavenGame
 import com.soldierofheaven.ecs.PlayerInputHandler
 import com.soldierofheaven.ecs.components.*
+import com.soldierofheaven.ecs.components.Transform
 import com.soldierofheaven.ecs.events.PlayerHealthChangeEvent
 import com.soldierofheaven.ecs.events.ReloadFinishedEvent
 import com.soldierofheaven.ecs.events.ReloadSuccessEvent
@@ -23,6 +22,7 @@ import com.soldierofheaven.ecs.events.ui.WeaponChangedUiEvent
 import com.soldierofheaven.ecs.systems.CameraPositioningSystem
 import com.soldierofheaven.ecs.systems.RenderSystem
 import com.soldierofheaven.ecs.systems.WeaponSystem
+import com.soldierofheaven.stats.StatisticsTracker
 import com.soldierofheaven.ui.AmmoDisplay
 import com.soldierofheaven.ui.Crosshair
 import com.soldierofheaven.ui.HealthBar
@@ -50,6 +50,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private lateinit var reloadBar: ReloadBar
     private lateinit var ammoDisplay: AmmoDisplay
 
+    private val tracker = StatisticsTracker()
+
     private var playerEntityId by Delegates.notNull<Int>()
 
     init {
@@ -59,7 +61,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         val playerWidth = 48f
         val playerHeight = 48f
         val editor = ecsWorld.edit(playerEntityId)
-        editor.add(Player()).add(Tag().apply { value = "Player" }).add(RigidBody().apply {
+        editor.add(Player().apply { speed=25f }).add(Tag().apply { value = "Player" }).add(RigidBody().apply {
             val playerBodyDef = BodyDef().apply {
                 gravityScale = 0f
                 linearDamping = 5f
@@ -78,6 +80,14 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         }).create(Transform::class.java)
         editor.create(Health::class.java)
         initUi(ecsWorld.getEntity(playerEntityId).getComponent(Transform::class.java).position)
+
+        val testId = ecsWorld.create()
+        val testeditor = ecsWorld.edit(testId)
+        val tex = testeditor.create(TextureDisplay::class.java).apply { texture = game.assetManager.get(Resources.BASIC_BULLET) }
+        testeditor.create(Transform::class.java).apply {
+            position.set(50f, 50f, 0f)
+            size.set(tex.texture!!.width.toFloat(), tex.texture!!.height.toFloat())
+        }
     }
 
     private fun initUi(playerPositionVector: Vector3) {
@@ -155,8 +165,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             editor.add(RigidBody().apply {
                 val bulletBodyDef = BodyDef().apply {
                     gravityScale = 0f
-                    linearDamping = 5f
                     type = BodyDef.BodyType.DynamicBody
+                    bullet = true
                 }
                 val bulletBodyShape = PolygonShape().apply { setAsBox(e.weapon.bulletData.icon.width / 2f, e.weapon.bulletData.icon.height / 2f) }
                 val bulletFixtureDef = FixtureDef().apply {

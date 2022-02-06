@@ -13,7 +13,5 @@ object EventQueue {
         config.setSystem(eventSystem)
     }
 
-    fun register(o: Any) {
-        eventSystem.registerEvents(o)
-    }
+    fun register(o: Any) = eventSystem.registerEvents(o)
 }

@@ -86,6 +86,8 @@ class Weapon(
 
     fun reloadProgress(): Float = reloadTimer.timeElapsed() / reloadTime
 
+    fun hasAmmo() = !isEmpty() && storedAmmo > 0
+
     fun reset() {
         reloadTimer.stop()
         storedAmmo = if (maxStoredAmmo == INFINITE_AMMO) -1 else maxStoredAmmo / 2

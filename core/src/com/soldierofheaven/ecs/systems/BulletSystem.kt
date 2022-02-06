@@ -21,12 +21,9 @@ class BulletSystem : IteratingSystem() {
         val rigidBody = rigidBodyMapper!!.get(entityId)
         if (rigidBody?.physicsBody == null) return
 
-        rigidBody.physicsBody!!.applyLinearImpulse(
+        rigidBody.physicsBody!!.setLinearVelocity(
             bullet.moveDirection.x * bullet.speed,
-            bullet.moveDirection.y * bullet.speed,
-            rigidBody.physicsBody!!.position.x,
-            rigidBody.physicsBody!!.position.y,
-            true
+            bullet.moveDirection.y * bullet.speed
         )
     }
 }

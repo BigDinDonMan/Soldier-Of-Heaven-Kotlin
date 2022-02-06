@@ -12,7 +12,7 @@ import com.soldierofheaven.util.PhysicsWorld
 @All(Transform::class, RigidBody::class)
 class PhysicsSystem(private val physicsWorld: PhysicsWorld, private val velocityIterations: Int = 6, private val positionIterations: Int = 2) : IteratingSystem() {
 
-    val TIME_STEP = 1 / 300f
+    val TIME_STEP = 1 / 660f //dont ask; bullets behave the best at this time step, with 12/12 iterations
     var accumulator = 0f
 
     @Wire
@@ -21,7 +21,7 @@ class PhysicsSystem(private val physicsWorld: PhysicsWorld, private val velocity
     var rigidBodyMapper: ComponentMapper<RigidBody>? = null
 
     override fun begin() {
-        val delta = Gdx.graphics.deltaTime
+        val delta = world.delta
         accumulator += delta
         while (accumulator >= delta) {
             physicsWorld.step(TIME_STEP, velocityIterations, positionIterations)

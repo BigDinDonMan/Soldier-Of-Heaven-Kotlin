@@ -32,7 +32,6 @@ class WeaponJsonConverter(private val assetManager: AssetManager) {
 
     private data class BulletData(
         val speed: Float,
-        val mass: Float,
         val iconPath: String
     )
 
@@ -51,7 +50,7 @@ class WeaponJsonConverter(private val assetManager: AssetManager) {
     private fun convert(w: Weapon) = WeaponData(
         w.name, w.clipSize, w.maxStoredAmmo, w.reloadTime, w.damage, w.fireRate,
         w.price, assetManager.getAssetFileName(w.weaponIcon), assetManager.getAssetFileName(w.ammoIcon),
-        BulletData(w.bulletData.speed, w.bulletData.mass, assetManager.getAssetFileName(w.bulletData.icon)),
+        BulletData(w.bulletData.speed, assetManager.getAssetFileName(w.bulletData.icon)),
         assetManager.getAssetFileName(w.shotSound), assetManager.getAssetFileName(w.reloadSound),
         unlocked = w.unlocked, bulletSpread = w.bulletSpread, bulletsPerShot = w.bulletsPerShot
     )
@@ -59,7 +58,7 @@ class WeaponJsonConverter(private val assetManager: AssetManager) {
     private fun convertBack(w: WeaponData) = Weapon(
         w.name, w.clipSize, w.maxStoredAmmo, w.reloadTime, w.damage,
         w.fireRate, w.price, assetManager.get(w.weaponIconPath), assetManager.get(w.ammoIconPath),
-        BulletPrefabData(w.bulletData.speed, w.bulletData.mass, assetManager.get(w.bulletData.iconPath)),
+        BulletPrefabData(w.bulletData.speed, assetManager.get(w.bulletData.iconPath)),
         assetManager.get(w.shotSoundPath), assetManager.get(w.reloadSoundPath), w.bulletSpread,
         w.bulletsPerShot
     ).apply { unlocked = w.unlocked }
