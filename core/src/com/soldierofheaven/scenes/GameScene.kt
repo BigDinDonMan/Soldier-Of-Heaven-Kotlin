@@ -1,6 +1,7 @@
 package com.soldierofheaven.scenes
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.graphics.Texture
@@ -35,8 +36,7 @@ import kotlin.math.abs
 import kotlin.properties.Delegates
 import kotlin.random.Random
 
-//todo: explosion particle effect should have more emitters (so that middle isnt empty)
-//todo: make explosion more pixelated (smaller images maybe?)
+//NOTE: call reset on particle effect after loading or else it might behave weirdly for the first couple of times
 class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: EcsWorld, private val physicsWorld: PhysicsWorld) : ScreenAdapter() {
 
     private val viewport = StretchViewport(Gdx.graphics.widthF(), Gdx.graphics.heightF())
@@ -60,6 +60,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private val tracker = StatisticsTracker()
 
     private var playerEntityId by Delegates.notNull<Int>()
+
+    private val testEffects = ArrayList<ParticleEffect>()
 
     init {
         explosion.load(Gdx.files.internal("gfx/particles/explosion.particle"), Gdx.files.internal("gfx/particles"))
@@ -172,6 +174,22 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
                 explosion.start()
             }
             testBatch.end()
+            testBatch.projectionMatrix = ecsWorld.getSystem(RenderSystem::class.java).spriteBatch.projectionMatrix
+            testBatch.begin()
+            testEffects.forEach { e -> if (!e.isComplete) {
+                e.update(delta)
+                e.draw(testBatch, delta)
+            } }
+            testBatch.end()
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+                testEffects.add(ParticleEffect().apply {
+                    load(Gdx.files.internal("gfx/particles/explosion.particle"), Gdx.files.internal("gfx/particles"))
+                    reset()
+                    emitters.forEach { it.setPosition(Random.nextDouble(-200.0, 200.0).toFloat(), Random.nextDouble(-200.0, 200.0).toFloat()) }
+                    start()
+                })
+            }
         }
 
         stage.act()
