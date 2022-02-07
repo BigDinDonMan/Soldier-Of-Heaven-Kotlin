@@ -36,6 +36,7 @@ import kotlin.properties.Delegates
 import kotlin.random.Random
 
 //todo: explosion particle effect should have more emitters (so that middle isnt empty)
+//todo: make explosion more pixelated (smaller images maybe?)
 class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: EcsWorld, private val physicsWorld: PhysicsWorld) : ScreenAdapter() {
 
     private val viewport = StretchViewport(Gdx.graphics.widthF(), Gdx.graphics.heightF())
@@ -53,17 +54,17 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private lateinit var reloadBar: ReloadBar
     private lateinit var ammoDisplay: AmmoDisplay
 
-//    private val testBatch = SpriteBatch()
-//    private val explosion = ParticleEffect()
+    private val testBatch = SpriteBatch()
+    private val explosion = ParticleEffect()
 
     private val tracker = StatisticsTracker()
 
     private var playerEntityId by Delegates.notNull<Int>()
 
     init {
-//        explosion.load(Gdx.files.internal("gfx/particles/explosion.particle"), Gdx.files.internal(""))
-//        explosion.start()
-//        explosion.emitters.get(0).setPosition(0f, 0f)
+        explosion.load(Gdx.files.internal("gfx/particles/explosion.particle"), Gdx.files.internal("gfx/particles"))
+        explosion.start()
+        explosion.emitters.get(0).setPosition(0f, 0f)
         playerEntityId = ecsWorld.create()
         ecsWorld.getSystem(CameraPositioningSystem::class.java).playerEntityId = playerEntityId
         ecsWorld.getSystem(WeaponSystem::class.java).setPlayerEntityId(playerEntityId)
@@ -138,14 +139,14 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
         if (debug) {
             debugRenderer.render(physicsWorld, ecsWorld.getSystem(RenderSystem::class.java).spriteBatch.projectionMatrix)
-//            explosion.update(delta)
-//            testBatch.projectionMatrix = ecsWorld.getSystem(RenderSystem::class.java).spriteBatch.projectionMatrix
-//            testBatch.begin()
-//            explosion.draw(testBatch)
-//            if (explosion.isComplete) {
-//                explosion.start()
-//            }
-//            testBatch.end()
+            explosion.update(delta)
+            testBatch.projectionMatrix = ecsWorld.getSystem(RenderSystem::class.java).spriteBatch.projectionMatrix
+            testBatch.begin()
+            explosion.draw(testBatch)
+            if (explosion.isComplete) {
+                explosion.start()
+            }
+            testBatch.end()
         }
 
         stage.act()
