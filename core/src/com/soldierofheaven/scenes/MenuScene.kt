@@ -80,11 +80,6 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
         }
     }
 
-    @Subscribe
-    private fun updateWeaponUi(e: WeaponChangeEvent){
-
-    }
-
     override fun show() {
         Gdx.input.inputProcessor = stage
     }
