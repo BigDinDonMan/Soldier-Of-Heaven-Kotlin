@@ -31,6 +31,8 @@ import java.io.File
 //todo: maybe add skills? e.g. summoning an angel to help (like those circles with eyes)
 //todo: add weapon swap sound (similar to the one in nuclear throne maybe?)
 //todo: download and set up LibGDX physics editor (to reduce boilerplate)
+//todo: set up particle effect pool
+//todo: if setting up pools: use GDX pool implementations and inject them into systems using Artemis
 class SoldierOfHeavenGame : KtxGame<Screen>() {
     private lateinit var batch: SpriteBatch
     private lateinit var physicsWorld: PhysicsWorld
@@ -62,6 +64,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
             InputSystem(),
             CameraPositioningSystem(camera),
             RenderSystem(batch, camera),
+            ParticleEffectSystem(batch, camera),
             WeaponSystem(buildWeapons()),
             BulletSystem(),
             DamageSystem(),
