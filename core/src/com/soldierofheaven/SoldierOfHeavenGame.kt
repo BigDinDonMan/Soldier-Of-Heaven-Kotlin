@@ -63,6 +63,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
             PhysicsSystem(physicsWorld),
             InputSystem(),
             CameraPositioningSystem(camera),
+            AnimationSystem(),
             RenderSystem(batch, camera),
             ParticleEffectSystem(batch, camera),
             WeaponSystem(buildWeapons()),

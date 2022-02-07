@@ -1,12 +1,9 @@
 package com.soldierofheaven.ecs.systems
 
 import com.artemis.ComponentMapper
-import com.artemis.EntitySystem
 import com.artemis.annotations.All
 import com.artemis.annotations.Wire
 import com.artemis.systems.IteratingSystem
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.g2d.ParticleEffectPool
 import com.soldierofheaven.ecs.components.LifeCycle
 import com.soldierofheaven.ecs.components.ParticleEffect
 import com.soldierofheaven.ecs.components.RigidBody
