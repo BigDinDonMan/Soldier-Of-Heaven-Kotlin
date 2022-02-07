@@ -55,13 +55,7 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
             }
         )
 
-        val returnButton = ImageButton(defaultSkin).apply {
-            addListener(object : ClickListener() {
-                override fun clicked(event: InputEvent, x: Float, y: Float) {
-                    //todo: switch back to main menu (hide dialog windows)
-                }
-            })
-        }
+
 
         val howToPlayGroup = Group()
         val aboutGroup = Group()
@@ -77,6 +71,15 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
         for (button in buttons) {
             rootTable.row()
             rootTable.add(button).center().top().padBottom(padding).padTop(padding).width(buttonWidth).height(buttonHeight)
+        }
+
+        //this has to be at the end to capture the state of above actors
+        val returnButton = ImageButton(defaultSkin).apply {
+            addListener(object : ClickListener() {
+                override fun clicked(event: InputEvent, x: Float, y: Float) {
+                    //todo: switch back to main menu (hide dialog windows)
+                }
+            })
         }
     }
 
