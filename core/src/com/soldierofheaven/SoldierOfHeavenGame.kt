@@ -64,6 +64,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
             RenderSystem(batch, camera),
             WeaponSystem(buildWeapons()),
             BulletSystem(),
+            DamageSystem(),
             RemovalSystem()
         ).build()
         ecsWorldConfig.register("physicsWorld", physicsWorld)
@@ -71,6 +72,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         EventQueue.init(ecsWorldConfig)
 
         ecsWorld = EcsWorld(ecsWorldConfig)
+        physicsWorld.setContactListener(GameContactListener(ecsWorld))
 
         addScreen(MenuScene(this))
         addScreen(GameScene(this, ecsWorld, physicsWorld))

@@ -98,6 +98,31 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             position.set(50f, 50f, 0f)
             size.set(tex.texture!!.width.toFloat(), tex.texture!!.height.toFloat())
         }
+
+        val testEnemyId = ecsWorld.create()
+        val edit = ecsWorld.edit(testEnemyId)
+        val texture = edit.create(TextureDisplay::class.java).apply { texture = game.assetManager.get(Resources.BASIC_BULLET) }
+        val transform = edit.create(Transform::class.java).apply {
+            position.set(100f, 100f, 0f)
+            size.set(texture.texture!!.width.toFloat(), texture.texture!!.height.toFloat())
+        }
+        edit.add(Tag().apply { value = "Enemy" }).add(RigidBody().apply {
+            val playerBodyDef = BodyDef().apply {
+                gravityScale = 0f
+                linearDamping = 5f
+                type = BodyDef.BodyType.DynamicBody
+            }
+            val playerBodyShape = PolygonShape().apply { setAsBox(transform.size.x / 2, transform.size.y / 2) }
+            val playerBodyFixtureDef = FixtureDef().apply {
+                shape = playerBodyShape
+                friction = 2f
+            }
+            physicsBody = physicsWorld.createBody(playerBodyDef).apply {
+                createFixture(playerBodyFixtureDef)
+                userData = testEnemyId
+            }
+            playerBodyShape.dispose()
+        }).create(Health::class.java).apply { maxHealth = 50f }
     }
 
     private fun initUi(playerPositionVector: Vector3) {
@@ -192,7 +217,10 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
                     friction = 0f
                     isSensor = true
                 }
-                physicsBody = physicsWorld.createBody(bulletBodyDef).apply { createFixture(bulletFixtureDef) }
+                physicsBody = physicsWorld.createBody(bulletBodyDef).apply {
+                    createFixture(bulletFixtureDef)
+                    userData = bulletId
+                }
                 physicsBody!!.setTransform(e.x, e.y, 0f)
                 bulletBodyShape.dispose()
             }).add(TextureDisplay().apply {
@@ -208,12 +236,15 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
                 }
 
                 speed = e.weapon.bulletData.speed
+                damageableEntityTag = "Enemy"
+                damage = e.weapon.damage
             }
             editor.create(LifeCycle::class.java).apply { lifeTime = 2.5f }
             editor.create(Transform::class.java).apply {
                 size.set(e.weapon.bulletData.icon.width.toFloat(), e.weapon.bulletData.icon.height.toFloat())
                 position.set(e.x - size.x / 2, e.y - size.y / 2, 0f)
             }
+            editor.add(Tag().apply { value = "Bullet" })
         }
     }
 
