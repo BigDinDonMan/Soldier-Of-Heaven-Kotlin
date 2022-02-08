@@ -5,6 +5,7 @@ import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Texture
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.soldierofheaven.ecs.components.enums.ExplosiveType
 import com.soldierofheaven.weapons.Weapon
 
 typealias BulletPrefabData = com.soldierofheaven.weapons.BulletData
@@ -32,6 +33,12 @@ class WeaponJsonConverter(private val assetManager: AssetManager) {
 
     private data class BulletData(
         val speed: Float,
+        val bulletDamping: Float,
+        val explosiveType: ExplosiveType?,
+        val explosiveRange: Float?,
+        val explodeOnContact: Boolean?,
+        val explosionTimer: Float?,
+        val particleEffectName: String?,
         val iconPath: String
     )
 
@@ -50,7 +57,8 @@ class WeaponJsonConverter(private val assetManager: AssetManager) {
     private fun convert(w: Weapon) = WeaponData(
         w.name, w.clipSize, w.maxStoredAmmo, w.reloadTime, w.damage, w.fireRate,
         w.price, assetManager.getAssetFileName(w.weaponIcon), assetManager.getAssetFileName(w.ammoIcon),
-        BulletData(w.bulletData.speed, assetManager.getAssetFileName(w.bulletData.icon)),
+        BulletData(w.bulletData.speed, w.bulletData.bulletDamping, w.bulletData.explosiveType, w.bulletData.explosiveRange,
+            w.bulletData.explodeOnContact, w.bulletData.explosionTimer, w.bulletData.particleEffectName, assetManager.getAssetFileName(w.bulletData.icon)),
         assetManager.getAssetFileName(w.shotSound), assetManager.getAssetFileName(w.reloadSound),
         unlocked = w.unlocked, bulletSpread = w.bulletSpread, bulletsPerShot = w.bulletsPerShot
     )
@@ -58,7 +66,8 @@ class WeaponJsonConverter(private val assetManager: AssetManager) {
     private fun convertBack(w: WeaponData) = Weapon(
         w.name, w.clipSize, w.maxStoredAmmo, w.reloadTime, w.damage,
         w.fireRate, w.price, assetManager.get(w.weaponIconPath), assetManager.get(w.ammoIconPath),
-        BulletPrefabData(w.bulletData.speed, assetManager.get(w.bulletData.iconPath)),
+        BulletPrefabData(w.bulletData.speed, w.bulletData.bulletDamping, w.bulletData.explosiveType, w.bulletData.explosiveRange,
+            w.bulletData.explodeOnContact, w.bulletData.explosionTimer, w.bulletData.particleEffectName, assetManager.get(w.bulletData.iconPath)),
         assetManager.get(w.shotSoundPath), assetManager.get(w.reloadSoundPath), w.bulletSpread,
         w.bulletsPerShot
     ).apply { unlocked = w.unlocked }

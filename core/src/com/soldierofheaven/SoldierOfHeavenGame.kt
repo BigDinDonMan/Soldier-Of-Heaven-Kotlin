@@ -120,21 +120,30 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
             Weapon("Peacemaker", 10, Weapon.INFINITE_AMMO, 1f, 10f,
                 0.25f, -1, assetManager.get(Resources.BASIC_BULLET),
                 assetManager.get(Resources.BASIC_BULLET),
-                BulletData(baseBulletSpeed, assetManager.get(Resources.BASIC_BULLET)),
+                BulletData(baseBulletSpeed, 0f, null, null,
+                    null, null, null, assetManager.get(Resources.BASIC_BULLET)),
                 assetManager.get("sfx/pistol-shot.wav"),
                 assetManager.get("sfx/pistol-reload.wav")).apply { unlocked = true },
             Weapon("The Absolver", 30, 600, 2.5f, 6f,
                 0.1f, 800, assetManager.get(Resources.BASIC_BULLET),
                 assetManager.get(Resources.BASIC_BULLET),
-                BulletData(baseBulletSpeed, assetManager.get(Resources.BASIC_BULLET)),
+                BulletData(baseBulletSpeed, 0f, null, null,
+                    null, null, null, assetManager.get(Resources.BASIC_BULLET)),
                 assetManager.get("sfx/rifle-shot.wav"), assetManager.get("sfx/rifle-reload.wav")
             ).apply { unlocked = true },
             Weapon("Gate Guardian", 6, 100, 4.25f, 5f, 1.25f, 1200,
                 assetManager.get(Resources.BASIC_BULLET), assetManager.get(Resources.BASIC_BULLET),
-                BulletData(baseBulletSpeed, assetManager.get(Resources.BASIC_BULLET)),
+                BulletData(baseBulletSpeed, 0f, null, null,
+                    null, null, null, assetManager.get(Resources.BASIC_BULLET)),
                 assetManager.get("sfx/shotgun-shot.wav"), assetManager.get("sfx/shotgun-reload.wav"),
                 bulletSpread = 0.25f, bulletsPerShot = 10
             ).apply { unlocked = true }
+            //smg should have very high fire rate and also small bullet spread
+//            Weapon("SMG PLACEHOLDER NAME", 45, 900, 2.5f, 5f, 0.05f, 2500,
+//                assetManager.get(Resources.BASIC_BULLET), assetManager.get(Resources.BASIC_BULLET),
+//                BulletData(baseBulletSpeed, 0f, null, null,
+//                    null, null, null, assetManager.get(Resources.BASIC_BULLET)),
+//                assetManager.get("sfx/smg-shot.wav"), assetManager.get("sfx/smg-reload.wav"), bulletSpread = 0.1f)
 //            Weapon("ROCKET LAUNCHER PLACEHOLDER NAME", 3, 15, 4f, 75f, 2.5f, 5000,
 //                assetManager.get(Resources.BASIC_BULLET), assetManager.get(Resources.BASIC_BULLET),
 //                BulletData(baseBulletSpeed, assetManager.get(Resources.BASIC_BULLET)),
