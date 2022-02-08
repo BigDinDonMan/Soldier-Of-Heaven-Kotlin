@@ -7,6 +7,7 @@ import com.artemis.systems.IteratingSystem
 import com.badlogic.gdx.math.Vector2
 import com.soldierofheaven.ecs.components.Player
 import com.soldierofheaven.ecs.components.RigidBody
+import com.soldierofheaven.ecs.components.Speed
 import com.soldierofheaven.ecs.components.Transform
 import com.soldierofheaven.ecs.events.MoveEvent
 import net.mostlyoriginal.api.event.common.EventSystem
@@ -20,6 +21,8 @@ class InputSystem : IteratingSystem() {
     var rigidBodyMapper: ComponentMapper<RigidBody>? = null
     @Wire
     var playerMapper: ComponentMapper<Player>? = null
+    @Wire
+    var speedMapper: ComponentMapper<Speed>? = null
 
     private val moveDirection = Vector2()
 
@@ -30,10 +33,10 @@ class InputSystem : IteratingSystem() {
 
     override fun process(entityId: Int) {
         val rigidBody = rigidBodyMapper!!.get(entityId)
-        val player = playerMapper!!.get(entityId)
+        val speed = speedMapper!!.get(entityId)
         rigidBody.physicsBody!!.applyLinearImpulse(
-            moveDirection.x * player.speed,
-            moveDirection.y * player.speed,
+            moveDirection.x * speed.value,
+            moveDirection.y * speed.value,
             rigidBody.physicsBody!!.position.x,
             rigidBody.physicsBody!!.position.y,
             true)

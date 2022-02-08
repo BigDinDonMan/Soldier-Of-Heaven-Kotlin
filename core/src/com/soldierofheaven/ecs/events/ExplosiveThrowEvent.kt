@@ -1,4 +1,6 @@
 package com.soldierofheaven.ecs.events
 
-class ExplosiveThrowEvent {
+import net.mostlyoriginal.api.event.common.Event
+
+class ExplosiveThrowEvent : Event {
 }

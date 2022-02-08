@@ -20,10 +20,7 @@ import com.soldierofheaven.SoldierOfHeavenGame
 import com.soldierofheaven.ecs.PlayerInputHandler
 import com.soldierofheaven.ecs.components.*
 import com.soldierofheaven.ecs.components.Transform
-import com.soldierofheaven.ecs.events.PlayerHealthChangeEvent
-import com.soldierofheaven.ecs.events.ReloadFinishedEvent
-import com.soldierofheaven.ecs.events.ReloadSuccessEvent
-import com.soldierofheaven.ecs.events.ShotEvent
+import com.soldierofheaven.ecs.events.*
 import com.soldierofheaven.ecs.events.ui.WeaponChangedUiEvent
 import com.soldierofheaven.ecs.systems.CameraPositioningSystem
 import com.soldierofheaven.ecs.systems.RenderSystem
@@ -78,7 +75,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         val playerWidth = 48f
         val playerHeight = 48f
         val editor = ecsWorld.edit(playerEntityId)
-        editor.add(Player().apply { speed=25f }).add(Tag().apply { value = "Player" }).add(RigidBody().apply {
+        editor.add(Player()).add(Tag().apply { value = "Player" }).add(RigidBody().apply {
             val playerBodyDef = BodyDef().apply {
                 gravityScale = 0f
                 linearDamping = 5f
@@ -95,6 +92,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             }
             playerBodyShape.dispose()
         }).create(Transform::class.java)
+        editor.create(Speed::class.java).apply { value = 25f }
         editor.create(Health::class.java)
         initUi(ecsWorld.getEntity(playerEntityId).getComponent(Transform::class.java).position)
 
@@ -258,18 +256,26 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
                         (e.directionY + Random.nextDouble((-e.weapon.bulletSpread).toDouble(), e.weapon.bulletSpread.toDouble())).toFloat()
                     )
                 }
-
-                speed = e.weapon.bulletData.speed
-                damageableEntityTag = "Enemy"
-                damage = e.weapon.damage
             }
             editor.create(LifeCycle::class.java).apply { lifeTime = 2.5f }
             editor.create(Transform::class.java).apply {
                 size.set(e.weapon.bulletData.icon.width.toFloat(), e.weapon.bulletData.icon.height.toFloat())
                 position.set(e.x - size.x / 2, e.y - size.y / 2, 0f)
             }
+            editor.create(Damage::class.java).apply {
+                damageableTags.add("Enemy")
+                value = e.weapon.damage
+            }
+            editor.create(Speed::class.java).apply {
+                value = e.weapon.bulletData.speed
+            }
             editor.add(Tag().apply { value = "Bullet" })
         }
+    }
+
+    @Subscribe
+    private fun spawnExplosive(e: ExplosiveThrowEvent) {
+
     }
 
     @Subscribe
