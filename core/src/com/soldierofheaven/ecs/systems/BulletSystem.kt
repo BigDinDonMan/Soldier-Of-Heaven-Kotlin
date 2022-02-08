@@ -2,14 +2,12 @@ package com.soldierofheaven.ecs.systems
 
 import com.artemis.ComponentMapper
 import com.artemis.annotations.All
+import com.artemis.annotations.One
 import com.artemis.annotations.Wire
 import com.artemis.systems.IteratingSystem
-import com.soldierofheaven.ecs.components.Bullet
-import com.soldierofheaven.ecs.components.Explosive
-import com.soldierofheaven.ecs.components.RigidBody
-import com.soldierofheaven.ecs.components.Speed
+import com.soldierofheaven.ecs.components.*
 
-@All(Bullet::class, RigidBody::class, Speed::class)
+@All(RigidBody::class, Speed::class)
 class BulletSystem : IteratingSystem() {
 
     @Wire
@@ -17,9 +15,6 @@ class BulletSystem : IteratingSystem() {
 
     @Wire
     var rigidBodyMapper: ComponentMapper<RigidBody>? = null
-
-    @Wire
-    var explosiveMapper: ComponentMapper<Explosive>? = null
 
     @Wire
     var speedMapper: ComponentMapper<Speed>? = null
@@ -30,9 +25,11 @@ class BulletSystem : IteratingSystem() {
         val speed = speedMapper!!.get(entityId)
         if (rigidBody?.physicsBody == null) return
 
-        rigidBody.physicsBody!!.setLinearVelocity(
-            bullet.moveDirection.x * speed.value,
-            bullet.moveDirection.y * speed.value
-        )
+        if (bullet != null) {
+            rigidBody.physicsBody!!.setLinearVelocity(
+                bullet.moveDirection.x * speed.value,
+                bullet.moveDirection.y * speed.value
+            )
+        }
     }
 }

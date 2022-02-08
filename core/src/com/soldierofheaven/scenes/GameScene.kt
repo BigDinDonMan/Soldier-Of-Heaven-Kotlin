@@ -8,6 +8,7 @@ import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.ParticleEffect
+import com.badlogic.gdx.graphics.g2d.ParticleEffectPool
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.physics.box2d.*
@@ -15,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.ObjectMap
 import com.badlogic.gdx.utils.viewport.StretchViewport
+import com.soldierofheaven.ParticlePools
 import com.soldierofheaven.Resources
 import com.soldierofheaven.SoldierOfHeavenGame
 import com.soldierofheaven.ecs.PlayerInputHandler
@@ -55,7 +57,6 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private lateinit var ammoDisplay: AmmoDisplay
 
     private val testBatch = SpriteBatch()
-    private val explosion = ParticleEffect()
 
     private val prefabs = ObjectMap<String, Prefab>()
 
@@ -63,12 +64,9 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
     private var playerEntityId by Delegates.notNull<Int>()
 
-    private val testEffects = ArrayList<ParticleEffect>()
+    private val testEffects = ArrayList<ParticleEffectPool.PooledEffect>()
 
     init {
-        explosion.load(Gdx.files.internal("gfx/particles/explosion.particle"), Gdx.files.internal("gfx/particles"))
-        explosion.start()
-        explosion.emitters.get(0).setPosition(0f, 0f)
         playerEntityId = ecsWorld.create()
         ecsWorld.getSystem(CameraPositioningSystem::class.java).playerEntityId = playerEntityId
         ecsWorld.getSystem(WeaponSystem::class.java).setPlayerEntityId(playerEntityId)
@@ -169,14 +167,6 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
         if (debug) {
             debugRenderer.render(physicsWorld, ecsWorld.getSystem(RenderSystem::class.java).spriteBatch!!.projectionMatrix)
-            explosion.update(delta)
-            testBatch.projectionMatrix = ecsWorld.getSystem(RenderSystem::class.java).spriteBatch!!.projectionMatrix
-            testBatch.begin()
-            explosion.draw(testBatch)
-            if (explosion.isComplete) {
-                explosion.start()
-            }
-            testBatch.end()
             testBatch.projectionMatrix = ecsWorld.getSystem(RenderSystem::class.java).spriteBatch!!.projectionMatrix
             testBatch.begin()
             testEffects.forEach { e -> if (!e.isComplete) {
@@ -186,12 +176,17 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             testBatch.end()
 
             if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-                testEffects.add(ParticleEffect().apply {
-                    load(Gdx.files.internal("gfx/particles/explosion.particle"), Gdx.files.internal("gfx/particles"))
-                    reset()
-                    emitters.forEach { it.setPosition(Random.nextDouble(-200.0, 200.0).toFloat(), Random.nextDouble(-200.0, 200.0).toFloat()) }
+                testEffects.add(ParticlePools.obtain("Explosion").apply {
+                    val x = Random.nextDouble(-200.0, 200.0).toFloat()
+                    val y = Random.nextDouble(-200.0, 200.0).toFloat()
+                    setPosition(x, y)
                     start()
                 })
+            }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                testEffects.forEach { ParticlePools.free("Explosion", it) }
+                testEffects.clear()
             }
         }
 
@@ -220,10 +215,14 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         ammoDisplay.update(e.weapon)
     }
 
+    @Subscribe
+    private fun updateAmmoAfterShooting(e: ShotEvent) {
+        ammoDisplay.update(e.weapon)
+    }
+
     //todo: move manual spawning of entities to some manager/load them from prefabs
     @Subscribe
     private fun spawnBulletEntity(e: ShotEvent) {
-        ammoDisplay.update(e.weapon)
         for (i in (0 until e.weapon.bulletsPerShot)) {
             val bulletId = ecsWorld.create()
             val editor = ecsWorld.edit(bulletId)
@@ -275,7 +274,13 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
     @Subscribe
     private fun spawnExplosive(e: ExplosiveThrowEvent) {
-
+        val explosiveId = ecsWorld.create()
+        val editor = ecsWorld.edit(explosiveId)
+        editor.create(TextureDisplay::class.java).apply {  }
+        editor.create(Transform::class.java).apply {  }
+        editor.create(Damage::class.java).apply {  }
+        editor.create(Speed::class.java).apply {  }
+        editor.create(Explosive::class.java).apply {  }
     }
 
     @Subscribe
@@ -290,5 +295,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         ammoDisplay.update(e.weapon)
     }
 
+    @Subscribe
+    private fun spawnExplosion(e: ExplosionEvent) {
+    }
     //</editor-fold>
 }

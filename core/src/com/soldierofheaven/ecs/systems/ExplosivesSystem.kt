@@ -8,7 +8,7 @@ import com.soldierofheaven.ecs.components.Explosive
 import com.soldierofheaven.ecs.components.LifeCycle
 import com.soldierofheaven.ecs.components.RigidBody
 import com.soldierofheaven.ecs.components.Transform
-import com.soldierofheaven.ecs.events.ExplosiveCollisionEvent
+import com.soldierofheaven.ecs.events.ExplosionEvent
 import com.soldierofheaven.util.PhysicsWorld
 import net.mostlyoriginal.api.event.common.Subscribe
 
@@ -38,11 +38,6 @@ class ExplosivesSystem : IteratingSystem() {
         if (explosive.fuseTime <= 0f) {
             makeExplosion(entityId, explosive)
         }
-    }
-
-    @Subscribe
-    private fun handleExplosiveCollision(e: ExplosiveCollisionEvent) {
-        //i dont yet know how to handle this...
     }
 
     private fun makeExplosion(id:Int, e: Explosive) {

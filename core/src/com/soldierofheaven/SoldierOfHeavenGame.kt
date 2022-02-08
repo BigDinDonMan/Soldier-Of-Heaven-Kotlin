@@ -3,7 +3,9 @@ package com.soldierofheaven
 import com.artemis.WorldConfigurationBuilder
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
+import com.badlogic.gdx.assets.AssetLoaderParameters
 import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.assets.loaders.ParticleEffectLoader
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
@@ -13,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.Box2D
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.soldierofheaven.ecs.components.Bullet
+import com.soldierofheaven.ecs.components.ParticleEffect
 import com.soldierofheaven.ecs.systems.*
 import com.soldierofheaven.scenes.GameScene
 import com.soldierofheaven.scenes.MenuScene
@@ -37,6 +40,7 @@ import java.io.File
 //todo: explosive bullets should have both bullet and explosive components
 //todo: explosives should explode on impact with enemies or marked props (e.g. explosive barrels or sth)
 //todo: make object with all available tags
+//todo: think about how to make explosive bullets (because current implementation does not support it)
 class SoldierOfHeavenGame : KtxGame<Screen>() {
     private lateinit var batch: SpriteBatch
     private lateinit var physicsWorld: PhysicsWorld
@@ -61,7 +65,18 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         assetManager.load("sfx/shotgun-reload.wav", Sound::class.java)
         assetManager.load("sfx/rifle-shot.wav", Sound::class.java)
         assetManager.load("sfx/rifle-reload.wav", Sound::class.java)
+        assetManager.load("gfx/particles/explosion.particle", com.badlogic.gdx.graphics.g2d.ParticleEffect::class.java,
+            ParticleEffectLoader.ParticleEffectParameter().apply {
+                imagesDir = Gdx.files.internal("gfx/particles")
+            })
+        assetManager.load("gfx/particles/rocket-trail.particle", com.badlogic.gdx.graphics.g2d.ParticleEffect::class.java,
+        ParticleEffectLoader.ParticleEffectParameter().apply {
+            imagesDir = Gdx.files.internal("gfx/particles")
+        })
         assetManager.finishLoading()
+
+        ParticlePools.registerEffect("Rocket trail", assetManager.get("gfx/particles/rocket-trail.particle"), 5, 10)
+        ParticlePools.registerEffect("Explosion", assetManager.get("gfx/particles/explosion.particle"), 10, 15)
 
         val ecsWorldConfig = WorldConfigurationBuilder().with(
             PhysicsSystem(physicsWorld),
