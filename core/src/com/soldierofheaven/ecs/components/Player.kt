@@ -2,5 +2,5 @@ package com.soldierofheaven.ecs.components
 
 import com.artemis.Component
 
-class Player : Component() {
-}
+// just a marker
+class Player : Component()

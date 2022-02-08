@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.soldierofheaven.ParticlePools
 import com.soldierofheaven.Resources
 import com.soldierofheaven.SoldierOfHeavenGame
+import com.soldierofheaven.Tags
 import com.soldierofheaven.ecs.PlayerInputHandler
 import com.soldierofheaven.ecs.components.*
 import com.soldierofheaven.ecs.components.Transform
@@ -227,7 +228,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         for (i in (0 until e.weapon.bulletsPerShot)) {
             val bulletId = ecsWorld.create()
             val editor = ecsWorld.edit(bulletId)
-            editor.add(RigidBody().apply {
+            val bullet = editor.add(RigidBody().apply {
                 val bulletBodyDef = BodyDef().apply {
                     gravityScale = 0f
                     type = BodyDef.BodyType.DynamicBody
@@ -269,13 +270,16 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
                 position.set(e.x - size.x / 2, e.y - size.y / 2, 0f)
             }
             editor.create(Damage::class.java).apply {
-                damageableTags.add("Enemy")
+                damageableTags.add(Tags.ENEMY)
+                if (bullet.isExplosive()) {
+                    damageableTags.add(Tags.PLAYER)
+                }
                 value = e.weapon.damage
             }
             editor.create(Speed::class.java).apply {
                 value = e.weapon.bulletData.speed
             }
-            editor.add(Tag().apply { value = "Bullet" })
+            editor.add(Tag().apply { value = Tags.BULLET })
         }
     }
 

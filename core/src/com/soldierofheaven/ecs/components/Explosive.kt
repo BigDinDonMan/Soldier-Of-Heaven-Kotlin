@@ -1,7 +1,6 @@
 package com.soldierofheaven.ecs.components
 
 import com.artemis.PooledComponent
-import java.util.*
 
 class Explosive : PooledComponent() {
     var range = 0f

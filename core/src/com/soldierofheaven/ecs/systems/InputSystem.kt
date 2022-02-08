@@ -10,7 +10,6 @@ import com.soldierofheaven.ecs.components.RigidBody
 import com.soldierofheaven.ecs.components.Speed
 import com.soldierofheaven.ecs.components.Transform
 import com.soldierofheaven.ecs.events.MoveEvent
-import net.mostlyoriginal.api.event.common.EventSystem
 import net.mostlyoriginal.api.event.common.Subscribe
 
 @All(Player::class)
