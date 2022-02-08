@@ -1,9 +1,11 @@
 package com.soldierofheaven.scenes
 
+import com.artemis.prefab.Prefab
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.ScreenAdapter
+import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.ParticleEffect
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -11,6 +13,7 @@ import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.physics.box2d.*
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.utils.ObjectMap
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.soldierofheaven.Resources
 import com.soldierofheaven.SoldierOfHeavenGame
@@ -49,13 +52,15 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
     private val defaultSkin = Skin(Gdx.files.internal("skins/uiskin.json"))
 
-    private val gameCamera = ecsWorld.getSystem(RenderSystem::class.java).gameCamera
+    private val gameCamera: Camera = ecsWorld.getSystem(RenderSystem::class.java).gameCamera!!
     private lateinit var healthBar: HealthBar
     private lateinit var reloadBar: ReloadBar
     private lateinit var ammoDisplay: AmmoDisplay
 
     private val testBatch = SpriteBatch()
     private val explosion = ParticleEffect()
+
+    private val prefabs = ObjectMap<String, Prefab>()
 
     private val tracker = StatisticsTracker()
 
@@ -165,16 +170,16 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         ecsWorld.process()
 
         if (debug) {
-            debugRenderer.render(physicsWorld, ecsWorld.getSystem(RenderSystem::class.java).spriteBatch.projectionMatrix)
+            debugRenderer.render(physicsWorld, ecsWorld.getSystem(RenderSystem::class.java).spriteBatch!!.projectionMatrix)
             explosion.update(delta)
-            testBatch.projectionMatrix = ecsWorld.getSystem(RenderSystem::class.java).spriteBatch.projectionMatrix
+            testBatch.projectionMatrix = ecsWorld.getSystem(RenderSystem::class.java).spriteBatch!!.projectionMatrix
             testBatch.begin()
             explosion.draw(testBatch)
             if (explosion.isComplete) {
                 explosion.start()
             }
             testBatch.end()
-            testBatch.projectionMatrix = ecsWorld.getSystem(RenderSystem::class.java).spriteBatch.projectionMatrix
+            testBatch.projectionMatrix = ecsWorld.getSystem(RenderSystem::class.java).spriteBatch!!.projectionMatrix
             testBatch.begin()
             testEffects.forEach { e -> if (!e.isComplete) {
                 e.update(delta)
@@ -217,6 +222,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         ammoDisplay.update(e.weapon)
     }
 
+    //todo: move manual spawning of entities to some manager/load them from prefabs
     @Subscribe
     private fun spawnBulletEntity(e: ShotEvent) {
         ammoDisplay.update(e.weapon)

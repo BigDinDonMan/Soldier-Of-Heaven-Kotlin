@@ -32,7 +32,11 @@ import java.io.File
 //todo: add weapon swap sound (similar to the one in nuclear throne maybe?)
 //todo: download and set up LibGDX physics editor (to reduce boilerplate)
 //todo: set up particle effect pool
+//todo: add explosive type (missile should speed up, grenade should slow down over time etc.)
 //todo: if setting up pools: use GDX pool implementations and inject them into systems using Artemis
+//todo: explosive bullets should have both bullet and explosive components
+//todo: explosives should explode on impact with enemies or marked props (e.g. explosive barrels or sth)
+//todo: make object with all available tags
 class SoldierOfHeavenGame : KtxGame<Screen>() {
     private lateinit var batch: SpriteBatch
     private lateinit var physicsWorld: PhysicsWorld
@@ -64,8 +68,8 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
             InputSystem(),
             CameraPositioningSystem(camera),
             AnimationSystem(),
-            RenderSystem(batch, camera),
-            ParticleEffectSystem(batch, camera),
+            RenderSystem(),
+            ParticleEffectSystem(),
             WeaponSystem(buildWeapons()),
             BulletSystem(),
             DamageSystem(),
@@ -73,6 +77,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         ).build()
         ecsWorldConfig.register("physicsWorld", physicsWorld)
         ecsWorldConfig.register("gameCamera", camera)
+        ecsWorldConfig.register("mainBatch", batch)
         EventQueue.init(ecsWorldConfig)
 
         ecsWorld = EcsWorld(ecsWorldConfig)
@@ -115,6 +120,11 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
                 assetManager.get("sfx/shotgun-shot.wav"), assetManager.get("sfx/shotgun-reload.wav"),
                 bulletSpread = 0.25f, bulletsPerShot = 10
             ).apply { unlocked = true }
+//            Weapon("ROCKET LAUNCHER PLACEHOLDER NAME", 3, 15, 4f, 75f, 2.5f, 5000,
+//                assetManager.get(Resources.BASIC_BULLET), assetManager.get(Resources.BASIC_BULLET),
+//                BulletData(baseBulletSpeed, assetManager.get(Resources.BASIC_BULLET)),
+//                assetManager.get("sfx/rocket-launcher-shot.wav"), assetManager.get("sfx/rocket-launcher-reload.wav")
+//            )
         ))
     }
 

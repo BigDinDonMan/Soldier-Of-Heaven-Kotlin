@@ -1,4 +1,6 @@
 package com.soldierofheaven.ui
 
-class ScoreDisplay {
+import com.badlogic.gdx.scenes.scene2d.Actor
+
+class ScoreDisplay : Actor() {
 }

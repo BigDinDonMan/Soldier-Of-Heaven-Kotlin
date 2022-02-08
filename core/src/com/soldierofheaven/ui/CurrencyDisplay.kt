@@ -1,4 +1,6 @@
 package com.soldierofheaven.ui
 
-class CurrencyDisplay {
+import com.badlogic.gdx.scenes.scene2d.Actor
+
+class CurrencyDisplay : Actor() {
 }

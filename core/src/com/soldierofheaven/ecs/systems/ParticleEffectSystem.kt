@@ -10,16 +10,22 @@ import com.soldierofheaven.ecs.components.ParticleEffect
 import com.soldierofheaven.ecs.components.Transform
 
 @All(ParticleEffect::class, Transform::class)
-class ParticleEffectSystem(private val spriteBatch: SpriteBatch, private val gameCamera: Camera): IteratingSystem() {
+class ParticleEffectSystem(): IteratingSystem() {
     @Wire
-    var particleMapper: ComponentMapper<ParticleEffect>? = null
+    private var particleMapper: ComponentMapper<ParticleEffect>? = null
 
     @Wire
-    var transformMapper: ComponentMapper<Transform>? = null
+    private var transformMapper: ComponentMapper<Transform>? = null
+
+    @Wire(name = "mainBatch")
+    private var spriteBatch: SpriteBatch? = null
+
+    @Wire(name = "gameCamera")
+    private var gameCamera: Camera? = null
 
     override fun begin() {
-        spriteBatch.projectionMatrix = gameCamera.combined
-        spriteBatch.begin()
+        spriteBatch!!.projectionMatrix = gameCamera!!.combined
+        spriteBatch!!.begin()
     }
 
     override fun process(entityId: Int) {
@@ -41,6 +47,6 @@ class ParticleEffectSystem(private val spriteBatch: SpriteBatch, private val gam
     }
 
     override fun end() {
-        spriteBatch.end()
+        spriteBatch!!.end()
     }
 }
