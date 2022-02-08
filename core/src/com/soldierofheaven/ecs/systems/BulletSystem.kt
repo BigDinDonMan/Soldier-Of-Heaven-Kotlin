@@ -33,6 +33,12 @@ class BulletSystem : IteratingSystem() {
         if (rigidBody?.physicsBody == null) return
 
         if (bullet.isExplosive()) {
+            if (bullet.explosionTimer != null && bullet.explosionTimer!! > 0f) {
+                val current = bullet.explosionTimer!!
+                bullet.explosionTimer = current - world.delta
+            } else {
+                //todo: explode bullet and add LifeCycle with lifeTime = 0
+            }
             when (bullet.explosiveType) {
                 ExplosiveType.GRENADE -> {
                     rigidBody.physicsBody!!.linearDamping = bullet.bulletDamping
@@ -63,6 +69,10 @@ class BulletSystem : IteratingSystem() {
                 bullet.moveDirection.y * speed.value
             )
         }
+
+    }
+
+    private fun explodeBullet() {
 
     }
 }

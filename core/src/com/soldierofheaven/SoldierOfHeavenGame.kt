@@ -16,6 +16,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.soldierofheaven.ecs.components.Bullet
 import com.soldierofheaven.ecs.components.ParticleEffect
+import com.soldierofheaven.ecs.components.enums.ExplosiveType
 import com.soldierofheaven.ecs.systems.*
 import com.soldierofheaven.scenes.GameScene
 import com.soldierofheaven.scenes.MenuScene
@@ -148,6 +149,12 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
 //                assetManager.get(Resources.BASIC_BULLET), assetManager.get(Resources.BASIC_BULLET),
 //                BulletData(baseBulletSpeed, assetManager.get(Resources.BASIC_BULLET)),
 //                assetManager.get("sfx/rocket-launcher-shot.wav"), assetManager.get("sfx/rocket-launcher-reload.wav")
+//            )
+//            Weapon("PLACEHOLDER GRENADE_LAUNCHER NAME", 4, 40, 3.25f, 40f, 1f, 4000,
+//                assetManager.get(Resources.BASIC_BULLET), assetManager.get(Resources.BASIC_BULLET),
+//                BulletData(baseBulletSpeed, 5f, ExplosiveType.GRENADE, 50f, true,
+//                    3f, "Explosion", assetManager.get(Resources.BASIC_BULLET)),
+//                assetManager.get("sfx/grenade-launcher-shot.wav"), assetManager.get("sfx/grenade-launcher-shot.wav")
 //            )
         ))
     }

@@ -41,6 +41,7 @@ class ExplosivesSystem : IteratingSystem() {
     }
 
     private fun makeExplosion(id:Int, e: Explosive) {
-
+        //todo: explooooode
+        //todo: think about the explosives: should they be implemented like a grenades? or maybe like mines?
     }
 }
