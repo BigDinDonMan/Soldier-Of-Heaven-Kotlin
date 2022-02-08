@@ -6,6 +6,7 @@ import com.soldierofheaven.ecs.components.enums.ExplosiveType
 
 class Bullet : PooledComponent() {
     val moveDirection = Vector2()
+    var bulletDamping = 0f
     var explosionRange: Float? = null
     var explosionTimer: Float? = null
     var explodeOnContact: Boolean? = null
@@ -17,5 +18,8 @@ class Bullet : PooledComponent() {
         explosionTimer = null
         explodeOnContact = null
         explosiveType = null
+        bulletDamping = 0f
     }
+
+    fun isExplosive() = explosiveType != null && explosionTimer != null && explosionRange != null
 }

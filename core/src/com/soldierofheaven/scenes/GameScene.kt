@@ -22,6 +22,7 @@ import com.soldierofheaven.SoldierOfHeavenGame
 import com.soldierofheaven.ecs.PlayerInputHandler
 import com.soldierofheaven.ecs.components.*
 import com.soldierofheaven.ecs.components.Transform
+import com.soldierofheaven.ecs.components.enums.ExplosiveType
 import com.soldierofheaven.ecs.events.*
 import com.soldierofheaven.ecs.events.ui.WeaponChangedUiEvent
 import com.soldierofheaven.ecs.systems.CameraPositioningSystem
@@ -255,6 +256,12 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
                         (e.directionY + Random.nextDouble((-e.weapon.bulletSpread).toDouble(), e.weapon.bulletSpread.toDouble())).toFloat()
                     )
                 }
+
+//                explosionTimer = 2.5f
+//                explosiveType = ExplosiveType.GRENADE
+//                bulletDamping = 5f
+//                explodeOnContact = true
+//                explosionRange = 150f
             }
             editor.create(LifeCycle::class.java).apply { lifeTime = 2.5f }
             editor.create(Transform::class.java).apply {

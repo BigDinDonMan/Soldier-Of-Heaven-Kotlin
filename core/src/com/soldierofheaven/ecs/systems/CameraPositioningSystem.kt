@@ -17,6 +17,10 @@ class CameraPositioningSystem(private val gameCamera: Camera) : BaseSystem() {
 
     private val screenCoordsVector = Vector3()
 
+    override fun begin() {
+        //this will be needed for camera shake
+    }
+
     override fun processSystem() {
         val transform = transformMapper!!.get(playerEntityId)
 
@@ -30,5 +34,9 @@ class CameraPositioningSystem(private val gameCamera: Camera) : BaseSystem() {
             (transform.position.y + screenCoordsVector.y) / 2,
             z
         )
+    }
+
+    override fun end() {
+        //this will be needed for camera shake
     }
 }
