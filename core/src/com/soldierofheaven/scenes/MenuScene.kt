@@ -2,17 +2,14 @@ package com.soldierofheaven.scenes
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ScreenAdapter
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.soldierofheaven.SoldierOfHeavenGame
-import com.soldierofheaven.ecs.events.WeaponChangeEvent
 import com.soldierofheaven.util.heightF
 import com.soldierofheaven.util.widthF
-import net.mostlyoriginal.api.event.common.Subscribe
 import kotlin.system.exitProcess
 
 class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
@@ -30,11 +27,25 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
         val rootTable = Table().apply { setFillParent(true) }
         stage.addActor(rootTable)
 
-        //todo: add a window with "how to play" instructions and show it on button click (or maybe a separate scene?)
-        //todo: add return button
-        //todo: add "about" window with author and game (?) info
+        val controlsWindow = Window("Controls", defaultSkin)
+        controlsWindow.isVisible = false
+        controlsWindow.setSize(600f, 400f)
+        controlsWindow.setPosition(Gdx.graphics.widthF() / 2 - controlsWindow.width / 2, Gdx.graphics.heightF() / 2 - controlsWindow.height / 2)
+        val creditsWindow = Window("Credits", defaultSkin)
+        creditsWindow.isVisible = false
+        creditsWindow.setSize(600f, 400f)
+        creditsWindow.setPosition(Gdx.graphics.widthF() / 2 - creditsWindow.width / 2, Gdx.graphics.heightF() / 2 - creditsWindow.height / 2)
+        val returnButton = ImageButton(defaultSkin).apply { isVisible = false }
+        returnButton.setSize(40f, 40f)
+        returnButton.setPosition(5f, Gdx.graphics.heightF() - returnButton.height - 5f)
+        stage.addActor(creditsWindow)
+        stage.addActor(controlsWindow)
+        stage.addActor(returnButton)
 
         val titleLabel = Label("Soldier of Heaven", defaultSkin)
+        val howToPlayButton = ImageTextButton("How to play", defaultSkin)
+        val aboutButton = ImageTextButton("About", defaultSkin)
+        val optionsButton = ImageTextButton("Options", defaultSkin)
         val buttons = arrayOf(
             ImageTextButton("New Game", defaultSkin).apply {
                 addListener(object : ClickListener() {
@@ -43,8 +54,9 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
                     }
                 })
             },
-            ImageTextButton("How to play", defaultSkin),
-            ImageTextButton("About", defaultSkin),
+            howToPlayButton,
+            optionsButton,
+            aboutButton,
             ImageTextButton("Exit", defaultSkin).apply {
                 addListener(object : ClickListener() {
                     override fun clicked(event: InputEvent, x: Float, y: Float) {
@@ -54,11 +66,6 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
                 })
             }
         )
-
-
-
-        val howToPlayGroup = Group()
-        val aboutGroup = Group()
 
         val titlePadding = 75f
 
@@ -73,14 +80,34 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
             rootTable.add(button).center().top().padBottom(padding).padTop(padding).width(buttonWidth).height(buttonHeight)
         }
 
+        howToPlayButton.addListener(object : ClickListener() {
+            override fun clicked(event: InputEvent?, x: Float, y: Float) {
+                controlsWindow.isVisible = true
+                creditsWindow.isVisible = false
+                buttons.forEach { it.isVisible = false }
+                titleLabel.isVisible = false
+                returnButton.isVisible = true
+            }
+        })
+        aboutButton.addListener(object : ClickListener() {
+            override fun clicked(event: InputEvent?, x: Float, y: Float) {
+                controlsWindow.isVisible = false
+                creditsWindow.isVisible = true
+                buttons.forEach { it.isVisible = false }
+                titleLabel.isVisible = false
+                returnButton.isVisible = true
+            }
+        })
         //this has to be at the end to capture the state of above actors
-        val returnButton = ImageButton(defaultSkin).apply {
-            addListener(object : ClickListener() {
-                override fun clicked(event: InputEvent, x: Float, y: Float) {
-                    //todo: switch back to main menu (hide dialog windows)
-                }
-            })
-        }
+        returnButton.addListener(object : ClickListener() {
+            override fun clicked(event: InputEvent, x: Float, y: Float) {
+                controlsWindow.isVisible = false
+                creditsWindow.isVisible = false
+                buttons.forEach { it.isVisible = true }
+                titleLabel.isVisible = true
+                returnButton.isVisible = false
+            }
+        })
     }
 
     override fun show() {

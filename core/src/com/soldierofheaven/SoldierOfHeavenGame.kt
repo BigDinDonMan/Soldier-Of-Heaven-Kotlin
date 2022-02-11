@@ -1,6 +1,7 @@
 package com.soldierofheaven
 
 import com.artemis.WorldConfigurationBuilder
+import com.artemis.managers.WorldSerializationManager
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.assets.AssetLoaderParameters
@@ -35,13 +36,8 @@ import java.io.File
 //todo: maybe add skills? e.g. summoning an angel to help (like those circles with eyes)
 //todo: add weapon swap sound (similar to the one in nuclear throne maybe?)
 //todo: download and set up LibGDX physics editor (to reduce boilerplate)
-//todo: set up particle effect pool
-//todo: add explosive type (missile should speed up, grenade should slow down over time etc.)
-//todo: if setting up pools: use GDX pool implementations and inject them into systems using Artemis
-//todo: explosive bullets should have both bullet and explosive components
 //todo: explosives should explode on impact with enemies or marked props (e.g. explosive barrels or sth)
 //todo: make object with all available tags
-//todo: think about how to make explosive bullets (because current implementation does not support it)
 class SoldierOfHeavenGame : KtxGame<Screen>() {
     private lateinit var batch: SpriteBatch
     private lateinit var physicsWorld: PhysicsWorld
@@ -102,7 +98,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         addScreen(MenuScene(this))
         addScreen(GameScene(this, ecsWorld, physicsWorld))
 
-        screens.forEach { e -> EventQueue.register(e.value) }
+        screens.forEach { EventQueue.register(it.value) }
 
         setScreen<MenuScene>()
     }
@@ -112,6 +108,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         physicsWorld.dispose()
         ecsWorld.dispose()
         assetManager.dispose()
+        screens.forEach { it.value.dispose() }
     }
 
     //this should be removed before final build

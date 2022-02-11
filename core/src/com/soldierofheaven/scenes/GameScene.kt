@@ -1,5 +1,6 @@
 package com.soldierofheaven.scenes
 
+import com.artemis.managers.WorldSerializationManager
 import com.artemis.prefab.Prefab
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
@@ -259,10 +260,11 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
                 }
 
 //                explosionTimer = 2.5f
-//                explosiveType = ExplosiveType.GRENADE
+//                explosiveType = ExplosiveType.MISSILE
 //                bulletDamping = 5f
 //                explodeOnContact = true
 //                explosionRange = 150f
+                // kocham cie c:
             }
             editor.create(LifeCycle::class.java).apply { lifeTime = 2.5f }
             editor.create(Transform::class.java).apply {
@@ -271,9 +273,10 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             }
             editor.create(Damage::class.java).apply {
                 damageableTags.add(Tags.ENEMY)
-                if (bullet.isExplosive()) {
-                    damageableTags.add(Tags.PLAYER)
-                }
+                //todo: dont add a Player tag here, instead just make explosion hurt every body caught in it (send explosion event)
+//                if (bullet.isExplosive()) {
+//                    damageableTags.add(Tags.PLAYER)
+//                }
                 value = e.weapon.damage
             }
             editor.create(Speed::class.java).apply {
