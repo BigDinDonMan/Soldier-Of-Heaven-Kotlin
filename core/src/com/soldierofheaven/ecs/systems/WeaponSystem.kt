@@ -62,6 +62,10 @@ class WeaponSystem(val weapons: List<Weapon> = ArrayList()) : BaseSystem() {
         this.playerEntityId = id
     }
 
+    fun resetCurrentWeapon() {
+        currentWeapon = weapons.first()
+    }
+
     //<editor-fold desc="Event listeners">
     @Subscribe
     private fun receiveShotState(e: ShotRequestEvent) {

@@ -28,6 +28,7 @@ import com.soldierofheaven.ecs.components.enums.ExplosiveType
 import com.soldierofheaven.ecs.events.*
 import com.soldierofheaven.ecs.events.ui.WeaponChangedUiEvent
 import com.soldierofheaven.ecs.systems.CameraPositioningSystem
+import com.soldierofheaven.ecs.systems.PhysicsSystem
 import com.soldierofheaven.ecs.systems.RenderSystem
 import com.soldierofheaven.ecs.systems.WeaponSystem
 import com.soldierofheaven.stats.StatisticsTracker
@@ -36,13 +37,14 @@ import com.soldierofheaven.ui.Crosshair
 import com.soldierofheaven.ui.HealthBar
 import com.soldierofheaven.ui.ReloadBar
 import com.soldierofheaven.util.*
+import com.soldierofheaven.util.`interface`.Resettable
 import net.mostlyoriginal.api.event.common.Subscribe
 import kotlin.math.abs
 import kotlin.properties.Delegates
 import kotlin.random.Random
 
 //NOTE: call reset on particle effect after loading or else it might behave weirdly for the first couple of times
-class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: EcsWorld, private val physicsWorld: PhysicsWorld) : ScreenAdapter() {
+class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: EcsWorld, private val physicsWorld: PhysicsWorld) : ScreenAdapter(), Resettable {
 
     private val viewport = StretchViewport(Gdx.graphics.widthF(), Gdx.graphics.heightF())
     private val stage = Stage(viewport)
@@ -59,76 +61,12 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private lateinit var reloadBar: ReloadBar
     private lateinit var ammoDisplay: AmmoDisplay
 
-    private val testBatch = SpriteBatch()
-
-    private val prefabs = ObjectMap<String, Prefab>()
-
-    private val tracker = StatisticsTracker()
+    private var tracker = StatisticsTracker()
 
     private var playerEntityId by Delegates.notNull<Int>()
 
-    private val testEffects = ArrayList<ParticleEffectPool.PooledEffect>()
-
     init {
-        playerEntityId = ecsWorld.create()
-        ecsWorld.getSystem(CameraPositioningSystem::class.java).playerEntityId = playerEntityId
-        ecsWorld.getSystem(WeaponSystem::class.java).setPlayerEntityId(playerEntityId)
-        val playerWidth = 48f
-        val playerHeight = 48f
-        val editor = ecsWorld.edit(playerEntityId)
-        editor.add(Player()).add(Tag().apply { value = "Player" }).add(RigidBody().apply {
-            val playerBodyDef = BodyDef().apply {
-                gravityScale = 0f
-                linearDamping = 5f
-                type = BodyDef.BodyType.DynamicBody
-            }
-            val playerBodyShape = PolygonShape().apply { setAsBox(playerWidth / 2, playerHeight / 2) }
-            val playerBodyFixtureDef = FixtureDef().apply {
-                shape = playerBodyShape
-                friction = 2f
-            }
-            physicsBody = physicsWorld.createBody(playerBodyDef).apply {
-                createFixture(playerBodyFixtureDef)
-                userData = playerEntityId
-            }
-            playerBodyShape.dispose()
-        }).create(Transform::class.java)
-        editor.create(Speed::class.java).apply { value = 25f }
-        editor.create(Health::class.java)
-        initUi(ecsWorld.getEntity(playerEntityId).getComponent(Transform::class.java).position)
-
-        val testId = ecsWorld.create()
-        val testeditor = ecsWorld.edit(testId)
-        val tex = testeditor.create(TextureDisplay::class.java).apply { texture = game.assetManager.get(Resources.BASIC_BULLET) }
-        testeditor.create(Transform::class.java).apply {
-            position.set(50f, 50f, 0f)
-            size.set(tex.texture!!.width.toFloat(), tex.texture!!.height.toFloat())
-        }
-
-        val testEnemyId = ecsWorld.create()
-        val edit = ecsWorld.edit(testEnemyId)
-        val texture = edit.create(TextureDisplay::class.java).apply { texture = game.assetManager.get(Resources.BASIC_BULLET) }
-        val transform = edit.create(Transform::class.java).apply {
-            position.set(100f, 100f, 0f)
-            size.set(texture.texture!!.width.toFloat(), texture.texture!!.height.toFloat())
-        }
-        edit.add(Tag().apply { value = "Enemy" }).add(RigidBody().apply {
-            val playerBodyDef = BodyDef().apply {
-                gravityScale = 0f
-                linearDamping = 5f
-                type = BodyDef.BodyType.DynamicBody
-            }
-            val playerBodyShape = PolygonShape().apply { setAsBox(transform.size.x / 2, transform.size.y / 2) }
-            val playerBodyFixtureDef = FixtureDef().apply {
-                shape = playerBodyShape
-                friction = 2f
-            }
-            physicsBody = physicsWorld.createBody(playerBodyDef).apply {
-                createFixture(playerBodyFixtureDef)
-                userData = testEnemyId
-            }
-            playerBodyShape.dispose()
-        }).create(Health::class.java).apply { maxHealth = 50f }
+        setupScene(true)
     }
 
     private fun initUi(playerPositionVector: Vector3) {
@@ -169,30 +107,11 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         ecsWorld.process()
 
         if (debug) {
-            debugRenderer.render(physicsWorld, ecsWorld.getSystem(RenderSystem::class.java).spriteBatch!!.projectionMatrix)
-            testBatch.projectionMatrix = ecsWorld.getSystem(RenderSystem::class.java).spriteBatch!!.projectionMatrix
-            testBatch.begin()
-            testEffects.forEach { e -> if (!e.isComplete) {
-                e.update(delta)
-                e.draw(testBatch, delta)
-            } }
-            testBatch.end()
-
-            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-                testEffects.add(ParticlePools.obtain("Explosion").apply {
-                    val x = Random.nextDouble(-200.0, 200.0).toFloat()
-                    val y = Random.nextDouble(-200.0, 200.0).toFloat()
-                    setPosition(x, y)
-                    start()
-                })
-            }
-
-            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-                testEffects.forEach { ParticlePools.free("Explosion", it) }
-                testEffects.clear()
-            }
+            debugRenderer.render(
+                physicsWorld,
+                ecsWorld.getSystem(RenderSystem::class.java).spriteBatch!!.projectionMatrix
+            )
         }
-
         stage.act()
         stage.draw()
     }
@@ -312,5 +231,89 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     @Subscribe
     private fun spawnExplosion(e: ExplosionEvent) {
     }
+
     //</editor-fold>
+
+    override fun reset() {
+        gameCamera.position.set(Vector3.Zero)
+        val weaponSystem = ecsWorld.getSystem(WeaponSystem::class.java)
+        weaponSystem.weapons.forEach { it.reset() }
+        weaponSystem.resetCurrentWeapon()
+        tracker = StatisticsTracker()
+        val ids = ecsWorld.getSystem(PhysicsSystem::class.java).entityIds
+        val rigidbodyMapper = ecsWorld.getMapper(RigidBody::class.java)
+        for (i in 0 until ids.size()) {
+            val body = rigidbodyMapper.get(ids.get(i))
+            if (body?.physicsBody != null) {
+                physicsWorld.destroyBody(body.physicsBody)
+            }
+        }
+        ammoDisplay.update(weaponSystem.weapons.first())
+        ecsWorld.entityManager.reset()
+        setupScene()
+    }
+
+    private fun setupScene(setupUi: Boolean = false) {
+        playerEntityId = ecsWorld.create()
+        ecsWorld.getSystem(CameraPositioningSystem::class.java).playerEntityId = playerEntityId
+        ecsWorld.getSystem(WeaponSystem::class.java).setPlayerEntityId(playerEntityId)
+        val playerWidth = 48f
+        val playerHeight = 48f
+        val editor = ecsWorld.edit(playerEntityId)
+        editor.add(Player()).add(Tag().apply { value = "Player" }).add(RigidBody().apply {
+            val playerBodyDef = BodyDef().apply {
+                gravityScale = 0f
+                linearDamping = 5f
+                type = BodyDef.BodyType.DynamicBody
+            }
+            val playerBodyShape = PolygonShape().apply { setAsBox(playerWidth / 2, playerHeight / 2) }
+            val playerBodyFixtureDef = FixtureDef().apply {
+                shape = playerBodyShape
+                friction = 2f
+            }
+            physicsBody = physicsWorld.createBody(playerBodyDef).apply {
+                createFixture(playerBodyFixtureDef)
+                userData = playerEntityId
+            }
+            playerBodyShape.dispose()
+        }).create(Transform::class.java)
+        editor.create(Speed::class.java).apply { value = 25f }
+        editor.create(Health::class.java)
+        if (setupUi) {
+            initUi(ecsWorld.getEntity(playerEntityId).getComponent(Transform::class.java).position)
+        }
+
+        val testId = ecsWorld.create()
+        val testeditor = ecsWorld.edit(testId)
+        val tex = testeditor.create(TextureDisplay::class.java).apply { texture = game.assetManager.get(Resources.BASIC_BULLET) }
+        testeditor.create(Transform::class.java).apply {
+            position.set(50f, 50f, 0f)
+            size.set(tex.texture!!.width.toFloat(), tex.texture!!.height.toFloat())
+        }
+
+        val testEnemyId = ecsWorld.create()
+        val edit = ecsWorld.edit(testEnemyId)
+        val texture = edit.create(TextureDisplay::class.java).apply { texture = game.assetManager.get(Resources.BASIC_BULLET) }
+        val transform = edit.create(Transform::class.java).apply {
+            position.set(100f, 100f, 0f)
+            size.set(texture.texture!!.width.toFloat(), texture.texture!!.height.toFloat())
+        }
+        edit.add(Tag().apply { value = "Enemy" }).add(RigidBody().apply {
+            val playerBodyDef = BodyDef().apply {
+                gravityScale = 0f
+                linearDamping = 5f
+                type = BodyDef.BodyType.DynamicBody
+            }
+            val playerBodyShape = PolygonShape().apply { setAsBox(transform.size.x / 2, transform.size.y / 2) }
+            val playerBodyFixtureDef = FixtureDef().apply {
+                shape = playerBodyShape
+                friction = 2f
+            }
+            physicsBody = physicsWorld.createBody(playerBodyDef).apply {
+                createFixture(playerBodyFixtureDef)
+                userData = testEnemyId
+            }
+            playerBodyShape.dispose()
+        }).create(Health::class.java).apply { maxHealth = 50f }
+    }
 }
