@@ -112,8 +112,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
                 ecsWorld.getSystem(RenderSystem::class.java).spriteBatch!!.projectionMatrix
             )
         }
-        stage.act()
-        stage.draw()
+
+        stage.update()
     }
 
     override fun resize(width: Int, height: Int) = viewport.update(width, height)
@@ -260,7 +260,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         val playerWidth = 48f
         val playerHeight = 48f
         val editor = ecsWorld.edit(playerEntityId)
-        editor.add(Player()).add(Tag().apply { value = "Player" }).add(RigidBody().apply {
+        editor.add(Player()).add(Tag().apply { value = Tags.PLAYER }).add(RigidBody().apply {
             val playerBodyDef = BodyDef().apply {
                 gravityScale = 0f
                 linearDamping = 5f
@@ -298,7 +298,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             position.set(100f, 100f, 0f)
             size.set(texture.texture!!.width.toFloat(), texture.texture!!.height.toFloat())
         }
-        edit.add(Tag().apply { value = "Enemy" }).add(RigidBody().apply {
+        edit.add(Tag().apply { value = Tags.ENEMY }).add(RigidBody().apply {
             val playerBodyDef = BodyDef().apply {
                 gravityScale = 0f
                 linearDamping = 5f

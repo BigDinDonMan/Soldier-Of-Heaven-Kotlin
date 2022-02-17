@@ -8,8 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.soldierofheaven.SoldierOfHeavenGame
-import com.soldierofheaven.util.heightF
-import com.soldierofheaven.util.widthF
+import com.soldierofheaven.util.*
 import kotlin.system.exitProcess
 
 class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
@@ -30,17 +29,19 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
         val controlsWindow = Window("Controls", defaultSkin)
         controlsWindow.isVisible = false
         controlsWindow.setSize(600f, 400f)
-        controlsWindow.setPosition(Gdx.graphics.widthF() / 2 - controlsWindow.width / 2, Gdx.graphics.heightF() / 2 - controlsWindow.height / 2)
+        controlsWindow.centerAbsolute()
         val creditsWindow = Window("Credits", defaultSkin)
         creditsWindow.isVisible = false
         creditsWindow.setSize(600f, 400f)
-        creditsWindow.setPosition(Gdx.graphics.widthF() / 2 - creditsWindow.width / 2, Gdx.graphics.heightF() / 2 - creditsWindow.height / 2)
+        creditsWindow.centerAbsolute()
         val returnButton = ImageButton(defaultSkin).apply { isVisible = false }
         returnButton.setSize(40f, 40f)
         returnButton.setPosition(5f, Gdx.graphics.heightF() - returnButton.height - 5f)
-        stage.addActor(creditsWindow)
-        stage.addActor(controlsWindow)
-        stage.addActor(returnButton)
+        val optionsWindow = Window("Options", defaultSkin)
+        optionsWindow.isVisible = false
+        optionsWindow.setSize(700f, 450f)
+        optionsWindow.centerAbsolute()
+        stage.addActors(creditsWindow, controlsWindow, optionsWindow, returnButton)
 
         val titleLabel = Label("Soldier of Heaven", defaultSkin)
         val howToPlayButton = ImageTextButton("How to play", defaultSkin)
@@ -84,6 +85,7 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
             override fun clicked(event: InputEvent?, x: Float, y: Float) {
                 controlsWindow.isVisible = true
                 creditsWindow.isVisible = false
+                optionsWindow.isVisible = false
                 buttons.forEach { it.isVisible = false }
                 titleLabel.isVisible = false
                 returnButton.isVisible = true
@@ -92,6 +94,7 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
         aboutButton.addListener(object : ClickListener() {
             override fun clicked(event: InputEvent?, x: Float, y: Float) {
                 controlsWindow.isVisible = false
+                optionsWindow.isVisible = false
                 creditsWindow.isVisible = true
                 buttons.forEach { it.isVisible = false }
                 titleLabel.isVisible = false
@@ -103,9 +106,20 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
             override fun clicked(event: InputEvent, x: Float, y: Float) {
                 controlsWindow.isVisible = false
                 creditsWindow.isVisible = false
+                optionsWindow.isVisible = false
                 buttons.forEach { it.isVisible = true }
                 titleLabel.isVisible = true
                 returnButton.isVisible = false
+            }
+        })
+        optionsButton.addListener(object : ClickListener() {
+            override fun clicked(event: InputEvent, x: Float, y: Float) {
+                controlsWindow.isVisible = false
+                optionsWindow.isVisible = true
+                creditsWindow.isVisible = false
+                buttons.forEach { it.isVisible = false }
+                titleLabel.isVisible = false
+                returnButton.isVisible = true
             }
         })
     }
@@ -119,9 +133,12 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
     }
 
     override fun render(delta: Float) {
-        stage.act()
-        stage.draw()
+        stage.update()
     }
 
     override fun resize(width: Int, height: Int) = viewport.update(width, height)
+
+    private fun setupControlsWindow(window: Window) {}
+    private fun setupOptionsWindow(window: Window) {}
+    private fun setupAboutWindow(window: Window) {}
 }
