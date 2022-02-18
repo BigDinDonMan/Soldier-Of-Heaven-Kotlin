@@ -17,6 +17,8 @@ class CameraPositioningSystem(private val gameCamera: Camera) : BaseSystem() {
 
     private val screenCoordsVector = Vector3()
 
+    private var shaking = false
+
     override fun begin() {
         //this will be needed for camera shake
     }

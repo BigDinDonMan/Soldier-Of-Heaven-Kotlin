@@ -31,13 +31,10 @@ import com.soldierofheaven.weapons.Weapon
 import ktx.app.KtxGame
 import java.io.File
 
-//todo: add camera shake :)
 //todo: monitor performance of the game with the current amount of event dispatching; if it suffers, implement pooling or switch to callbacks
 //todo: maybe add skills? e.g. summoning an angel to help (like those circles with eyes)
-//todo: add weapon swap sound (similar to the one in nuclear throne maybe?)
 //todo: download and set up LibGDX physics editor (to reduce boilerplate)
 //todo: explosives should explode on impact with enemies or marked props (e.g. explosive barrels or sth)
-//todo: make object with all available tags
 class SoldierOfHeavenGame : KtxGame<Screen>() {
     private lateinit var batch: SpriteBatch
     private lateinit var physicsWorld: PhysicsWorld

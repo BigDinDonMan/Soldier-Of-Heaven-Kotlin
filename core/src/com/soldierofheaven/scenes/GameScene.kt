@@ -66,7 +66,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private var playerEntityId by Delegates.notNull<Int>()
 
     init {
-        setupScene(true)
+        setupScene(setupUi = true)
     }
 
     private fun initUi(playerPositionVector: Vector3) {
@@ -177,13 +177,11 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
                         (e.directionY + Random.nextDouble((-e.weapon.bulletSpread).toDouble(), e.weapon.bulletSpread.toDouble())).toFloat()
                     )
                 }
-
-//                explosionTimer = 2.5f
-//                explosiveType = ExplosiveType.MISSILE
-//                bulletDamping = 5f
-//                explodeOnContact = true
-//                explosionRange = 150f
-                // kocham cie c:
+                explosionTimer = e.weapon.bulletData.explosionTimer
+                explosiveType = e.weapon.bulletData.explosiveType
+                explosionRange = e.weapon.bulletData.explosiveRange
+                explodeOnContact = e.weapon.bulletData.explodeOnContact
+                bulletDamping = e.weapon.bulletData.bulletDamping
             }
             editor.create(LifeCycle::class.java).apply { lifeTime = 2.5f }
             editor.create(Transform::class.java).apply {
@@ -192,10 +190,6 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             }
             editor.create(Damage::class.java).apply {
                 damageableTags.add(Tags.ENEMY)
-                //todo: dont add a Player tag here, instead just make explosion hurt every body caught in it (send explosion event)
-//                if (bullet.isExplosive()) {
-//                    damageableTags.add(Tags.PLAYER)
-//                }
                 value = e.weapon.damage
             }
             editor.create(Speed::class.java).apply {
