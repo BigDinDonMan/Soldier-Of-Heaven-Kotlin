@@ -17,10 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.ObjectMap
 import com.badlogic.gdx.utils.viewport.StretchViewport
-import com.soldierofheaven.ParticlePools
-import com.soldierofheaven.Resources
-import com.soldierofheaven.SoldierOfHeavenGame
-import com.soldierofheaven.Tags
+import com.soldierofheaven.*
 import com.soldierofheaven.ecs.PlayerInputHandler
 import com.soldierofheaven.ecs.components.*
 import com.soldierofheaven.ecs.components.Transform
@@ -38,6 +35,7 @@ import com.soldierofheaven.ui.HealthBar
 import com.soldierofheaven.ui.ReloadBar
 import com.soldierofheaven.util.*
 import com.soldierofheaven.util.`interface`.Resettable
+import net.mostlyoriginal.api.event.common.EventSystem
 import net.mostlyoriginal.api.event.common.Subscribe
 import kotlin.math.abs
 import kotlin.properties.Delegates
@@ -103,8 +101,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     }
 
     override fun render(delta: Float) {
-        ecsWorld.setDelta(delta)
-        ecsWorld.process()
+        ecsWorld.update(delta)
 
         if (debug) {
             debugRenderer.render(

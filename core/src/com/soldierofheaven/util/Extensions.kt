@@ -15,3 +15,5 @@ fun Float.isCloseTo(_val: Float, eps: Float = 0.0001f) = abs(this - _val) <= eps
 fun Stage.addActors(vararg actors: Actor) = actors.forEach(this::addActor)
 fun Stage.update() = this.act().also { this.draw() }
 fun Actor.centerAbsolute() = this.setPosition(Gdx.graphics.widthF() / 2 - width / 2, Gdx.graphics.heightF() / 2 - height / 2)
+
+fun EcsWorld.update(delta: Float) = this.setDelta(delta).also { process() }

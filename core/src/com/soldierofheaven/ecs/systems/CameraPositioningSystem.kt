@@ -7,6 +7,9 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.math.Vector3
 import com.soldierofheaven.ecs.components.Transform
+import com.soldierofheaven.ecs.events.CameraShakeEvent
+import net.mostlyoriginal.api.event.common.Subscribe
+import kotlin.random.Random
 
 class CameraPositioningSystem(private val gameCamera: Camera) : BaseSystem() {
 
@@ -15,15 +18,32 @@ class CameraPositioningSystem(private val gameCamera: Camera) : BaseSystem() {
     @Wire
     var transformMapper: ComponentMapper<Transform>? = null
 
-    private val screenCoordsVector = Vector3()
 
+    private val screenCoordsVector = Vector3()
+    private val actualPosition = Vector3()
     private var shaking = false
+    private var shakeCountDown = 0f
+    private var shakeMagnitude = 0f
+
+    @Subscribe
+    private fun receiveShakeEvent(e: CameraShakeEvent) {
+        shaking = true
+        shakeCountDown = e.duration
+        shakeMagnitude = e.strength
+    }
 
     override fun begin() {
         //this will be needed for camera shake
+        if (!shaking) {
+            actualPosition.set(gameCamera.position)
+        }
     }
 
     override fun processSystem() {
+        if (shakeCountDown > 0f) {
+            shakeCountDown -= world.delta
+        } else shaking = false
+
         val transform = transformMapper!!.get(playerEntityId)
 
         val z = gameCamera.position.z
@@ -31,14 +51,21 @@ class CameraPositioningSystem(private val gameCamera: Camera) : BaseSystem() {
         val my = Gdx.input.y.toFloat()
         screenCoordsVector.set(mx, my, z)
         gameCamera.unproject(screenCoordsVector)
-        gameCamera.position.set(
+
+        actualPosition.set(
             (transform.position.x + screenCoordsVector.x) / 2,
             (transform.position.y + screenCoordsVector.y) / 2,
             z
         )
-    }
 
-    override fun end() {
-        //this will be needed for camera shake
+        if (shaking) {
+            actualPosition.add(
+                Random.nextDouble(-shakeMagnitude.toDouble(), shakeMagnitude.toDouble()).toFloat(),
+                Random.nextDouble(-shakeMagnitude.toDouble(), shakeMagnitude.toDouble()).toFloat(),
+                0f
+            )
+        }
+
+        gameCamera.position.set(actualPosition)
     }
 }
