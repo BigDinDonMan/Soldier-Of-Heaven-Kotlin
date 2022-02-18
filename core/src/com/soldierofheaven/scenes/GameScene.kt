@@ -108,6 +108,10 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
                 physicsWorld,
                 ecsWorld.getSystem(RenderSystem::class.java).spriteBatch!!.projectionMatrix
             )
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+                EventQueue.dispatch(ExplosionEvent(150f , 150f))
+            }
         }
 
         stage.update()
@@ -139,7 +143,6 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         ammoDisplay.update(e.weapon)
     }
 
-    //todo: move manual spawning of entities to some manager/load them from prefabs
     @Subscribe
     private fun spawnBulletEntity(e: ShotEvent) {
         for (i in (0 until e.weapon.bulletsPerShot)) {
@@ -221,6 +224,16 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
     @Subscribe
     private fun spawnExplosion(e: ExplosionEvent) {
+        val explosionEffectId = ecsWorld.create()
+        val edit = ecsWorld.edit(explosionEffectId)
+        edit.create(Transform::class.java).apply { position.set(e.centerX, e.centerY, 0f) }
+        val part = edit.create(com.soldierofheaven.ecs.components.ParticleEffect::class.java).apply {
+            particleEffect = ParticlePools.obtain("Explosion").apply { this.reset() }
+            particleEffectName = "Explosion"
+        }
+        edit.create(LifeCycle::class.java).apply {
+            lifeTime = part.particleEffect!!.emitters.maxBy { it.duration }!!.duration / 1000f // duration is in millis, lifetime should be in seconds
+        }
     }
 
     //</editor-fold>
