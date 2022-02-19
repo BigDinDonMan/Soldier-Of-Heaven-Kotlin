@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.ParticleEffect
 import com.badlogic.gdx.graphics.g2d.ParticleEffectPool
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.physics.box2d.*
 import com.badlogic.gdx.scenes.scene2d.Stage
@@ -29,10 +30,7 @@ import com.soldierofheaven.ecs.systems.PhysicsSystem
 import com.soldierofheaven.ecs.systems.RenderSystem
 import com.soldierofheaven.ecs.systems.WeaponSystem
 import com.soldierofheaven.stats.StatisticsTracker
-import com.soldierofheaven.ui.AmmoDisplay
-import com.soldierofheaven.ui.Crosshair
-import com.soldierofheaven.ui.HealthBar
-import com.soldierofheaven.ui.ReloadBar
+import com.soldierofheaven.ui.*
 import com.soldierofheaven.util.*
 import com.soldierofheaven.util.`interface`.Resettable
 import net.mostlyoriginal.api.event.common.EventSystem
@@ -78,7 +76,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         }
         stage.addActor(healthBar)
 
-        val crosshair = Crosshair(game.assetManager.get("gfx/crosshair.png"))
+        val crosshair = Crosshair(game.assetManager["gfx/crosshair.png"])
         stage.addActor(crosshair)
 
         val reloadIcon = game.assetManager.get("gfx/reload-bar.png", Texture::class.java)
@@ -94,6 +92,18 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         }
         ammoDisplay.update(ecsWorld.getSystem(WeaponSystem::class.java).weapons.first())
         stage.addActor(ammoDisplay)
+
+        val slotsX = 15f
+        val slotsStartY = 560f
+        val slotSize = 72f
+        val slotPadding = 15f
+        val weaponSystem = ecsWorld.getSystem(WeaponSystem::class.java)
+        weaponSystem.weapons.forEachIndexed { index, weapon -> kotlin.run {
+            val slot = WeaponSlot(weapon, index + 1, defaultSkin)
+            slot.setSize(slotSize, slotSize)
+            slot.setPosition(slotsX, slotsStartY - (slotSize + slotPadding) * index)
+            stage.addActor(slot)
+        } }
     }
 
     override fun show() {
