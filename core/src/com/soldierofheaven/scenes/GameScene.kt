@@ -228,7 +228,10 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         val edit = ecsWorld.edit(explosionEffectId)
         edit.create(Transform::class.java).apply { position.set(e.centerX, e.centerY, 0f) }
         val part = edit.create(com.soldierofheaven.ecs.components.ParticleEffect::class.java).apply {
-            particleEffect = ParticlePools.obtain("Explosion").apply { this.reset() }
+            particleEffect = ParticlePools.obtain("Explosion").apply {
+                reset()
+                start()
+            }
             particleEffectName = "Explosion"
         }
         edit.create(LifeCycle::class.java).apply {

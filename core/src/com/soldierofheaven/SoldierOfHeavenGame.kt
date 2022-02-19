@@ -59,18 +59,18 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         assetManager.load("sfx/shotgun-reload.wav", Sound::class.java)
         assetManager.load("sfx/rifle-shot.wav", Sound::class.java)
         assetManager.load("sfx/rifle-reload.wav", Sound::class.java)
-        assetManager.load("gfx/particles/explosion.particle", com.badlogic.gdx.graphics.g2d.ParticleEffect::class.java,
+        assetManager.load("gfx/particles/explosion.p", com.badlogic.gdx.graphics.g2d.ParticleEffect::class.java,
             ParticleEffectLoader.ParticleEffectParameter().apply {
                 imagesDir = Gdx.files.internal("gfx/particles")
             })
-        assetManager.load("gfx/particles/rocket-trail.particle", com.badlogic.gdx.graphics.g2d.ParticleEffect::class.java,
+        assetManager.load("gfx/particles/rocket-trail.p", com.badlogic.gdx.graphics.g2d.ParticleEffect::class.java,
         ParticleEffectLoader.ParticleEffectParameter().apply {
             imagesDir = Gdx.files.internal("gfx/particles")
         })
         assetManager.finishLoading()
 
-        ParticlePools.registerEffect("Rocket trail", assetManager.get("gfx/particles/rocket-trail.particle"), 5, 10)
-        ParticlePools.registerEffect("Explosion", assetManager.get("gfx/particles/explosion.particle"), 10, 15)
+        ParticlePools.registerEffect("Rocket trail", assetManager.get("gfx/particles/rocket-trail.p"), 5, 10)
+        ParticlePools.registerEffect("Explosion", assetManager.get("gfx/particles/explosion.p"), 10, 15)
 
         val ecsWorldConfig = WorldConfigurationBuilder().with(
             PhysicsSystem(physicsWorld),

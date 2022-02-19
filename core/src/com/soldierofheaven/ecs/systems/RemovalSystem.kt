@@ -5,6 +5,7 @@ import com.artemis.annotations.All
 import com.artemis.annotations.Wire
 import com.artemis.systems.IteratingSystem
 import com.badlogic.gdx.graphics.g2d.ParticleEffectPool
+import com.soldierofheaven.ParticlePools
 import com.soldierofheaven.ecs.components.LifeCycle
 import com.soldierofheaven.ecs.components.ParticleEffect
 import com.soldierofheaven.ecs.components.RigidBody
@@ -44,9 +45,10 @@ class RemovalSystem() : IteratingSystem() {
                 physicsWorld!!.destroyBody(rigidBody.physicsBody)
             }
             val particleEffect = particleEffectMapper!!.get(id)
-            if (particleEffect != null) {
-                (particleEffect.particleEffect as ParticleEffectPool.PooledEffect).free()
-                println("freed!")
+            if (particleEffect?.particleEffect != null) {
+                if (particleEffect.particleEffect!! is ParticleEffectPool.PooledEffect) {
+                    ParticlePools.free(particleEffect.particleEffectName, particleEffect.particleEffect as ParticleEffectPool.PooledEffect)
+                }
             }
         } }
         removalQueue.clear()
