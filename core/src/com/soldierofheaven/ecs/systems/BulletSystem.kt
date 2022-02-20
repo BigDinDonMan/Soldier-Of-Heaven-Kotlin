@@ -6,8 +6,10 @@ import com.artemis.annotations.One
 import com.artemis.annotations.Wire
 import com.artemis.systems.IteratingSystem
 import com.badlogic.gdx.math.Vector2
+import com.soldierofheaven.EventQueue
 import com.soldierofheaven.ecs.components.*
 import com.soldierofheaven.ecs.components.enums.ExplosiveType
+import com.soldierofheaven.ecs.events.ExplosionEvent
 import kotlin.math.pow
 
 @All(RigidBody::class, Speed::class, Bullet::class)
@@ -22,6 +24,9 @@ class BulletSystem : IteratingSystem() {
     @Wire
     var speedMapper: ComponentMapper<Speed>? = null
 
+    @Wire
+    var damageMapper: ComponentMapper<Damage>? = null
+
     companion object {
         const val MISSILE_SPEED_SCALE_POWER = 1.5f
     }
@@ -30,6 +35,7 @@ class BulletSystem : IteratingSystem() {
         val bullet = bulletMapper!!.get(entityId)
         val rigidBody = rigidBodyMapper!!.get(entityId)
         val speed = speedMapper!!.get(entityId)
+        val damage = damageMapper!!.get(entityId)
         if (rigidBody?.physicsBody == null) return
 
         if (bullet.isExplosive()) {
@@ -37,7 +43,12 @@ class BulletSystem : IteratingSystem() {
                 val current = bullet.explosionTimer!!
                 bullet.explosionTimer = current - world.delta
             } else {
-                //todo: explode bullet and add LifeCycle with lifeTime = 0
+                EventQueue.dispatch(ExplosionEvent(
+                    rigidBody.physicsBody!!.position.x,
+                    rigidBody.physicsBody!!.position.y,
+                    damage.value, bullet.explosionRange!!
+                ))
+                world.edit(entityId).create(LifeCycle::class.java).apply { lifeTime = -1f }
             }
             when (bullet.explosiveType) {
                 ExplosiveType.GRENADE -> {
@@ -69,10 +80,6 @@ class BulletSystem : IteratingSystem() {
                 bullet.moveDirection.y * speed.value
             )
         }
-
-    }
-
-    private fun explodeBullet() {
 
     }
 }
