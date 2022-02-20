@@ -4,10 +4,13 @@ import com.artemis.ComponentMapper
 import com.artemis.annotations.All
 import com.artemis.annotations.Wire
 import com.artemis.systems.IteratingSystem
+import com.soldierofheaven.EventQueue
+import com.soldierofheaven.Physics
 import com.soldierofheaven.ecs.components.Explosive
 import com.soldierofheaven.ecs.components.LifeCycle
 import com.soldierofheaven.ecs.components.RigidBody
 import com.soldierofheaven.ecs.components.Transform
+import com.soldierofheaven.ecs.events.DamageEvent
 import com.soldierofheaven.ecs.events.ExplosionEvent
 import com.soldierofheaven.util.PhysicsWorld
 import net.mostlyoriginal.api.event.common.Subscribe
@@ -47,6 +50,11 @@ class ExplosivesSystem : IteratingSystem() {
 
     @Subscribe
     private fun overlapExplosion(e: ExplosionEvent) {
-
+        val capturedCount = Physics.overlapSphereNonAlloc(e.centerX, e.centerY, e.range, explosionOverlapArray)
+        for (i in 0 until capturedCount) {
+            //iterate over captured entities and queue them in damage system
+            val entityId = explosionOverlapArray[i]
+            EventQueue.dispatch(DamageEvent(entityId, e.damage))
+        }
     }
 }

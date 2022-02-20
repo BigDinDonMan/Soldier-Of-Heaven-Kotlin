@@ -81,6 +81,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
             ParticleEffectSystem(),
             WeaponSystem(buildWeapons()),
             BulletSystem(),
+            ExplosivesSystem(),
             DamageSystem(),
             RemovalSystem()
         ).build()
