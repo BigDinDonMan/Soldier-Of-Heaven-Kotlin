@@ -30,6 +30,8 @@ class ExplosivesSystem : IteratingSystem() {
     @Wire(name = "physicsWorld")
     var physicsWorld: PhysicsWorld? = null
 
+    private val explosionOverlapArray = IntArray(100)
+
     override fun process(entityId: Int) {
         val explosive = explosiveMapper!!.get(entityId)
         val lifeCycle = lifeCycleMapper!!.get(entityId)
@@ -41,7 +43,10 @@ class ExplosivesSystem : IteratingSystem() {
     }
 
     private fun makeExplosion(id:Int, e: Explosive) {
-        //todo: explooooode
-        //todo: think about the explosives: should they be implemented like a grenades? or maybe like mines?
+    }
+
+    @Subscribe
+    private fun overlapExplosion(e: ExplosionEvent) {
+
     }
 }

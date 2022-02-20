@@ -92,6 +92,8 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         ecsWorld = EcsWorld(ecsWorldConfig)
         physicsWorld.setContactListener(GameContactListener(ecsWorld))
 
+        Physics.init(physicsWorld, ecsWorld)
+
         addScreen(MenuScene(this))
         addScreen(GameScene(this, ecsWorld, physicsWorld))
 

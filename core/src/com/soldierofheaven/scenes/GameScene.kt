@@ -128,7 +128,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             )
 
             if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-                EventQueue.dispatch(ExplosionEvent(150f , 150f))
+                EventQueue.dispatch(ExplosionEvent(150f , 150f, 0f, 0f))
             }
         }
 
@@ -261,6 +261,9 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         edit.create(LifeCycle::class.java).apply {
             lifeTime = part.particleEffect!!.emitters.maxBy { it.duration }!!.duration / 1000f // duration is in millis, lifetime should be in seconds
         }
+
+//        val explosionSound: Sound = game.assetManager["sfx/explosion.wav"]
+//        explosionSound.play()
     }
 
     //</editor-fold>
