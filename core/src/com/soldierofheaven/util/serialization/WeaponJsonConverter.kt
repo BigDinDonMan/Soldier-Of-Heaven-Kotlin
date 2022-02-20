@@ -11,6 +11,7 @@ import com.soldierofheaven.weapons.Weapon
 typealias BulletPrefabData = com.soldierofheaven.weapons.BulletData
 
 //this class is BAD but I didn't find any good way to inject asset manager into a JsonAdapter annotation so...
+//will probably have to roll my own serializer
 class WeaponJsonConverter(private val assetManager: AssetManager) {
 
     private data class WeaponData(
