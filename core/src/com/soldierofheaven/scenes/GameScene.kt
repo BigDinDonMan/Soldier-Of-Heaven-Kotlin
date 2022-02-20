@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.ScreenAdapter
+import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.ParticleEffect
@@ -56,6 +57,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private lateinit var healthBar: HealthBar
     private lateinit var reloadBar: ReloadBar
     private lateinit var ammoDisplay: AmmoDisplay
+    private lateinit var weaponSlots: List<WeaponSlot>
 
     private var tracker = StatisticsTracker()
 
@@ -98,12 +100,18 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         val slotSize = 72f
         val slotPadding = 15f
         val weaponSystem = ecsWorld.getSystem(WeaponSystem::class.java)
-        weaponSystem.weapons.forEachIndexed { index, weapon -> kotlin.run {
+        var firstSlotMarkedAsSelected = false
+        weaponSlots = weaponSystem.weapons.mapIndexed { index, weapon -> kotlin.run {
             val slot = WeaponSlot(weapon, index + 1, defaultSkin)
             slot.setSize(slotSize, slotSize)
             slot.setPosition(slotsX, slotsStartY - (slotSize + slotPadding) * index)
-            stage.addActor(slot)
+            if (!firstSlotMarkedAsSelected) {
+                firstSlotMarkedAsSelected = true
+                slot.setSelected(true)
+            }
+            slot
         } }
+        weaponSlots.forEach(stage::addActor)
     }
 
     override fun show() {
@@ -146,6 +154,12 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     @Subscribe
     private fun updateSelectedWeapon(e: WeaponChangedUiEvent) {
         ammoDisplay.update(e.weapon)
+
+        val swapSound: Sound = game.assetManager["sfx/weapon-swap.wav"];
+        swapSound.play()
+
+        weaponSlots.forEach { it.setSelected(false) }
+        weaponSlots[e.index - 1].setSelected(true)
     }
 
     @Subscribe
