@@ -12,6 +12,7 @@ import com.soldierofheaven.ecs.components.RigidBody
 import com.soldierofheaven.ecs.components.Transform
 import com.soldierofheaven.ecs.events.DamageEvent
 import com.soldierofheaven.ecs.events.ExplosionEvent
+import com.soldierofheaven.ecs.events.KnockbackEvent
 import com.soldierofheaven.util.PhysicsWorld
 import net.mostlyoriginal.api.event.common.Subscribe
 
@@ -54,11 +55,12 @@ class ExplosivesSystem : IteratingSystem() {
         for (i in 0 until capturedCount) {
             //iterate over captured entities and queue them in damage system
             val entityId = explosionOverlapArray[i]
-            //todo: explosion should also have knockback; create a KnockbackSystem or knock back enemies inside DamageSystem
             //to calculate the direction of knockback simply calculate the direction between an entity and explosion center
             //where destination is enemy position and origin is explosion center
             //and then perform subtraction destination - origin
             EventQueue.dispatch(DamageEvent(entityId, e.damage))
+            //todo: calculate direction and strength (strength should somehow depend on the range or should be added in the bullet data)
+            EventQueue.dispatch(KnockbackEvent(entityId, 5f, 0f, 0f ))
         }
     }
 }

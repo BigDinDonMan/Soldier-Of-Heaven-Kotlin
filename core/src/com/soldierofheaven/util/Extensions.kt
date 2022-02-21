@@ -2,6 +2,7 @@ package com.soldierofheaven.util
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Graphics
+import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import kotlin.math.abs
@@ -17,3 +18,7 @@ fun Stage.update() = this.act().also { this.draw() }
 fun Actor.centerAbsolute() = this.setPosition(Gdx.graphics.widthF() / 2 - width / 2, Gdx.graphics.heightF() / 2 - height / 2)
 
 fun EcsWorld.update(delta: Float) = this.setDelta(delta).also { process() }
+
+fun Body.applyImpulseToCenter(impulseX: Float, impulseY: Float, wake: Boolean) {
+    this.applyLinearImpulse(impulseX, impulseY, this.position.x, this.position.y, wake)
+}
