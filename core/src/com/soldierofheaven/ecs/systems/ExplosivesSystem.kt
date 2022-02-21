@@ -54,6 +54,10 @@ class ExplosivesSystem : IteratingSystem() {
         for (i in 0 until capturedCount) {
             //iterate over captured entities and queue them in damage system
             val entityId = explosionOverlapArray[i]
+            //todo: explosion should also have knockback; create a KnockbackSystem or knock back enemies inside DamageSystem
+            //to calculate the direction of knockback simply calculate the direction between an entity and explosion center
+            //where destination is enemy position and origin is explosion center
+            //and then perform subtraction destination - origin
             EventQueue.dispatch(DamageEvent(entityId, e.damage))
         }
     }

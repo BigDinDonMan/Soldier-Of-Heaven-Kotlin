@@ -18,15 +18,9 @@ class DamageSystem : BaseSystem() {
     var healthMapper: ComponentMapper<Health>? = null
 
     private val damageEventQueue = LinkedList<DamageEvent>()
-    private val processingQueue = LinkedList<DamageEvent>()
-
-    override fun begin() {
-        processingQueue += damageEventQueue
-        damageEventQueue.clear()
-    }
 
     override fun processSystem() {
-        processingQueue.forEach { (id, damage) -> kotlin.run {
+        damageEventQueue.forEach { (id, damage) -> kotlin.run {
             val health = healthMapper!!.get(id)
             health.health -= damage
             if (health.health <= 0f) {
@@ -36,7 +30,7 @@ class DamageSystem : BaseSystem() {
     }
 
     override fun end() {
-        processingQueue.clear()
+        damageEventQueue.clear()
     }
 
     @Subscribe
