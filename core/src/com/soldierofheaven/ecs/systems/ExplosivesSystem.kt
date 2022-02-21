@@ -62,9 +62,11 @@ class ExplosivesSystem : IteratingSystem() {
             val entityPosition = rigidBody.physicsBody!!.position
             val directionX = entityPosition.x - e.centerX
             val directionY = entityPosition.y - e.centerY
-            EventQueue.dispatch(DamageEvent(entityId, e.damage))
-            //todo: calculate explosion knockback strength (maybe use properly rescaled range as indicator?)
-            EventQueue.dispatch(KnockbackEvent(entityId, 5f, directionX, directionY))
+            //todo: calculate explosion knockback strength (maybe use properly rescaled range as indicator? maybe cubic root?)
+            EventQueue.dispatchMultiple(
+                DamageEvent(entityId, e.damage),
+                KnockbackEvent(entityId, 5f, directionX, directionY)
+            )
         }
     }
 }

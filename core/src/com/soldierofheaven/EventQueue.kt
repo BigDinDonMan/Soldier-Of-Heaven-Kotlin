@@ -9,6 +9,8 @@ object EventQueue {
 
     fun dispatch(e: Event) = eventSystem.dispatch(e)
 
+    fun dispatchMultiple(vararg events: Event) = events.forEach(eventSystem::dispatch)
+
     fun init(config: WorldConfiguration) {
         config.setSystem(eventSystem)
     }
