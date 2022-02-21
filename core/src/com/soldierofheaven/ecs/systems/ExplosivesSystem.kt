@@ -4,6 +4,7 @@ import com.artemis.ComponentMapper
 import com.artemis.annotations.All
 import com.artemis.annotations.Wire
 import com.artemis.systems.IteratingSystem
+import com.badlogic.gdx.math.Vector2
 import com.soldierofheaven.EventQueue
 import com.soldierofheaven.Physics
 import com.soldierofheaven.ecs.components.Explosive
@@ -55,12 +56,15 @@ class ExplosivesSystem : IteratingSystem() {
         for (i in 0 until capturedCount) {
             //iterate over captured entities and queue them in damage system
             val entityId = explosionOverlapArray[i]
-            //to calculate the direction of knockback simply calculate the direction between an entity and explosion center
-            //where destination is enemy position and origin is explosion center
-            //and then perform subtraction destination - origin
+            val rigidBody = rigidBodyMapper!!.get(entityId)
+            if (rigidBody?.physicsBody == null) continue
+
+            val entityPosition = rigidBody.physicsBody!!.position
+            val directionX = entityPosition.x - e.centerX
+            val directionY = entityPosition.y - e.centerY
             EventQueue.dispatch(DamageEvent(entityId, e.damage))
-            //todo: calculate direction and strength (strength should somehow depend on the range or should be added in the bullet data)
-            EventQueue.dispatch(KnockbackEvent(entityId, 5f, 0f, 0f ))
+            //todo: calculate explosion knockback strength (maybe use properly rescaled range as indicator?)
+            EventQueue.dispatch(KnockbackEvent(entityId, 5f, directionX, directionY))
         }
     }
 }

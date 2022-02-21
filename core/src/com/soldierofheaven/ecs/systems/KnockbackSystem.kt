@@ -20,13 +20,13 @@ class KnockbackSystem : BaseSystem() {
     private val knockBackQueue = LinkedList<KnockbackEvent>()
 
     override fun processSystem() {
-        knockBackQueue.forEach { event -> kotlin.run {
-            val rigidBody = rigidBodyMapper!!.get(event.entityId)
+        knockBackQueue.forEach { (id, strength, dirX, dirY) -> kotlin.run {
+            val rigidBody = rigidBodyMapper!!.get(id)
             if (rigidBody?.physicsBody == null) return
 
             rigidBody.physicsBody!!.applyImpulseToCenter(
-                event.directionX * event.strength,
-                event.directionY * event.strength,
+                dirX * strength,
+                dirY * strength,
                 true
             )
         } }
