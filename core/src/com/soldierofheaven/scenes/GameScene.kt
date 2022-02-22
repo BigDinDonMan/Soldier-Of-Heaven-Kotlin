@@ -30,6 +30,7 @@ import com.soldierofheaven.ecs.systems.CameraPositioningSystem
 import com.soldierofheaven.ecs.systems.PhysicsSystem
 import com.soldierofheaven.ecs.systems.RenderSystem
 import com.soldierofheaven.ecs.systems.WeaponSystem
+import com.soldierofheaven.events.PauseEvent
 import com.soldierofheaven.stats.StatisticsTracker
 import com.soldierofheaven.ui.*
 import com.soldierofheaven.util.*
@@ -48,6 +49,13 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
     private var debug = true
     private val debugRenderer = Box2DDebugRenderer()
+
+    private var paused by Delegates.observable(false) { value, oldValue, newValue ->
+        kotlin.run {
+            inputHandler.setEnabled(newValue)
+            //todo: add pause dialog and show it here
+        }
+    }
 
     private val inputHandler = PlayerInputHandler()
 
@@ -265,6 +273,11 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
 //        val explosionSound: Sound = game.assetManager["sfx/explosion.wav"]
 //        explosionSound.play()
+    }
+
+    @Subscribe
+    private fun togglePause(_e: PauseEvent) {
+        paused = !paused
     }
 
     //</editor-fold>

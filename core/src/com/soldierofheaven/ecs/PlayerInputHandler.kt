@@ -7,6 +7,7 @@ import com.soldierofheaven.ecs.events.MoveEvent
 import com.soldierofheaven.ecs.events.ReloadRequestEvent
 import com.soldierofheaven.ecs.events.ShotRequestEvent
 import com.soldierofheaven.ecs.events.WeaponChangeEvent
+import com.soldierofheaven.events.PauseEvent
 import ktx.app.KtxInputAdapter
 
 class PlayerInputHandler() : KtxInputAdapter {
@@ -16,6 +17,8 @@ class PlayerInputHandler() : KtxInputAdapter {
     private var y = 0f
 
     override fun keyDown(keycode: Int): Boolean {
+        if (keycode == Input.Keys.ESCAPE)
+            EventQueue.dispatch(PauseEvent())
         if (!enabled) return false
 
         when (keycode) {
