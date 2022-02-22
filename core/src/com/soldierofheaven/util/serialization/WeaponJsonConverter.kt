@@ -39,6 +39,7 @@ class WeaponJsonConverter(private val assetManager: AssetManager) {
         val explosiveRange: Float?,
         val explodeOnContact: Boolean?,
         val explosionTimer: Float?,
+        val explosionStrength: Float?,
         val particleEffectName: String?,
         val iconPath: String
     )
@@ -59,7 +60,7 @@ class WeaponJsonConverter(private val assetManager: AssetManager) {
         w.name, w.clipSize, w.maxStoredAmmo, w.reloadTime, w.damage, w.fireRate,
         w.price, assetManager.getAssetFileName(w.weaponIcon), assetManager.getAssetFileName(w.ammoIcon),
         BulletData(w.bulletData.speed, w.bulletData.bulletDamping, w.bulletData.explosiveType, w.bulletData.explosiveRange,
-            w.bulletData.explodeOnContact, w.bulletData.explosionTimer, w.bulletData.particleEffectName, assetManager.getAssetFileName(w.bulletData.icon)),
+            w.bulletData.explodeOnContact, w.bulletData.explosionTimer, w.bulletData.explosionStrength, w.bulletData.particleEffectName, assetManager.getAssetFileName(w.bulletData.icon)),
         assetManager.getAssetFileName(w.shotSound), assetManager.getAssetFileName(w.reloadSound),
         unlocked = w.unlocked, bulletSpread = w.bulletSpread, bulletsPerShot = w.bulletsPerShot
     )
@@ -68,7 +69,7 @@ class WeaponJsonConverter(private val assetManager: AssetManager) {
         w.name, w.clipSize, w.maxStoredAmmo, w.reloadTime, w.damage,
         w.fireRate, w.price, assetManager.get(w.weaponIconPath), assetManager.get(w.ammoIconPath),
         BulletPrefabData(w.bulletData.speed, w.bulletData.bulletDamping, w.bulletData.explosiveType, w.bulletData.explosiveRange,
-            w.bulletData.explodeOnContact, w.bulletData.explosionTimer, w.bulletData.particleEffectName, assetManager.get(w.bulletData.iconPath)),
+            w.bulletData.explodeOnContact, w.bulletData.explosionTimer, w.bulletData.explosionStrength, w.bulletData.particleEffectName, assetManager.get(w.bulletData.iconPath)),
         assetManager.get(w.shotSoundPath), assetManager.get(w.reloadSoundPath), w.bulletSpread,
         w.bulletsPerShot
     ).apply { unlocked = w.unlocked }

@@ -120,20 +120,20 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
                 0.25f, -1, assetManager.get(Resources.BASIC_BULLET),
                 assetManager.get(Resources.BASIC_BULLET),
                 BulletData(baseBulletSpeed, 0f, null, null,
-                    null, null, null, assetManager.get(Resources.BASIC_BULLET)),
+                    null, null, null, null, assetManager.get(Resources.BASIC_BULLET)),
                 assetManager.get("sfx/pistol-shot.wav"),
                 assetManager.get("sfx/pistol-reload.wav")).apply { unlocked = true },
             Weapon("The Absolver", 30, 600, 2.5f, 6f,
                 0.1f, 800, assetManager.get(Resources.BASIC_BULLET),
                 assetManager.get(Resources.BASIC_BULLET),
                 BulletData(baseBulletSpeed, 0f, null, null,
-                    null, null, null, assetManager.get(Resources.BASIC_BULLET)),
+                    null, null, null, null, assetManager.get(Resources.BASIC_BULLET)),
                 assetManager.get("sfx/rifle-shot.wav"), assetManager.get("sfx/rifle-reload.wav")
             ).apply { unlocked = true },
             Weapon("Gate Guardian", 6, 100, 4.25f, 5f, 1.25f, 1200,
                 assetManager.get(Resources.BASIC_BULLET), assetManager.get(Resources.BASIC_BULLET),
                 BulletData(baseBulletSpeed, 0f, null, null,
-                    null, null, null, assetManager.get(Resources.BASIC_BULLET)),
+                    null, null, null, null, assetManager.get(Resources.BASIC_BULLET)),
                 assetManager.get("sfx/shotgun-shot.wav"), assetManager.get("sfx/shotgun-reload.wav"),
                 bulletSpread = 0.25f, bulletsPerShot = 10
             ).apply { unlocked = true }

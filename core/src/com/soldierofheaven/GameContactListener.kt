@@ -33,7 +33,7 @@ class GameContactListener(private val ecsWorld: EcsWorld) : ContactListener {
 
                 if (bullet.isExplosive()) {
                     val bulletBody = contact.fixtureA.body
-                    EventQueue.dispatch(ExplosionEvent(bulletBody.position.x, bulletBody.position.y, damage.value, bullet.explosionRange!!))
+                    EventQueue.dispatch(ExplosionEvent(bulletBody.position.x, bulletBody.position.y, damage.value, bullet.explosionRange!!, bullet.explosionStrength!!))
                 } else {
                     EventQueue.dispatch(DamageEvent(entityBId, damage.value))
                 }
@@ -47,7 +47,7 @@ class GameContactListener(private val ecsWorld: EcsWorld) : ContactListener {
 
                 if (bullet.isExplosive()) {
                     val bulletBody = contact.fixtureA.body
-                    EventQueue.dispatch(ExplosionEvent(bulletBody.position.x, bulletBody.position.y, damage.value, bullet.explosionRange!!))
+                    EventQueue.dispatch(ExplosionEvent(bulletBody.position.x, bulletBody.position.y, damage.value, bullet.explosionRange!!, bullet.explosionStrength!!))
                 } else {
                     EventQueue.dispatch(DamageEvent(entityAId, damage.value))
                 }

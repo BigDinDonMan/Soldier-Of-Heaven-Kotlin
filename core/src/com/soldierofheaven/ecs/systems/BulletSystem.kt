@@ -46,7 +46,8 @@ class BulletSystem : IteratingSystem() {
                 EventQueue.dispatch(ExplosionEvent(
                     rigidBody.physicsBody!!.position.x,
                     rigidBody.physicsBody!!.position.y,
-                    damage.value, bullet.explosionRange!!
+                    damage.value, bullet.explosionRange!!,
+                    bullet.explosionStrength!!
                 ))
                 world.edit(entityId).create(LifeCycle::class.java).apply { lifeTime = -1f }
             }

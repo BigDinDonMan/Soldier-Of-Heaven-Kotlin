@@ -10,6 +10,7 @@ data class BulletData(
     val explosiveRange: Float?,
     val explodeOnContact: Boolean?,
     val explosionTimer: Float?,
+    val explosionStrength: Float?,
     val particleEffectName: String?,
     val icon: Texture
 )

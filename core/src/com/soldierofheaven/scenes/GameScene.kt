@@ -128,7 +128,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             )
 
             if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-                EventQueue.dispatch(ExplosionEvent(150f , 150f, 0f, 100f))
+                EventQueue.dispatch(ExplosionEvent(150f , 150f, 0f, 100f, 500f))
             }
         }
 
@@ -206,6 +206,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
                 explosionRange = e.weapon.bulletData.explosiveRange
                 explodeOnContact = e.weapon.bulletData.explodeOnContact
                 bulletDamping = e.weapon.bulletData.bulletDamping
+                explosionStrength = e.weapon.bulletData.explosionStrength
             }
             editor.create(LifeCycle::class.java).apply { lifeTime = 2.5f }
             editor.create(Transform::class.java).apply {

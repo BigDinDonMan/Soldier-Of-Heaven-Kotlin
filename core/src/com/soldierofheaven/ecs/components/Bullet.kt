@@ -11,6 +11,7 @@ class Bullet : PooledComponent() {
     var explosionTimer: Float? = null
     var explodeOnContact: Boolean? = null
     var explosiveType: ExplosiveType? = null
+    var explosionStrength: Float? = null
 
     override fun reset() {
         moveDirection.set(Vector2.Zero)
@@ -18,6 +19,7 @@ class Bullet : PooledComponent() {
         explosionTimer = null
         explodeOnContact = null
         explosiveType = null
+        explosionStrength = null
         bulletDamping = 0f
     }
 

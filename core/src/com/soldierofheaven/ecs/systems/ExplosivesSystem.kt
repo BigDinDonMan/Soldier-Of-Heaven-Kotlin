@@ -7,15 +7,14 @@ import com.artemis.systems.IteratingSystem
 import com.badlogic.gdx.math.Vector2
 import com.soldierofheaven.EventQueue
 import com.soldierofheaven.Physics
-import com.soldierofheaven.ecs.components.Explosive
-import com.soldierofheaven.ecs.components.LifeCycle
-import com.soldierofheaven.ecs.components.RigidBody
-import com.soldierofheaven.ecs.components.Transform
+import com.soldierofheaven.ecs.components.*
 import com.soldierofheaven.ecs.events.DamageEvent
 import com.soldierofheaven.ecs.events.ExplosionEvent
 import com.soldierofheaven.ecs.events.KnockbackEvent
 import com.soldierofheaven.util.PhysicsWorld
+import com.soldierofheaven.util.math.cbrt
 import net.mostlyoriginal.api.event.common.Subscribe
+import kotlin.math.sqrt
 
 @All(Explosive::class)
 class ExplosivesSystem : IteratingSystem() {
@@ -30,24 +29,33 @@ class ExplosivesSystem : IteratingSystem() {
     var transformMapper: ComponentMapper<Transform>? = null
 
     @Wire
+    var damageMapper: ComponentMapper<Damage>? = null
+
+    @Wire
     var rigidBodyMapper: ComponentMapper<RigidBody>? = null
 
     @Wire(name = "physicsWorld")
     var physicsWorld: PhysicsWorld? = null
 
     private val explosionOverlapArray = IntArray(100)
+    private val calculationVector = Vector2()
 
     override fun process(entityId: Int) {
         val explosive = explosiveMapper!!.get(entityId)
         val lifeCycle = lifeCycleMapper!!.get(entityId)
+        val rigidBody = rigidBodyMapper!!.get(entityId)
+        val damage = damageMapper!!.get(entityId)
 
         explosive.fuseTime -= world.delta
         if (explosive.fuseTime <= 0f) {
-            makeExplosion(entityId, explosive)
+            //queue event
+            lifeCycle.lifeTime = -1f
+            if (rigidBody?.physicsBody != null)
+                EventQueue.dispatch(ExplosionEvent(
+                    rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y,
+                    damage.value, explosive.range, explosive.strength)
+                )
         }
-    }
-
-    private fun makeExplosion(id:Int, e: Explosive) {
     }
 
     @Subscribe
@@ -59,13 +67,15 @@ class ExplosivesSystem : IteratingSystem() {
             val rigidBody = rigidBodyMapper!!.get(entityId)
             if (rigidBody?.physicsBody == null) continue
 
+            //direction needs to be normalized because knockback strength is not constant when not normalized
+            //todo: add explosion strength to bullet
             val entityPosition = rigidBody.physicsBody!!.position
-            val directionX = entityPosition.x - e.centerX
-            val directionY = entityPosition.y - e.centerY
-            //todo: calculate explosion knockback strength (maybe use properly rescaled range as indicator? maybe cubic root?)
+            calculationVector.set(entityPosition.x - e.centerX, entityPosition.y - e.centerY)
+            calculationVector.nor()
+
             EventQueue.dispatchMultiple(
                 DamageEvent(entityId, e.damage),
-                KnockbackEvent(entityId, 5f, directionX, directionY)
+                KnockbackEvent(entityId, e.strength, calculationVector.x, calculationVector.y)
             )
         }
     }

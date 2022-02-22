@@ -17,3 +17,5 @@ fun Vector2.directionTowards(x: Float, y: Float, out: Vector3): Vector3 {
     out.set(x - this.x, y - this.y, out.z)
     return out
 }
+
+fun cbrt(v: Float) = v.pow(1/3f)
