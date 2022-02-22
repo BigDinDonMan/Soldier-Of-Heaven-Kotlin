@@ -44,6 +44,7 @@ class WeaponSlot(private val weapon: Weapon, weaponIndex: Int, skin: Skin) : Ima
     }
 
     fun setSelected(b: Boolean) {
-
+        //todo: create a skin for these slots where style.up is the icon for selected slot and down is for non-selected
+        image.drawable = if (b) this.style.up else this.style.down
     }
 }

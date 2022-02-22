@@ -34,7 +34,6 @@ import java.io.File
 //todo: monitor performance of the game with the current amount of event dispatching; if it suffers, implement pooling or switch to callbacks
 //todo: maybe add skills? e.g. summoning an angel to help (like those circles with eyes)
 //todo: download and set up LibGDX physics editor (to reduce boilerplate)
-//todo: explosives should explode on impact with enemies or marked props (e.g. explosive barrels or sth)
 class SoldierOfHeavenGame : KtxGame<Screen>() {
     private lateinit var batch: SpriteBatch
     private lateinit var physicsWorld: PhysicsWorld
@@ -59,6 +58,8 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         assetManager.load("sfx/shotgun-reload.wav", Sound::class.java)
         assetManager.load("sfx/rifle-shot.wav", Sound::class.java)
         assetManager.load("sfx/rifle-reload.wav", Sound::class.java)
+        assetManager.load("sfx/smg-reload.wav", Sound::class.java)
+        assetManager.load("sfx/weapon-swap.wav", Sound::class.java)
         assetManager.load("gfx/particles/explosion.p", com.badlogic.gdx.graphics.g2d.ParticleEffect::class.java,
             ParticleEffectLoader.ParticleEffectParameter().apply {
                 imagesDir = Gdx.files.internal("gfx/particles")
