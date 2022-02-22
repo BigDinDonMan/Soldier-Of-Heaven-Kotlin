@@ -1,5 +1,6 @@
 package com.soldierofheaven.scenes
 
+import com.artemis.BaseSystem
 import com.artemis.managers.WorldSerializationManager
 import com.artemis.prefab.Prefab
 import com.badlogic.gdx.Gdx
@@ -16,6 +17,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.physics.box2d.*
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.ObjectMap
 import com.badlogic.gdx.utils.viewport.StretchViewport
@@ -26,10 +28,7 @@ import com.soldierofheaven.ecs.components.Transform
 import com.soldierofheaven.ecs.components.enums.ExplosiveType
 import com.soldierofheaven.ecs.events.*
 import com.soldierofheaven.ecs.events.ui.WeaponChangedUiEvent
-import com.soldierofheaven.ecs.systems.CameraPositioningSystem
-import com.soldierofheaven.ecs.systems.PhysicsSystem
-import com.soldierofheaven.ecs.systems.RenderSystem
-import com.soldierofheaven.ecs.systems.WeaponSystem
+import com.soldierofheaven.ecs.systems.*
 import com.soldierofheaven.events.PauseEvent
 import com.soldierofheaven.stats.StatisticsTracker
 import com.soldierofheaven.ui.*
@@ -50,16 +49,25 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private var debug = true
     private val debugRenderer = Box2DDebugRenderer()
 
+    private val nonPausableSystems: Array<Class<out BaseSystem>> = arrayOf(
+        AnimationSystem::class.java,
+        RenderSystem::class.java
+    )
+
     private var paused by Delegates.observable(false) { value, oldValue, newValue ->
         kotlin.run {
-            inputHandler.setEnabled(newValue)
-            //todo: add pause dialog and show it here
+            inputHandler.setEnabled(!newValue)
+            switchSystemsWorking(!newValue)
+            pauseDialog.isVisible = newValue
+            if (newValue) pauseDialog.show(stage) else pauseDialog.hide()
+            //todo: stop all game systems (physics, input, particle effect etc.) from working
         }
     }
 
     private val inputHandler = PlayerInputHandler()
 
     private val defaultSkin = Skin(Gdx.files.internal("skins/uiskin.json"))
+    private lateinit var pauseDialog: Dialog
 
     private val gameCamera: Camera = ecsWorld.getSystem(RenderSystem::class.java).gameCamera!!
     private lateinit var healthBar: HealthBar
@@ -120,6 +128,29 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             slot
         } }
         weaponSlots.forEach(stage::addActor)
+
+        pauseDialog = object : Dialog("Game paused", defaultSkin) {
+            override fun result(`object`: Any?) {
+                (`object` as? () -> Unit)?.invoke()
+            }
+
+            override fun show(stage: Stage?): Dialog {
+                centerAbsolute()
+                return this
+            }
+
+            override fun hide() {
+                isVisible = false
+            }
+        }.apply {
+            isVisible = false
+            isModal = false
+            isMovable = false
+            setSize(300f, 150f)
+            centerAbsolute()
+        }.button("Resume", { paused = false; }).button("Exit", {})
+
+        stage.addActor(pauseDialog)
     }
 
     override fun show() {
@@ -298,6 +329,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         }
         ammoDisplay.update(weaponSystem.weapons.first())
         ecsWorld.entityManager.reset()
+        paused = false
         setupScene()
     }
 
@@ -363,5 +395,9 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             }
             playerBodyShape.dispose()
         }).create(Health::class.java).apply { maxHealth = 50f }
+    }
+
+    private fun switchSystemsWorking(working: Boolean) {
+        ecsWorld.systems.filter { it.javaClass !in nonPausableSystems }.forEach { it.isEnabled = working }
     }
 }
