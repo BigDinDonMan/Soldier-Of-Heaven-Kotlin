@@ -68,6 +68,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
     private val defaultSkin = Skin(Gdx.files.internal("skins/uiskin.json"))
     private lateinit var pauseDialog: Dialog
+    private lateinit var exitToMenuDialog: Dialog
 
     private val gameCamera: Camera = ecsWorld.getSystem(RenderSystem::class.java).gameCamera!!
     private lateinit var healthBar: HealthBar
@@ -135,6 +136,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             }
 
             override fun show(stage: Stage?): Dialog {
+                isVisible = true
                 centerAbsolute()
                 return this
             }
@@ -151,7 +153,44 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             centerAbsolute()
         }.button("Resume", { paused = false; }).button("Exit", this::showExitToMenuDialog)
 
-        stage.addActor(pauseDialog)
+        val dialog = object : Dialog("", defaultSkin){
+            override fun result(`object`: Any) {
+                println(`object`.javaClass.name)
+                (`object` as? () -> Unit)?.invoke()
+            }
+
+            override fun show(stage: Stage): Dialog {
+                stage.addActor(this)
+                pack()
+                isVisible = true
+                centerAbsolute()
+                return this
+            }
+
+            override fun hide() {
+                isVisible = false
+                remove()
+            }
+        }.apply {
+            isModal = false
+            isVisible = false
+            setSize(300f, 150f)
+            contentTable.addActor(Label("Are you sure you want to quit?", defaultSkin))
+            pack()
+            centerAbsolute()
+        }
+        dialog.button("Yes", {
+            dialog.hide()
+            val oldScreen = game.shownScreen
+            game.setScreen<MenuScene>()
+            (oldScreen as? GameScene)?.reset()
+        }).button("No", {
+            hide()
+            pauseDialog.show(stage)
+            return@button
+        })
+        exitToMenuDialog = dialog
+        stage.addActors(exitToMenuDialog, pauseDialog)
     }
 
     override fun show() {
@@ -309,6 +348,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
     @Subscribe
     private fun togglePause(_e: PauseEvent) {
+        if (exitToMenuDialog.isVisible) return
+        //todo: pause all playing sounds when pausing game
         paused = !paused
     }
 
@@ -403,36 +444,6 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     }
 
     private fun showExitToMenuDialog() {
-        //todo: this makes pause dialog disappear; fix it
-        val dialog = object : Dialog("", defaultSkin){
-            override fun result(`object`: Any?) {
-                (`object` as? () -> Unit)?.invoke()
-            }
-
-            override fun show(stage: Stage): Dialog {
-                stage.addActor(this)
-                pack()
-                isVisible = true
-                centerAbsolute()
-                return this
-            }
-
-            override fun hide() {
-                isVisible = false
-                remove()
-            }
-        }.apply {
-            isModal = false
-            setSize(300f, 150f)
-            contentTable.addActor(Label("Are you sure you want to quit?", defaultSkin))
-            pack()
-            centerAbsolute()
-        }
-        dialog.button("Yes", {
-            dialog.hide()
-            val oldScreen = game.shownScreen
-            game.setScreen<MenuScene>()
-            (oldScreen as? GameScene)?.reset()
-        }).button("No").show(stage)
+        exitToMenuDialog.show(stage)
     }
 }
