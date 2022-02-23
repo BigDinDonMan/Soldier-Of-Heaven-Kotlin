@@ -18,6 +18,7 @@ import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.physics.box2d.*
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.ObjectMap
 import com.badlogic.gdx.utils.viewport.StretchViewport
@@ -60,7 +61,6 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             switchSystemsWorking(!newValue)
             pauseDialog.isVisible = newValue
             if (newValue) pauseDialog.show(stage) else pauseDialog.hide()
-            //todo: stop all game systems (physics, input, particle effect etc.) from working
         }
     }
 
@@ -146,9 +146,10 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             isVisible = false
             isModal = false
             isMovable = false
+            titleLabel.isVisible = false
             setSize(300f, 150f)
             centerAbsolute()
-        }.button("Resume", { paused = false; }).button("Exit", {})
+        }.button("Resume", { paused = false; }).button("Exit", this::showExitToMenuDialog)
 
         stage.addActor(pauseDialog)
     }
@@ -319,18 +320,18 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         weaponSystem.weapons.forEach { it.reset() }
         weaponSystem.resetCurrentWeapon()
         tracker = StatisticsTracker()
-        val ids = ecsWorld.getSystem(PhysicsSystem::class.java).entityIds
         val rigidbodyMapper = ecsWorld.getMapper(RigidBody::class.java)
-        for (i in 0 until ids.size()) {
-            val body = rigidbodyMapper.get(ids.get(i))
+        ecsWorld.removeAllEntities { id ->
+            val body = rigidbodyMapper.get(id)
             if (body?.physicsBody != null) {
                 physicsWorld.destroyBody(body.physicsBody)
+                body.physicsBody = null
             }
         }
         ammoDisplay.update(weaponSystem.weapons.first())
-        ecsWorld.entityManager.reset()
         paused = false
         setupScene()
+        reloadBar.playerPositionVector = ecsWorld.getEntity(playerEntityId).getComponent(Transform::class.java).position
     }
 
     private fun setupScene(setupUi: Boolean = false) {
@@ -399,5 +400,39 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
     private fun switchSystemsWorking(working: Boolean) {
         ecsWorld.systems.filter { it.javaClass !in nonPausableSystems }.forEach { it.isEnabled = working }
+    }
+
+    private fun showExitToMenuDialog() {
+        //todo: this makes pause dialog disappear; fix it
+        val dialog = object : Dialog("", defaultSkin){
+            override fun result(`object`: Any?) {
+                (`object` as? () -> Unit)?.invoke()
+            }
+
+            override fun show(stage: Stage): Dialog {
+                stage.addActor(this)
+                pack()
+                isVisible = true
+                centerAbsolute()
+                return this
+            }
+
+            override fun hide() {
+                isVisible = false
+                remove()
+            }
+        }.apply {
+            isModal = false
+            setSize(300f, 150f)
+            contentTable.addActor(Label("Are you sure you want to quit?", defaultSkin))
+            pack()
+            centerAbsolute()
+        }
+        dialog.button("Yes", {
+            dialog.hide()
+            val oldScreen = game.shownScreen
+            game.setScreen<MenuScene>()
+            (oldScreen as? GameScene)?.reset()
+        }).button("No").show(stage)
     }
 }
