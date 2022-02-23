@@ -60,7 +60,13 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             inputHandler.setEnabled(!newValue)
             switchSystemsWorking(!newValue)
             pauseDialog.isVisible = newValue
-            if (newValue) pauseDialog.show(stage) else pauseDialog.hide()
+            if (newValue) {
+                pauseDialog.show(stage)
+                SoundManager.pauseAll()
+            } else {
+                pauseDialog.hide()
+                SoundManager.resumeAll()
+            }
         }
     }
 
@@ -124,7 +130,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             slot.setPosition(slotsX, slotsStartY - (slotSize + slotPadding) * index)
             if (!firstSlotMarkedAsSelected) {
                 firstSlotMarkedAsSelected = true
-                slot.setSelected(true)
+                slot.selected = true
             }
             slot
         } }
@@ -234,11 +240,15 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private fun updateSelectedWeapon(e: WeaponChangedUiEvent) {
         ammoDisplay.update(e.weapon)
 
-        val swapSound: Sound = game.assetManager["sfx/weapon-swap.wav"];
-        swapSound.play()
+        val index = e.index - 1
 
-        weaponSlots.forEach { it.setSelected(false) }
-        weaponSlots[e.index - 1].setSelected(true)
+        if (weaponSlots.indexOfFirst { it.selected } != index) {
+            val swapSound: Sound = game.assetManager["sfx/weapon-swap.wav"];
+            swapSound.play()
+        }
+
+        weaponSlots.forEach { it.selected = false }
+        weaponSlots[index].selected = true
     }
 
     @Subscribe
@@ -349,7 +359,6 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     @Subscribe
     private fun togglePause(_e: PauseEvent) {
         if (exitToMenuDialog.isVisible) return
-        //todo: pause all playing sounds when pausing game
         paused = !paused
     }
 
@@ -373,6 +382,9 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         paused = false
         setupScene()
         reloadBar.playerPositionVector = ecsWorld.getEntity(playerEntityId).getComponent(Transform::class.java).position
+        //todo: reset ui state
+        SoundManager.stopAll()
+        SoundManager.clearQueue()
     }
 
     private fun setupScene(setupUi: Boolean = false) {

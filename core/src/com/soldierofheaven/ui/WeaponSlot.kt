@@ -16,6 +16,12 @@ class WeaponSlot(private val weapon: Weapon, weaponIndex: Int, skin: Skin) : Ima
     private val numberLabel = Label(weaponIndex.toString(), skin)
     private val weaponNameLabel = Label(weapon.name, skin)
     private val weaponIconImage = Image()
+    var selected = false
+        set(value) {
+            field = value
+            //todo: create a skin for these slots where style.up is the icon for selected slot and down is for non-selected
+            image.drawable = if (value) this.style.up else this.style.down
+        }
 
     init {
         touchable = Touchable.disabled
@@ -41,10 +47,5 @@ class WeaponSlot(private val weapon: Weapon, weaponIndex: Int, skin: Skin) : Ima
             y + height / 2 - weapon.weaponIcon.height / 2
         )
         weaponIconImage.pack()
-    }
-
-    fun setSelected(b: Boolean) {
-        //todo: create a skin for these slots where style.up is the icon for selected slot and down is for non-selected
-        image.drawable = if (b) this.style.up else this.style.down
     }
 }

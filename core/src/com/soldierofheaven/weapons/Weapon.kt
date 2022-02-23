@@ -4,6 +4,7 @@ import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Texture
 import com.google.gson.annotations.JsonAdapter
 import com.soldierofheaven.EventQueue
+import com.soldierofheaven.SoundManager
 import com.soldierofheaven.ecs.events.ReloadFinishedEvent
 import com.soldierofheaven.util.GameTimer
 
@@ -54,6 +55,7 @@ class Weapon(
         currentAmmo--
         shotCooldown = fireRate
         shotSound.play()
+        SoundManager.queue(shotSound)
         return true
     }
 
@@ -65,6 +67,7 @@ class Weapon(
             currentAmmo = clipSize
             reloadTimer.start()
             reloadSound.play()
+            SoundManager.queue(reloadSound)
             return true
         }
         val removed = clipSize - currentAmmo
@@ -77,6 +80,7 @@ class Weapon(
         }
         reloadTimer.start()
         reloadSound.play()
+        SoundManager.queue(reloadSound)
         return true
     }
 
