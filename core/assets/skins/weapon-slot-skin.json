@@ -1,0 +1,10 @@
+{
+com.badlogic.gdx.scenes.scene2d.ui.Table: {
+	default: {
+		background: weapon-slot-idle
+	},
+	selected: {
+		background: weapon-slot-selected
+	}
+}
+}

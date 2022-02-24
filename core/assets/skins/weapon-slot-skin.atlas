@@ -1,0 +1,20 @@
+
+weapon-slot-skin.png
+size: 256, 256
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+weapon-slot-idle
+  rotate: false
+  xy: 1, 67
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+weapon-slot-selected
+  rotate: false
+  xy: 1, 1
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1

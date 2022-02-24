@@ -1,17 +1,15 @@
 package com.soldierofheaven.ui
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.soldierofheaven.weapons.Weapon
 
-class WeaponSlot(private val weapon: Weapon, weaponIndex: Int, skin: Skin) : ImageButton(skin) {
+class WeaponSlot(private val weapon: Weapon, private val slotSkin: Skin, weaponIndex: Int, skin: Skin) : Table(skin) {
 
     private val numberLabel = Label(weaponIndex.toString(), skin)
     private val weaponNameLabel = Label(weapon.name, skin)
@@ -19,13 +17,13 @@ class WeaponSlot(private val weapon: Weapon, weaponIndex: Int, skin: Skin) : Ima
     var selected = false
         set(value) {
             field = value
-            //todo: create a skin for these slots where style.up is the icon for selected slot and down is for non-selected
-            image.drawable = if (value) this.style.up else this.style.down
+            background = slotSkin.getDrawable(if (value) "weapon-slot-selected" else "weapon-slot-idle")
         }
 
     init {
         touchable = Touchable.disabled
         weaponIconImage.drawable = TextureRegionDrawable(weapon.weaponIcon)
+        background = slotSkin.getDrawable("weapon-slot-idle")
         addActor(numberLabel)
         addActor(weaponNameLabel)
         addActor(weaponIconImage)
