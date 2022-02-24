@@ -88,12 +88,13 @@ class Weapon(
 
     fun canShoot(): Boolean = shotCooldown <= 0f
 
-    fun reloadProgress(): Float = reloadTimer.timeElapsed() / reloadTime
+    fun reloadProgress(): Float = reloadTimer.timeElapsed / reloadTime
 
     fun hasAmmo() = !isEmpty() && storedAmmo > 0
 
     fun reset() {
         reloadTimer.stop()
+        reloadTimer.reset()
         storedAmmo = if (maxStoredAmmo == INFINITE_AMMO) -1 else maxStoredAmmo / 2
         shotCooldown = 0f
         currentAmmo = clipSize

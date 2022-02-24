@@ -1,8 +1,12 @@
 package com.soldierofheaven.util
 
-open class GameTimer(val time: Float, val looping: Boolean = false, val elapsedCallback: () -> Unit = {}) {
+import com.soldierofheaven.util.`interface`.Resettable
+
+open class GameTimer(val time: Float, val looping: Boolean = false, val elapsedCallback: () -> Unit = {}) : Resettable {
     private var counter = 0f
     private var started = false
+    val timeElapsed: Float
+        get() = counter
 
     open fun update(delta: Float) {
         if (!started) return
@@ -32,5 +36,8 @@ open class GameTimer(val time: Float, val looping: Boolean = false, val elapsedC
 
     fun isRunning() = started
 
-    fun timeElapsed() = counter
+    override fun reset() {
+        started = false
+        counter = 0f
+    }
 }

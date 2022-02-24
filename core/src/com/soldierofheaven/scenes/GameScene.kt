@@ -161,7 +161,6 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
         val dialog = object : Dialog("", defaultSkin){
             override fun result(`object`: Any) {
-                println(`object`.javaClass.name)
                 (`object` as? () -> Unit)?.invoke()
             }
 
@@ -197,6 +196,9 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         })
         exitToMenuDialog = dialog
         stage.addActors(exitToMenuDialog, pauseDialog)
+        val scoreDisplay = ScoreDisplay(defaultSkin)
+        scoreDisplay.setPosition(Gdx.graphics.widthF() - scoreDisplay.width, Gdx.graphics.heightF() - scoreDisplay.height)
+        stage.addActor(scoreDisplay)
     }
 
     override fun show() {
@@ -382,7 +384,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         paused = false
         setupScene()
         reloadBar.playerPositionVector = ecsWorld.getEntity(playerEntityId).getComponent(Transform::class.java).position
-        //todo: reset ui state
+        reloadBar.setEnabled(false)
+        healthBar.updateDisplay(150)
         SoundManager.stopAll()
         SoundManager.clearQueue()
     }
