@@ -7,7 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.soldierofheaven.weapons.Weapon
 
-class AmmoDisplay(private val ammoIcon: Texture, skin: Skin) : Actor() {
+//ammo icons need to be the same size
+//todo: add icons for all ammo types because the size changes between shotgun and other ammo now, after adding the icon
+class AmmoDisplay(private var ammoIcon: Texture, skin: Skin) : Actor() {
 
     companion object {
         val INFINITE_AMMO_STR = "N/A"//'\u221e'.toString()
@@ -24,7 +26,7 @@ class AmmoDisplay(private val ammoIcon: Texture, skin: Skin) : Actor() {
 
     override fun act(delta: Float) {
         super.act(delta)
-        val padding = 5f
+        val padding = 10f
         val xPos = x + ammoIcon.width + padding
         storedAmmoLabel.setPosition(xPos, y)
         clipLabel.setPosition(xPos, y + ammoIcon.height)
@@ -33,5 +35,6 @@ class AmmoDisplay(private val ammoIcon: Texture, skin: Skin) : Actor() {
     fun update(weapon: Weapon) {
         clipLabel.setText("${weapon.currentAmmo}/${weapon.clipSize}")
         storedAmmoLabel.setText(if (weapon.maxStoredAmmo == Weapon.INFINITE_AMMO) INFINITE_AMMO_STR else "${weapon.storedAmmo}/${weapon.maxStoredAmmo}")
+        ammoIcon = weapon.ammoIcon
     }
 }

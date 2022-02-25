@@ -113,7 +113,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
         val ammoIcon = game.assetManager.get("gfx/bullet-basic.png", Texture::class.java)
         ammoDisplay = AmmoDisplay(ammoIcon, defaultSkin).apply {
-            setPosition(healthPad, Gdx.graphics.heightF() - healthHeight - healthPad * 2 - ammoIcon.height)
+            setPosition(healthPad, Gdx.graphics.heightF() - healthHeight - healthPad * 2 - ammoIcon.height * 2)
         }
         ammoDisplay.update(ecsWorld.getSystem(WeaponSystem::class.java).weapons.first())
         stage.addActor(ammoDisplay)
