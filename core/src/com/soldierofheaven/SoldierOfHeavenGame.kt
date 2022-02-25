@@ -21,11 +21,8 @@ import com.soldierofheaven.ecs.components.enums.ExplosiveType
 import com.soldierofheaven.ecs.systems.*
 import com.soldierofheaven.scenes.GameScene
 import com.soldierofheaven.scenes.MenuScene
-import com.soldierofheaven.util.EcsWorld
-import com.soldierofheaven.util.PhysicsWorld
-import com.soldierofheaven.util.heightF
+import com.soldierofheaven.util.*
 import com.soldierofheaven.util.serialization.WeaponJsonConverter
-import com.soldierofheaven.util.widthF
 import com.soldierofheaven.weapons.BulletData
 import com.soldierofheaven.weapons.Weapon
 import ktx.app.KtxGame
@@ -50,30 +47,27 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         // we do not need any gravity in this game
         physicsWorld = PhysicsWorld(Vector2.Zero, false)
 
-        assetManager.load("gfx/crosshair.png", Texture::class.java)
         assetManager.load("gfx/reload-bar.png", Texture::class.java)
         assetManager.load("gfx/bullet-basic.png", Texture::class.java)
-        assetManager.load("sfx/pistol-reload.wav", Sound::class.java)
+        assetManager.load("gfx/crosshair.png", Texture::class.java)
         assetManager.load("sfx/pistol-shot.wav", Sound::class.java)
-        assetManager.load("sfx/shotgun-shot.wav", Sound::class.java)
-        assetManager.load("sfx/shotgun-reload.wav", Sound::class.java)
+        assetManager.load("sfx/pistol-reload.wav", Sound::class.java)
         assetManager.load("sfx/rifle-shot.wav", Sound::class.java)
         assetManager.load("sfx/rifle-reload.wav", Sound::class.java)
+        assetManager.load("sfx/shotgun-shot.wav", Sound::class.java)
+        assetManager.load("sfx/shotgun-reload.wav", Sound::class.java)
+        assetManager.load("sfx/weapon-swap.wav", Sound::class.java)
         assetManager.load("sfx/smg-shot.wav", Sound::class.java)
         assetManager.load("sfx/smg-reload.wav", Sound::class.java)
-        assetManager.load("sfx/weapon-swap.wav", Sound::class.java)
-        assetManager.load("gfx/particles/explosion.p", com.badlogic.gdx.graphics.g2d.ParticleEffect::class.java,
-            ParticleEffectLoader.ParticleEffectParameter().apply {
-                imagesDir = Gdx.files.internal("gfx/particles")
-            })
-        assetManager.load("gfx/particles/rocket-trail.p", com.badlogic.gdx.graphics.g2d.ParticleEffect::class.java,
-        ParticleEffectLoader.ParticleEffectParameter().apply {
+
+        assetManager.load("gfx/particles/explosion.p", com.badlogic.gdx.graphics.g2d.ParticleEffect::class.java, ParticleEffectLoader.ParticleEffectParameter().apply {
             imagesDir = Gdx.files.internal("gfx/particles")
         })
-        assetManager.finishLoading()
+        assetManager.load("gfx/particles/rocket-trail.p", com.badlogic.gdx.graphics.g2d.ParticleEffect::class.java, ParticleEffectLoader.ParticleEffectParameter().apply {
+            imagesDir = Gdx.files.internal("gfx/particles")
+        })
 
-        ParticlePools.registerEffect("Rocket trail", assetManager.get("gfx/particles/rocket-trail.p"), 5, 10)
-        ParticlePools.registerEffect("Explosion", assetManager.get("gfx/particles/explosion.p"), 10, 15)
+        assetManager.finishLoading()
 
         val ecsWorldConfig = WorldConfigurationBuilder().with(
             PhysicsSystem(physicsWorld),
@@ -98,6 +92,9 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         physicsWorld.setContactListener(GameContactListener(ecsWorld))
 
         Physics.init(physicsWorld, ecsWorld)
+
+        ParticlePools.registerEffect("Rocket trail", assetManager.get("gfx/particles/rocket-trail.p"), 5, 10)
+        ParticlePools.registerEffect("Explosion", assetManager.get("gfx/particles/explosion.p"), 10, 15)
 
         addScreen(MenuScene(this))
         addScreen(GameScene(this, ecsWorld, physicsWorld))

@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 
 class CurrencyDisplay(skin: Skin) : Actor() {
-    private val currencyImage = Image()
+    private val currencyImage = Image(skin.getDrawable("currency-icon"))
     private val currencyLabel = Label("0", skin)
 
     override fun act(delta: Float) {
