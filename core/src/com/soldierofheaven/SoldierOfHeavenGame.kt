@@ -34,6 +34,7 @@ import java.io.File
 //todo: monitor performance of the game with the current amount of event dispatching; if it suffers, implement pooling or switch to callbacks
 //todo: maybe add skills? e.g. summoning an angel to help (like those circles with eyes)
 //todo: download and set up LibGDX physics editor (to reduce boilerplate)
+//todo: create skin files for game and main menu
 class SoldierOfHeavenGame : KtxGame<Screen>() {
     private lateinit var batch: SpriteBatch
     private lateinit var physicsWorld: PhysicsWorld
@@ -58,6 +59,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         assetManager.load("sfx/shotgun-reload.wav", Sound::class.java)
         assetManager.load("sfx/rifle-shot.wav", Sound::class.java)
         assetManager.load("sfx/rifle-reload.wav", Sound::class.java)
+        assetManager.load("sfx/smg-shot.wav", Sound::class.java)
         assetManager.load("sfx/smg-reload.wav", Sound::class.java)
         assetManager.load("sfx/weapon-swap.wav", Sound::class.java)
         assetManager.load("gfx/particles/explosion.p", com.badlogic.gdx.graphics.g2d.ParticleEffect::class.java,
@@ -137,19 +139,19 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
                     null, null, null, null, assetManager.get(Resources.BASIC_BULLET)),
                 assetManager.get("sfx/shotgun-shot.wav"), assetManager.get("sfx/shotgun-reload.wav"),
                 bulletSpread = 0.25f, bulletsPerShot = 10
-            ).apply { unlocked = true }
+            ).apply { unlocked = true },
             //smg should have very high fire rate and also small bullet spread
-//            Weapon("SMG PLACEHOLDER NAME", 45, 900, 2.5f, 5f, 0.05f, 2500,
-//                assetManager.get(Resources.BASIC_BULLET), assetManager.get(Resources.BASIC_BULLET),
-//                BulletData(baseBulletSpeed, 0f, null, null,
-//                    null, null, null, assetManager.get(Resources.BASIC_BULLET)),
-//                assetManager.get("sfx/smg-shot.wav"), assetManager.get("sfx/smg-reload.wav"), bulletSpread = 0.1f)
-//            Weapon("ROCKET LAUNCHER PLACEHOLDER NAME", 3, 15, 4f, 75f, 2.5f, 5000,
+            Weapon("Demon Shredder", 45, 900, 2.5f, 5f, 0.05f, 2500,
+                assetManager.get(Resources.BASIC_BULLET), assetManager.get(Resources.BASIC_BULLET),
+                BulletData(baseBulletSpeed, 0f, null, null,
+                    null, null, null, null, assetManager.get(Resources.BASIC_BULLET)),
+                assetManager.get("sfx/smg-shot.wav"), assetManager.get("sfx/smg-reload.wav"), bulletSpread = 0.1f).apply { unlocked=true }
+//            Weapon("Heretic's Bane", 3, 15, 4f, 75f, 2.5f, 5000,
 //                assetManager.get(Resources.BASIC_BULLET), assetManager.get(Resources.BASIC_BULLET),
 //                BulletData(baseBulletSpeed, assetManager.get(Resources.BASIC_BULLET)),
 //                assetManager.get("sfx/rocket-launcher-shot.wav"), assetManager.get("sfx/rocket-launcher-reload.wav")
 //            )
-//            Weapon("PLACEHOLDER GRENADE_LAUNCHER NAME", 4, 40, 3.25f, 40f, 1f, 4000,
+//            Weapon("Faith Pellets", 4, 40, 3.25f, 40f, 1f, 4000,
 //                assetManager.get(Resources.BASIC_BULLET), assetManager.get(Resources.BASIC_BULLET),
 //                BulletData(baseBulletSpeed, 5f, ExplosiveType.GRENADE, 50f, true,
 //                    3f, "Explosion", assetManager.get(Resources.BASIC_BULLET)),

@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.soldierofheaven.weapons.Weapon
 
+//slot skin is temporary; everything will be inside skin parameter later on down the line (but it works for now)
 class WeaponSlot(private val weapon: Weapon, private val slotSkin: Skin, weaponIndex: Int, skin: Skin) : Table(skin) {
 
     private val numberLabel = Label(weaponIndex.toString(), skin)
