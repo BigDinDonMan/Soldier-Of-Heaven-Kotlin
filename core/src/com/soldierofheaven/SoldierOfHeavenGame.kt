@@ -51,6 +51,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         assetManager.load("gfx/bullet-basic.png", Texture::class.java)
         assetManager.load("gfx/crosshair.png", Texture::class.java)
         assetManager.load("gfx/shotgun-ammo.png", Texture::class.java)
+        assetManager.load("gfx/rifle-ammo.png", Texture::class.java)
         assetManager.load("sfx/pistol-shot.wav", Sound::class.java)
         assetManager.load("sfx/pistol-reload.wav", Sound::class.java)
         assetManager.load("sfx/rifle-shot.wav", Sound::class.java)
@@ -126,7 +127,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
                 assetManager.get("sfx/pistol-reload.wav")).apply { unlocked = true },
             Weapon("The Absolver", 30, 600, 2.5f, 6f,
                 0.1f, 800, assetManager.get(Resources.BASIC_BULLET),
-                assetManager.get(Resources.BASIC_BULLET),
+                assetManager.get("gfx/rifle-ammo.png"),
                 BulletData(baseBulletSpeed, 0f, null, null,
                     null, null, null, null, assetManager.get(Resources.BASIC_BULLET)),
                 assetManager.get("sfx/rifle-shot.wav"), assetManager.get("sfx/rifle-reload.wav")

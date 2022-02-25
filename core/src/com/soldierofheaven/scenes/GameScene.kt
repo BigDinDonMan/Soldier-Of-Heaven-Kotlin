@@ -82,8 +82,6 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private lateinit var ammoDisplay: AmmoDisplay
     private lateinit var weaponSlots: List<WeaponSlot>
 
-    private var tracker = StatisticsTracker()
-
     private var playerEntityId by Delegates.notNull<Int>()
 
     init {
@@ -372,7 +370,6 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         val weaponSystem = ecsWorld.getSystem(WeaponSystem::class.java)
         weaponSystem.weapons.forEach { it.reset() }
         weaponSystem.resetCurrentWeapon()
-        tracker = StatisticsTracker()
         val rigidbodyMapper = ecsWorld.getMapper(RigidBody::class.java)
         ecsWorld.removeAllEntities { id ->
             val body = rigidbodyMapper.get(id)
@@ -387,6 +384,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         reloadBar.playerPositionVector = ecsWorld.getEntity(playerEntityId).getComponent(Transform::class.java).position
         reloadBar.setEnabled(false)
         healthBar.updateDisplay(150)
+        StatisticsTracker.reset()
         SoundManager.stopAll()
         SoundManager.clearQueue()
     }

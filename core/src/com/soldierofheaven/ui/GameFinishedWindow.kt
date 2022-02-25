@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Window
 import com.soldierofheaven.stats.StatisticsTracker
 
-class GameFinishedWindow(private val statTrack: StatisticsTracker, skin: Skin) : Window("", skin) {
+class GameFinishedWindow(skin: Skin) : Window("", skin) {
     init {
         initUi()
     }

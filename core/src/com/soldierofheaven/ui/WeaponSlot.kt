@@ -13,7 +13,6 @@ import com.soldierofheaven.weapons.Weapon
 class WeaponSlot(private val weapon: Weapon, private val slotSkin: Skin, weaponIndex: Int, skin: Skin) : Table(skin) {
 
     private val numberLabel = Label(weaponIndex.toString(), skin)
-    private val weaponNameLabel = Label(weapon.name, skin)
     private val weaponIconImage = Image()
     var selected = false
         set(value) {
@@ -26,7 +25,6 @@ class WeaponSlot(private val weapon: Weapon, private val slotSkin: Skin, weaponI
         weaponIconImage.drawable = TextureRegionDrawable(weapon.weaponIcon)
         background = slotSkin.getDrawable("weapon-slot-idle")
         addActor(numberLabel)
-        addActor(weaponNameLabel)
         addActor(weaponIconImage)
     }
 
@@ -37,10 +35,9 @@ class WeaponSlot(private val weapon: Weapon, private val slotSkin: Skin, weaponI
 
     private fun changeChildrenPositions() {
         //this condition is needed because of inheritance from ImageButton; setSize is called inside the constructor
-        if (numberLabel == null || weaponNameLabel == null || weaponIconImage == null) return
+        if (numberLabel == null || weaponIconImage == null) return
         val paddingX = 5f
         numberLabel.setPosition(x + paddingX, y + height - numberLabel.height)
-        weaponNameLabel.setPosition(x + paddingX, y)
         weaponIconImage.setPosition(
             x + width / 2 - weapon.weaponIcon.width / 2,
             y + height / 2 - weapon.weaponIcon.height / 2
