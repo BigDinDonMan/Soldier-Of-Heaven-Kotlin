@@ -34,8 +34,6 @@ class WeaponSlot(private val weapon: Weapon, private val slotSkin: Skin, weaponI
     }
 
     private fun changeChildrenPositions() {
-        //this condition is needed because of inheritance from ImageButton; setSize is called inside the constructor
-        if (numberLabel == null || weaponIconImage == null) return
         val paddingX = 5f
         numberLabel.setPosition(x + paddingX, y + height - numberLabel.height)
         weaponIconImage.setPosition(

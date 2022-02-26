@@ -4,6 +4,7 @@ import com.artemis.WorldConfigurationBuilder
 import com.artemis.managers.WorldSerializationManager
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
+import com.badlogic.gdx.ai.GdxAI
 import com.badlogic.gdx.assets.AssetLoaderParameters
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.assets.loaders.ParticleEffectLoader
@@ -76,6 +77,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
             InputSystem(),
             AnimationSystem(),
             RenderSystem(),
+            AIControlSystem(),
             CameraPositioningSystem(camera),
             ParticleEffectSystem(),
             WeaponSystem(buildWeapons()),

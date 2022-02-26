@@ -1,8 +1,6 @@
 package com.soldierofheaven.scenes
 
 import com.artemis.BaseSystem
-import com.artemis.managers.WorldSerializationManager
-import com.artemis.prefab.Prefab
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputMultiplexer
@@ -10,23 +8,17 @@ import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.ParticleEffect
-import com.badlogic.gdx.graphics.g2d.ParticleEffectPool
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.physics.box2d.*
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
-import com.badlogic.gdx.utils.ObjectMap
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.soldierofheaven.*
 import com.soldierofheaven.ecs.PlayerInputHandler
 import com.soldierofheaven.ecs.components.*
 import com.soldierofheaven.ecs.components.Transform
-import com.soldierofheaven.ecs.components.enums.ExplosiveType
 import com.soldierofheaven.ecs.events.*
 import com.soldierofheaven.ecs.events.ui.WeaponChangedUiEvent
 import com.soldierofheaven.ecs.systems.*
@@ -35,9 +27,7 @@ import com.soldierofheaven.stats.StatisticsTracker
 import com.soldierofheaven.ui.*
 import com.soldierofheaven.util.*
 import com.soldierofheaven.util.`interface`.Resettable
-import net.mostlyoriginal.api.event.common.EventSystem
 import net.mostlyoriginal.api.event.common.Subscribe
-import kotlin.math.abs
 import kotlin.properties.Delegates
 import kotlin.random.Random
 
@@ -451,6 +441,32 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             }
             playerBodyShape.dispose()
         }).create(Health::class.java).apply { maxHealth = 50f }
+
+        val aiEnemyId = ecsWorld.create()
+        val aiEdit = ecsWorld.edit(aiEnemyId)
+        val aiTransform = aiEdit.create(Transform::class.java).apply {
+            position.set(-100f, -100f, 0f)
+            size.set(40f, 40f)
+        }
+        aiEdit.create(RigidBody::class.java).apply {
+            val playerBodyDef = BodyDef().apply {
+                gravityScale = 0f
+                linearDamping = 5f
+                type = BodyDef.BodyType.DynamicBody
+            }
+            val playerBodyShape = PolygonShape().apply { setAsBox(aiTransform.size.x / 2, aiTransform.size.y / 2) }
+            val playerBodyFixtureDef = FixtureDef().apply {
+                shape = playerBodyShape
+                friction = 2f
+            }
+            physicsBody = physicsWorld.createBody(playerBodyDef).apply {
+                createFixture(playerBodyFixtureDef)
+                userData = testEnemyId
+            }
+            playerBodyShape.dispose()
+        }
+        aiEdit.add(Tag().apply { value = Tags.ENEMY }).create(Enemy::class.java).apply {
+        }
     }
 
     private fun switchSystemsWorking(working: Boolean) {
