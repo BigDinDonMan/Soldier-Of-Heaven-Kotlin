@@ -15,6 +15,5 @@ class AIControlSystem : IteratingSystem() {
     override fun process(entityId: Int) {
         val enemy = enemyMapper!!.get(entityId)
         enemy.enemyStateMachine.update()
-        println(enemy.enemyStateMachine.currentState.name)
     }
 }

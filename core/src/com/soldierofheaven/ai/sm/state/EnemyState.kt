@@ -29,9 +29,13 @@ enum class EnemyState : StateAdapter<Enemy> {
                     if (dist < entity.runAwayDistance!!){
                         entity.enemyStateMachine.changeState(RUNNING_AWAY)
                     } else {
-                        rigidBody.physicsBody!!.applyImpulseToCenter(
-                            calculationVector.x * speed.value, calculationVector.y * speed.value, true
-                        )
+                        if (dist < entity.shotStopRange!!) {
+                            entity.enemyStateMachine.changeState(SHOOTING)
+                        } else {
+                            rigidBody.physicsBody!!.applyImpulseToCenter(
+                                calculationVector.x * speed.value, calculationVector.y * speed.value, true
+                            )
+                        }
                     }
                 } else {
                     if (dist < entity.shotStopRange!!) {
@@ -61,11 +65,7 @@ enum class EnemyState : StateAdapter<Enemy> {
             val dist = euclideanDistance(entity.playerPositionRef!!.x, entity.playerPositionRef!!.y,
                 rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y)
             if (dist > entity.runAwayDistance!!) {
-                if (dist <= entity.shotStopRange!!) {
-                    entity.enemyStateMachine.changeState(SHOOTING)
-                } else {
-                    entity.enemyStateMachine.changeState(CHASING)
-                }
+                entity.enemyStateMachine.changeState(if (dist <= entity.shotStopRange!!) SHOOTING else CHASING)
             } else {
                 rigidBody.physicsBody!!.applyImpulseToCenter(
                     calculationVector.x * speed.value, calculationVector.y * speed.value, true
@@ -88,9 +88,6 @@ enum class EnemyState : StateAdapter<Enemy> {
             else if (entity.runsAway && dist <= entity.runAwayDistance!!) {
                 entity.enemyStateMachine.changeState(RUNNING_AWAY)
             }
-//            } else if (dist < entity.shotStopRange!!) {
-//                entity.enemyStateMachine.changeState(RUNNING_AWAY)
-//            }
         }
     }
     ;
