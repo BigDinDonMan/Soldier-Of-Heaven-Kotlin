@@ -25,13 +25,22 @@ enum class EnemyState : StateAdapter<Enemy> {
             if (entity.isRanged) {
                 val dist = euclideanDistance(rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y,
                     entity.playerPositionRef!!.x, entity.playerPositionRef!!.y)
-                println(dist)
-                if (dist < entity.shotStopRange!!) {
-                    entity.enemyStateMachine.changeState(SHOOTING)
+                if (entity.runsAway) {
+                    if (dist < entity.runAwayDistance!!){
+                        entity.enemyStateMachine.changeState(RUNNING_AWAY)
+                    } else {
+                        rigidBody.physicsBody!!.applyImpulseToCenter(
+                            calculationVector.x * speed.value, calculationVector.y * speed.value, true
+                        )
+                    }
                 } else {
-                    rigidBody.physicsBody!!.applyImpulseToCenter(
-                        calculationVector.x * speed.value, calculationVector.y * speed.value, true
-                    )
+                    if (dist < entity.shotStopRange!!) {
+                        entity.enemyStateMachine.changeState(SHOOTING)
+                    } else {
+                        rigidBody.physicsBody!!.applyImpulseToCenter(
+                            calculationVector.x * speed.value, calculationVector.y * speed.value, true
+                        )
+                    }
                 }
             } else {
                 rigidBody.physicsBody!!.applyImpulseToCenter(
@@ -43,6 +52,7 @@ enum class EnemyState : StateAdapter<Enemy> {
     RUNNING_AWAY {
         override fun update(entity: Enemy) {
             val rigidBody = rigidBodyMapper.get(entity.ownerId)
+            val speed = speedMapper.get(entity.ownerId)
             if (rigidBody?.physicsBody == null) return
 
             calculationVector.set(rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y).
@@ -50,6 +60,17 @@ enum class EnemyState : StateAdapter<Enemy> {
                 nor()
             val dist = euclideanDistance(entity.playerPositionRef!!.x, entity.playerPositionRef!!.y,
                 rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y)
+            if (dist > entity.runAwayDistance!!) {
+                if (dist <= entity.shotStopRange!!) {
+                    entity.enemyStateMachine.changeState(SHOOTING)
+                } else {
+                    entity.enemyStateMachine.changeState(CHASING)
+                }
+            } else {
+                rigidBody.physicsBody!!.applyImpulseToCenter(
+                    calculationVector.x * speed.value, calculationVector.y * speed.value, true
+                )
+            }
         }
     },
     SHOOTING {
@@ -64,6 +85,9 @@ enum class EnemyState : StateAdapter<Enemy> {
                 rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y)
             if (dist > entity.shotStopRange!!) {
                 entity.enemyStateMachine.changeState(CHASING) }
+            else if (entity.runsAway && dist <= entity.runAwayDistance!!) {
+                entity.enemyStateMachine.changeState(RUNNING_AWAY)
+            }
 //            } else if (dist < entity.shotStopRange!!) {
 //                entity.enemyStateMachine.changeState(RUNNING_AWAY)
 //            }
