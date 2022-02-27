@@ -461,13 +461,14 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             }
             physicsBody = physicsWorld.createBody(playerBodyDef).apply {
                 createFixture(playerBodyFixtureDef)
-                userData = testEnemyId
+                userData = aiEnemyId
             }
             playerBodyShape.dispose()
         }
         aiEdit.add(Tag().apply { value = Tags.ENEMY }).create(Enemy::class.java).apply {
             ownerId = aiEnemyId
             playerPositionRef = ecsWorld.getEntity(playerEntityId).getComponent(RigidBody::class.java).physicsBody!!.position
+            shotStopRange = 240f
         }
         aiEdit.create(Speed::class.java).apply { value = 25f }
         aiEdit.create(Health::class.java).apply { maxHealth = 80f }

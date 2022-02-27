@@ -25,6 +25,7 @@ enum class EnemyState : StateAdapter<Enemy> {
             if (entity.isRanged) {
                 val dist = euclideanDistance(rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y,
                     entity.playerPositionRef!!.x, entity.playerPositionRef!!.y)
+                println(dist)
                 if (dist < entity.shotStopRange!!) {
                     entity.enemyStateMachine.changeState(SHOOTING)
                 } else {
@@ -47,6 +48,8 @@ enum class EnemyState : StateAdapter<Enemy> {
             calculationVector.set(rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y).
                 sub(entity.playerPositionRef!!.x, entity.playerPositionRef!!.y).
                 nor()
+            val dist = euclideanDistance(entity.playerPositionRef!!.x, entity.playerPositionRef!!.y,
+                rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y)
         }
     },
     SHOOTING {
@@ -57,6 +60,13 @@ enum class EnemyState : StateAdapter<Enemy> {
             calculationVector.set(rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y).
                 sub(entity.playerPositionRef!!.x, entity.playerPositionRef!!.y).
                 nor()
+            val dist = euclideanDistance(entity.playerPositionRef!!.x, entity.playerPositionRef!!.y,
+                rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y)
+            if (dist > entity.shotStopRange!!) {
+                entity.enemyStateMachine.changeState(CHASING) }
+//            } else if (dist < entity.shotStopRange!!) {
+//                entity.enemyStateMachine.changeState(RUNNING_AWAY)
+//            }
         }
     }
     ;
