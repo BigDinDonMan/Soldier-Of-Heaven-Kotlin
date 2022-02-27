@@ -466,7 +466,12 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             playerBodyShape.dispose()
         }
         aiEdit.add(Tag().apply { value = Tags.ENEMY }).create(Enemy::class.java).apply {
+            ownerId = aiEnemyId
+            playerPositionRef = ecsWorld.getEntity(playerEntityId).getComponent(RigidBody::class.java).physicsBody!!.position
         }
+        aiEdit.create(Speed::class.java).apply { value = 25f }
+        aiEdit.create(Health::class.java).apply { maxHealth = 80f }
+        aiEdit.create(Damage::class.java).apply { value = 10f }
     }
 
     private fun switchSystemsWorking(working: Boolean) {

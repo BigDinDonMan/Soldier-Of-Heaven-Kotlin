@@ -16,6 +16,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Box2D
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.soldierofheaven.ai.sm.state.EnemyState
 import com.soldierofheaven.ecs.components.Bullet
 import com.soldierofheaven.ecs.components.ParticleEffect
 import com.soldierofheaven.ecs.components.enums.ExplosiveType
@@ -33,6 +34,7 @@ import java.io.File
 //todo: maybe add skills? e.g. summoning an angel to help (like those circles with eyes)
 //todo: download and set up LibGDX physics editor (to reduce boilerplate)
 //todo: create skin files for game and main menu
+//todo: add an interval for damaging the player (e.g. player can only be damaged every 0.5 or 1 second)
 class SoldierOfHeavenGame : KtxGame<Screen>() {
     private lateinit var batch: SpriteBatch
     private lateinit var physicsWorld: PhysicsWorld
@@ -95,6 +97,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         ecsWorld = EcsWorld(ecsWorldConfig)
         physicsWorld.setContactListener(GameContactListener(ecsWorld))
 
+        EnemyState.init(ecsWorld)
         Physics.init(physicsWorld, ecsWorld)
 
         ParticlePools.registerEffect("Rocket trail", assetManager.get("gfx/particles/rocket-trail.p"), 5, 10)
@@ -117,6 +120,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
     }
 
     //this should be removed before final build
+    //todo: add a weapon with bullets tracking enemies or sth, idk
     private fun buildWeapons(): List<Weapon> {
         val baseBulletSpeed = 1000f
         return ArrayList(listOf(
