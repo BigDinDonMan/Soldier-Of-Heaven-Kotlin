@@ -3,12 +3,9 @@ package com.soldierofheaven.ecs.components
 import com.artemis.PooledComponent
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.math.Vector3
 import com.soldierofheaven.ai.sm.state.EnemyState
 import com.soldierofheaven.prototypes.Prefab
-import com.soldierofheaven.util.GameTimer
 
-//todo: add a bullet prefab if it is a ranged enemy
 //todo: seeking bullet (e.g. flaming skull chasing the player) could be made using an enemy that is destroyed on contact
 class Enemy : PooledComponent() {
 
@@ -28,6 +25,8 @@ class Enemy : PooledComponent() {
     var runAwayDistance: Float? = null // member that tells us at which distance from player the enemy should start running away; when missing, it wont run away
 
     val enemyStateMachine = DefaultStateMachine<Enemy, EnemyState>(this, EnemyState.CHASING)
+    var scoreOnKill = 0
+    var currencyOnKill = 0
 
     val isRanged: Boolean
         get() = shotStopRange != null
@@ -42,5 +41,7 @@ class Enemy : PooledComponent() {
         shotInterval = null
         runAwayDistance= null
         enemyStateMachine.changeState(EnemyState.CHASING)
+        scoreOnKill = 0
+        currencyOnKill = 0
     }
 }

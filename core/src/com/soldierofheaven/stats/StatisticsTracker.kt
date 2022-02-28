@@ -18,4 +18,6 @@ object StatisticsTracker : Resettable {
         score = 0
         enemiesKilled = 0
     }
+
+    //todo: add property changed callbacks and increment each field accordingly
 }

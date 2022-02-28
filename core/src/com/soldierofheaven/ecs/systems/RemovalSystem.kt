@@ -6,14 +6,17 @@ import com.artemis.annotations.Wire
 import com.artemis.systems.IteratingSystem
 import com.badlogic.gdx.graphics.g2d.ParticleEffectPool
 import com.soldierofheaven.ParticlePools
+import com.soldierofheaven.ecs.components.Enemy
 import com.soldierofheaven.ecs.components.LifeCycle
 import com.soldierofheaven.ecs.components.ParticleEffect
 import com.soldierofheaven.ecs.components.RigidBody
+import com.soldierofheaven.stats.StatisticsTracker
 import com.soldierofheaven.util.PhysicsWorld
 import java.util.*
 
 @All(LifeCycle::class)
 class RemovalSystem() : IteratingSystem() {
+
 
     @Wire(name = "physicsWorld")
     private var physicsWorld: PhysicsWorld? = null
@@ -26,6 +29,9 @@ class RemovalSystem() : IteratingSystem() {
 
     @Wire
     var particleEffectMapper: ComponentMapper<ParticleEffect>? = null
+
+    @Wire
+    var enemyMapper: ComponentMapper<Enemy>? = null
 
     private val removalQueue = LinkedList<Int>()
 
@@ -49,6 +55,13 @@ class RemovalSystem() : IteratingSystem() {
                 if (particleEffect.particleEffect!! is ParticleEffectPool.PooledEffect) {
                     ParticlePools.free(particleEffect.particleEffectName, particleEffect.particleEffect as ParticleEffectPool.PooledEffect)
                 }
+            }
+            val enemy = enemyMapper!!.get(id)
+            if (enemy != null) {
+                //this is fine for the moment
+                StatisticsTracker.score += enemy.scoreOnKill
+                StatisticsTracker.enemiesKilled++
+                StatisticsTracker.totalCurrency += enemy.currencyOnKill
             }
         } }
         removalQueue.clear()
