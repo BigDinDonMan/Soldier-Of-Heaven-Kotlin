@@ -4,4 +4,5 @@ object Tags {
     const val PLAYER = "Player"
     const val BULLET = "Bullet"
     const val ENEMY = "Enemy"
+    const val PICKUP = "Pickup"
 }

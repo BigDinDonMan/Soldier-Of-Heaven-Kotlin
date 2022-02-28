@@ -363,6 +363,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     @Subscribe
     private fun handleEnemyKilled(e: EnemyKilledEvent) {
         //todo: update currency here
+        //this is a sum because StatisticsTracker is updated after this listener runs
         scoreDisplay.update(StatisticsTracker.score + e.score)
     }
 

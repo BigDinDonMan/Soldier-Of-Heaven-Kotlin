@@ -24,8 +24,6 @@ class GameContactListener(private val ecsWorld: EcsWorld) : ContactListener {
         val entityBId = contact.fixtureB.body.userData as Int
         val tagA = tagMapper.get(entityAId)
         val tagB = tagMapper.get(entityBId)
-        println(tagA.value)
-        println(tagB.value)
         if (tagA.value == Tags.BULLET) {
             val bullet = bulletMapper[entityAId]
             val lifeCycle = lifeCycleMapper[entityAId]

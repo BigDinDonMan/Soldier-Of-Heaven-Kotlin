@@ -15,9 +15,6 @@ import java.util.*
 class ScoreDisplay(skin: Skin) : Actor(), Resettable {
     private val scoreLabel = Label("Score: 0", skin)
 
-    init {
-    }
-
     override fun act(delta: Float) {
         super.act(delta)
         scoreLabel.act(delta)
@@ -43,13 +40,9 @@ class ScoreDisplay(skin: Skin) : Actor(), Resettable {
         scoreLabel.setText("Score: 0")
     }
 
-    override fun getWidth(): Float {
-        return scoreLabel.width
-    }
+    override fun getWidth() = scoreLabel.width
 
-    override fun getHeight(): Float {
-        return scoreLabel.height
-    }
+    override fun getHeight() = scoreLabel.height
 
     override fun setHeight(height: Float) {
         scoreLabel.height = height
@@ -64,11 +57,7 @@ class ScoreDisplay(skin: Skin) : Actor(), Resettable {
         setHeight(height)
     }
 
-    override fun getX(): Float {
-        return scoreLabel.x
-    }
+    override fun getX() = scoreLabel.x
 
-    override fun getY(): Float {
-        return scoreLabel.y
-    }
+    override fun getY() = scoreLabel.y
 }
