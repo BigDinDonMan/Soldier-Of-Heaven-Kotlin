@@ -23,6 +23,7 @@ import com.soldierofheaven.ecs.events.*
 import com.soldierofheaven.ecs.events.ui.WeaponChangedUiEvent
 import com.soldierofheaven.ecs.systems.*
 import com.soldierofheaven.events.PauseEvent
+import com.soldierofheaven.prototypes.enemies.ImpPrefab
 import com.soldierofheaven.stats.StatisticsTracker
 import com.soldierofheaven.ui.*
 import com.soldierofheaven.util.*
@@ -470,6 +471,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             playerPositionRef = ecsWorld.getEntity(playerEntityId).getComponent(RigidBody::class.java).physicsBody!!.position
             shotStopRange = 240f
             runAwayDistance = 150f
+            shotInterval = 0.5f
         }
         aiEdit.create(Speed::class.java).apply { value = 25f }
         aiEdit.create(Health::class.java).apply { maxHealth = 80f }

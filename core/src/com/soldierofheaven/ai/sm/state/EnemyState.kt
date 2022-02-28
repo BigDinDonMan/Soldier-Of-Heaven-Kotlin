@@ -1,17 +1,16 @@
 package com.soldierofheaven.ai.sm.state
 
 import com.artemis.ComponentMapper
-import com.badlogic.gdx.ai.fsm.State
-import com.badlogic.gdx.ai.msg.Telegram
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
 import com.soldierofheaven.ecs.components.Enemy
 import com.soldierofheaven.ecs.components.RigidBody
 import com.soldierofheaven.ecs.components.Speed
-import com.soldierofheaven.ecs.components.Transform
 import com.soldierofheaven.util.EcsWorld
 import com.soldierofheaven.util.applyImpulseToCenter
 import com.soldierofheaven.util.math.euclideanDistance
 
+//ugh this stinks but hey it works so
 enum class EnemyState : StateAdapter<Enemy> {
     CHASING {
         override fun update(entity: Enemy) {
@@ -55,6 +54,7 @@ enum class EnemyState : StateAdapter<Enemy> {
     },
     RUNNING_AWAY {
         override fun update(entity: Enemy) {
+            entity.shotTimer?.update(Gdx.graphics.deltaTime)
             val rigidBody = rigidBodyMapper.get(entity.ownerId)
             val speed = speedMapper.get(entity.ownerId)
             if (rigidBody?.physicsBody == null) return
@@ -93,10 +93,10 @@ enum class EnemyState : StateAdapter<Enemy> {
     ;
 
     companion object {
-        lateinit var ecsWorld: EcsWorld
-        lateinit var rigidBodyMapper: ComponentMapper<RigidBody>
-        lateinit var speedMapper: ComponentMapper<Speed>
-        val calculationVector = Vector2()
+        private lateinit var ecsWorld: EcsWorld
+        private lateinit var rigidBodyMapper: ComponentMapper<RigidBody>
+        private lateinit var speedMapper: ComponentMapper<Speed>
+        private val calculationVector = Vector2()
 
         fun init(ecsWorld: EcsWorld) {
             this.ecsWorld = ecsWorld
