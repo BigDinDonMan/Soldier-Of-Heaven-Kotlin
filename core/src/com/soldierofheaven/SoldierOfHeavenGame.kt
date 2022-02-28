@@ -23,6 +23,7 @@ import com.soldierofheaven.ecs.components.enums.ExplosiveType
 import com.soldierofheaven.ecs.systems.*
 import com.soldierofheaven.scenes.GameScene
 import com.soldierofheaven.scenes.MenuScene
+import com.soldierofheaven.stats.StatisticsTracker
 import com.soldierofheaven.util.*
 import com.soldierofheaven.util.serialization.WeaponJsonConverter
 import com.soldierofheaven.weapons.BulletData
@@ -107,6 +108,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         addScreen(GameScene(this, ecsWorld, physicsWorld))
 
         screens.forEach { EventQueue.register(it.value) }
+        EventQueue.register(StatisticsTracker)
 
         setScreen<MenuScene>()
     }

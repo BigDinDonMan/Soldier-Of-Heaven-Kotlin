@@ -1,10 +1,13 @@
 package com.soldierofheaven.ui
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.soldierofheaven.util.`interface`.Resettable
+import com.soldierofheaven.util.heightF
+import com.soldierofheaven.util.widthF
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.*
@@ -18,6 +21,7 @@ class ScoreDisplay(skin: Skin) : Actor(), Resettable {
     override fun act(delta: Float) {
         super.act(delta)
         scoreLabel.act(delta)
+        setPosition(Gdx.graphics.widthF() - scoreLabel.width, Gdx.graphics.heightF()- scoreLabel.height)
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
@@ -32,6 +36,7 @@ class ScoreDisplay(skin: Skin) : Actor(), Resettable {
 
     fun update(score: Int) {
         scoreLabel.setText("Score: ${String.format("%,d", score)}")
+        scoreLabel.pack()
     }
 
     override fun reset() {

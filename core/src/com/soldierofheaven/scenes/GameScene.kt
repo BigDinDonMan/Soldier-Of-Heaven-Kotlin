@@ -73,10 +73,13 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private lateinit var reloadBar: ReloadBar
     private lateinit var ammoDisplay: AmmoDisplay
     private lateinit var weaponSlots: List<WeaponSlot>
+    private lateinit var scoreDisplay: ScoreDisplay
 
     private var playerEntityId by Delegates.notNull<Int>()
 
     private val fireballPrefab = FireballPrefab(ecsWorld, physicsWorld, game.assetManager)
+
+    private val healthMapper = ecsWorld.getMapper(Health::class.java)
 
     init {
         setupScene(setupUi = true)
@@ -189,7 +192,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         })
         exitToMenuDialog = dialog
         stage.addActors(exitToMenuDialog, pauseDialog)
-        val scoreDisplay = ScoreDisplay(defaultSkin)
+        scoreDisplay = ScoreDisplay(defaultSkin)
         scoreDisplay.setPosition(Gdx.graphics.widthF() - scoreDisplay.width, Gdx.graphics.heightF() - scoreDisplay.height)
         stage.addActor(scoreDisplay)
     }
@@ -357,6 +360,18 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         paused = !paused
     }
 
+    @Subscribe
+    private fun handleEnemyKilled(e: EnemyKilledEvent) {
+        //todo: update currency here
+        scoreDisplay.update(StatisticsTracker.score + e.score)
+    }
+
+    @Subscribe
+    private fun handlePlayerDamageEvent(e: DamageEvent) {
+        if (e.entityId == playerEntityId) {
+            healthBar.updateDisplay(healthMapper.get(e.entityId).health.toInt())
+        }
+    }
     //</editor-fold>
 
     override fun reset() {
@@ -390,7 +405,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         val playerWidth = 48f
         val playerHeight = 48f
         val editor = ecsWorld.edit(playerEntityId)
-        editor.add(Player()).create(Tag::class.java).apply {  }
+        editor.add(Player()).create(Tag::class.java).apply { value = Tags.PLAYER }
         editor.add(RigidBody().apply {
             val playerBodyDef = BodyDef().apply {
                 gravityScale = 0f
@@ -479,6 +494,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             runAwayDistance = 150f
             shotInterval = 0.5f
             bulletPrefab = fireballPrefab
+            currencyOnKill = 25
+            scoreOnKill = 100
         }
         aiEdit.create(Speed::class.java).apply { value = 25f }
         aiEdit.create(Health::class.java).apply { maxHealth = 80f }

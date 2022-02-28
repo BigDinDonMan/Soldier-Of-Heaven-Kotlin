@@ -1,6 +1,10 @@
 package com.soldierofheaven.stats
 
+import com.soldierofheaven.ecs.events.DamageEvent
+import com.soldierofheaven.ecs.events.EnemyKilledEvent
+import com.soldierofheaven.ecs.events.ShotEvent
 import com.soldierofheaven.util.`interface`.Resettable
+import net.mostlyoriginal.api.event.common.Subscribe
 
 //this class should be a container for player statistics and should contain event listeners (and be registered at the start)
 object StatisticsTracker : Resettable {
@@ -19,5 +23,15 @@ object StatisticsTracker : Resettable {
         enemiesKilled = 0
     }
 
-    //todo: add property changed callbacks and increment each field accordingly
+    @Subscribe
+    private fun handleEnemyKilled(e: EnemyKilledEvent) {
+        enemiesKilled++
+        totalCurrency += e.currency
+        score += e.score
+    }
+
+    @Subscribe
+    private fun handleShotEvent(e: ShotEvent) {
+        shotsFired++
+    }
 }

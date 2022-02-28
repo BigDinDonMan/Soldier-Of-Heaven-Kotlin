@@ -5,11 +5,13 @@ import com.artemis.annotations.All
 import com.artemis.annotations.Wire
 import com.artemis.systems.IteratingSystem
 import com.badlogic.gdx.graphics.g2d.ParticleEffectPool
+import com.soldierofheaven.EventQueue
 import com.soldierofheaven.ParticlePools
 import com.soldierofheaven.ecs.components.Enemy
 import com.soldierofheaven.ecs.components.LifeCycle
 import com.soldierofheaven.ecs.components.ParticleEffect
 import com.soldierofheaven.ecs.components.RigidBody
+import com.soldierofheaven.ecs.events.EnemyKilledEvent
 import com.soldierofheaven.stats.StatisticsTracker
 import com.soldierofheaven.util.PhysicsWorld
 import java.util.*
@@ -58,10 +60,7 @@ class RemovalSystem() : IteratingSystem() {
             }
             val enemy = enemyMapper!!.get(id)
             if (enemy != null) {
-                //this is fine for the moment
-                StatisticsTracker.score += enemy.scoreOnKill
-                StatisticsTracker.enemiesKilled++
-                StatisticsTracker.totalCurrency += enemy.currencyOnKill
+                EventQueue.dispatch(EnemyKilledEvent(enemy.scoreOnKill, enemy.currencyOnKill))
             }
         } }
         removalQueue.clear()
