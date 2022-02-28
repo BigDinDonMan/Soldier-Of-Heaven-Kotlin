@@ -74,6 +74,15 @@ class BulletSystem : IteratingSystem() {
                         true
                     )
                 }
+                ExplosiveType.GENERIC -> {
+                    rigidBody.physicsBody!!.applyLinearImpulse(
+                        bullet.moveDirection.x * speed.value,
+                        bullet.moveDirection.y * speed.value,
+                        rigidBody.physicsBody!!.position.x,
+                        rigidBody.physicsBody!!.position.y,
+                        true
+                    )
+                }
             }
         } else {
             rigidBody.physicsBody!!.setLinearVelocity(

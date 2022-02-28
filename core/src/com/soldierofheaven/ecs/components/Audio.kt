@@ -1,11 +1,9 @@
 package com.soldierofheaven.ecs.components
 
-import com.artemis.Component
 import com.artemis.PooledComponent
 
-class Tag : PooledComponent() {
-    var value = ""
+class Audio : PooledComponent() {
     override fun reset() {
-        value = ""
+
     }
 }

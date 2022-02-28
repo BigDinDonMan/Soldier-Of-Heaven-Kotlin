@@ -3,6 +3,7 @@ package com.soldierofheaven.ai.sm.state
 import com.artemis.ComponentMapper
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
+import com.soldierofheaven.ecs.components.Bullet
 import com.soldierofheaven.ecs.components.Enemy
 import com.soldierofheaven.ecs.components.RigidBody
 import com.soldierofheaven.ecs.components.Speed
@@ -54,7 +55,6 @@ enum class EnemyState : StateAdapter<Enemy> {
     },
     RUNNING_AWAY {
         override fun update(entity: Enemy) {
-            entity.shotTimer?.update(Gdx.graphics.deltaTime)
             val rigidBody = rigidBodyMapper.get(entity.ownerId)
             val speed = speedMapper.get(entity.ownerId)
             if (rigidBody?.physicsBody == null) return
@@ -78,9 +78,16 @@ enum class EnemyState : StateAdapter<Enemy> {
             val rigidBody = rigidBodyMapper.get(entity.ownerId)
             if (rigidBody?.physicsBody == null) return
 
-            calculationVector.set(rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y).
-                sub(entity.playerPositionRef!!.x, entity.playerPositionRef!!.y).
+            calculationVector.set(entity.playerPositionRef!!.x, entity.playerPositionRef!!.y).
+                sub(rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y).
                 nor()
+            if (entity.currentShotTimer > 0f) {
+                entity.currentShotTimer -= Gdx.graphics.deltaTime
+            } else {
+                entity.currentShotTimer = entity.shotInterval!!
+                val id = entity.bulletPrefab?.instantiate(rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y) ?: -1
+                ecsWorld.getEntity(id).getComponent(Bullet::class.java).apply { moveDirection.set(calculationVector) }
+            }
             val dist = euclideanDistance(entity.playerPositionRef!!.x, entity.playerPositionRef!!.y,
                 rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y)
             if (dist > entity.shotStopRange!!) {

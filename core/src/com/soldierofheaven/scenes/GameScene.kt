@@ -23,6 +23,7 @@ import com.soldierofheaven.ecs.events.*
 import com.soldierofheaven.ecs.events.ui.WeaponChangedUiEvent
 import com.soldierofheaven.ecs.systems.*
 import com.soldierofheaven.events.PauseEvent
+import com.soldierofheaven.prototypes.bullets.FireballPrefab
 import com.soldierofheaven.prototypes.enemies.ImpPrefab
 import com.soldierofheaven.stats.StatisticsTracker
 import com.soldierofheaven.ui.*
@@ -74,6 +75,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private lateinit var weaponSlots: List<WeaponSlot>
 
     private var playerEntityId by Delegates.notNull<Int>()
+
+    private val fireballPrefab = FireballPrefab(ecsWorld, physicsWorld, game.assetManager)
 
     init {
         setupScene(setupUi = true)
@@ -204,9 +207,9 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
                 ecsWorld.getSystem(RenderSystem::class.java).spriteBatch!!.projectionMatrix
             )
 
-            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-                EventQueue.dispatch(ExplosionEvent(150f , 150f, 0f, 100f, 500f))
-            }
+//            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+//                EventQueue.dispatch(ExplosionEvent(150f , 150f, 0f, 100f, 500f))
+//            }
         }
 
         stage.update()
@@ -301,7 +304,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             editor.create(Speed::class.java).apply {
                 value = e.weapon.bulletData.speed
             }
-            editor.add(Tag().apply { value = Tags.BULLET })
+            editor.create(Tag::class.java).apply { value = Tags.BULLET }
         }
     }
 
@@ -387,7 +390,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         val playerWidth = 48f
         val playerHeight = 48f
         val editor = ecsWorld.edit(playerEntityId)
-        editor.add(Player()).add(Tag().apply { value = Tags.PLAYER }).add(RigidBody().apply {
+        editor.add(Player()).create(Tag::class.java).apply {  }
+        editor.add(RigidBody().apply {
             val playerBodyDef = BodyDef().apply {
                 gravityScale = 0f
                 linearDamping = 5f
@@ -425,7 +429,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             position.set(100f, 100f, 0f)
             size.set(texture.texture!!.width.toFloat(), texture.texture!!.height.toFloat())
         }
-        edit.add(Tag().apply { value = Tags.ENEMY }).add(RigidBody().apply {
+        edit.create(Tag::class.java).apply { value = Tags.ENEMY }
+        edit.add(RigidBody().apply {
             val playerBodyDef = BodyDef().apply {
                 gravityScale = 0f
                 linearDamping = 5f
@@ -466,12 +471,14 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             }
             playerBodyShape.dispose()
         }
-        aiEdit.add(Tag().apply { value = Tags.ENEMY }).create(Enemy::class.java).apply {
+        aiEdit.create(Tag::class.java).apply { value = Tags.ENEMY }
+        aiEdit.create(Enemy::class.java).apply {
             ownerId = aiEnemyId
             playerPositionRef = ecsWorld.getEntity(playerEntityId).getComponent(RigidBody::class.java).physicsBody!!.position
             shotStopRange = 240f
             runAwayDistance = 150f
             shotInterval = 0.5f
+            bulletPrefab = fireballPrefab
         }
         aiEdit.create(Speed::class.java).apply { value = 25f }
         aiEdit.create(Health::class.java).apply { maxHealth = 80f }

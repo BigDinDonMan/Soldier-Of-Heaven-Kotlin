@@ -13,7 +13,7 @@ class ImpPrefab(ecsWorld: EcsWorld,physicsWorld: PhysicsWorld, assetManager: Ass
 
     override fun instantiate(): Int {
         val id = ecsWorld.create()
-        val edit =ecsWorld.edit(id)
+        val edit = ecsWorld.edit(id)
         return id
     }
 

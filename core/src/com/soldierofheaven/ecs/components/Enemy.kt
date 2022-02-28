@@ -20,17 +20,14 @@ class Enemy : PooledComponent() {
     var shotInterval: Float? = null
         set(value) {
             field = value
-            if (value != null) {
-                shotTimer = GameTimer(value, true) {
-                    bulletPrefab?.instantiate()
-                }
+            if (field != null) {
+                currentShotTimer = field!!
             }
         }
+    var currentShotTimer: Float = 0f
     var runAwayDistance: Float? = null // member that tells us at which distance from player the enemy should start running away; when missing, it wont run away
 
     val enemyStateMachine = DefaultStateMachine<Enemy, EnemyState>(this, EnemyState.CHASING)
-
-    var shotTimer: GameTimer? = null
 
     val isRanged: Boolean
         get() = shotStopRange != null
