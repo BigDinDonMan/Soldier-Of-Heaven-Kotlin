@@ -8,6 +8,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.Align
+import java.text.DecimalFormat
+import java.text.NumberFormat
+import java.util.*
 
 class CurrencyDisplay(private val icon: Texture, skin: Skin) : HorizontalGroup() {
     private val currencyImage = Image(icon)
@@ -44,9 +47,11 @@ class CurrencyDisplay(private val icon: Texture, skin: Skin) : HorizontalGroup()
     }
 
     fun update(currency: Int) {
-        //todo: format this int with thousands separator
-        //todo: move label to the left on update
-        currencyLabel.setText(currency)
+        val formatter = NumberFormat.getInstance(Locale.US) as DecimalFormat
+        val symbols = formatter.decimalFormatSymbols
+        symbols.groupingSeparator = ',';
+        formatter.decimalFormatSymbols = symbols
+        currencyLabel.setText(formatter.format(currency))
         invalidateCurrency()
     }
 

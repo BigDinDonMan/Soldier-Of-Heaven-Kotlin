@@ -2,6 +2,7 @@ package com.soldierofheaven.scenes
 
 import com.artemis.BaseSystem
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.audio.Sound
@@ -220,6 +221,9 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 //            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
 //                EventQueue.dispatch(ExplosionEvent(150f , 150f, 0f, 100f, 500f))
 //            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
+                EventQueue.dispatch(EnemyKilledEvent(40, 250))
+            }
         }
 
         stage.update()
