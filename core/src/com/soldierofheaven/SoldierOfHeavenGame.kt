@@ -30,6 +30,7 @@ import com.soldierofheaven.weapons.BulletData
 import com.soldierofheaven.weapons.Weapon
 import ktx.app.KtxGame
 import java.io.File
+import kotlin.random.Random
 
 //todo: monitor performance of the game with the current amount of event dispatching; if it suffers, implement pooling or switch to callbacks
 //todo: maybe add skills? e.g. summoning an angel to help (like those circles with eyes)
@@ -56,6 +57,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         assetManager.load("gfx/crosshair.png", Texture::class.java)
         assetManager.load("gfx/shotgun-ammo.png", Texture::class.java)
         assetManager.load("gfx/rifle-ammo.png", Texture::class.java)
+        assetManager.load("gfx/angelic-coin.png", Texture::class.java)
         assetManager.load("sfx/pistol-shot.wav", Sound::class.java)
         assetManager.load("sfx/pistol-reload.wav", Sound::class.java)
         assetManager.load("sfx/rifle-shot.wav", Sound::class.java)

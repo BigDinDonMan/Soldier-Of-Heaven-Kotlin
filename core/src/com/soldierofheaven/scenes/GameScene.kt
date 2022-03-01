@@ -2,14 +2,16 @@ package com.soldierofheaven.scenes
 
 import com.artemis.BaseSystem
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector3
-import com.badlogic.gdx.physics.box2d.*
+import com.badlogic.gdx.physics.box2d.BodyDef
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
+import com.badlogic.gdx.physics.box2d.FixtureDef
+import com.badlogic.gdx.physics.box2d.PolygonShape
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -18,13 +20,14 @@ import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.soldierofheaven.*
 import com.soldierofheaven.ecs.PlayerInputHandler
 import com.soldierofheaven.ecs.components.*
-import com.soldierofheaven.ecs.components.Transform
 import com.soldierofheaven.ecs.events.*
 import com.soldierofheaven.ecs.events.ui.WeaponChangedUiEvent
-import com.soldierofheaven.ecs.systems.*
+import com.soldierofheaven.ecs.systems.AnimationSystem
+import com.soldierofheaven.ecs.systems.CameraPositioningSystem
+import com.soldierofheaven.ecs.systems.RenderSystem
+import com.soldierofheaven.ecs.systems.WeaponSystem
 import com.soldierofheaven.events.PauseEvent
 import com.soldierofheaven.prototypes.bullets.FireballPrefab
-import com.soldierofheaven.prototypes.enemies.ImpPrefab
 import com.soldierofheaven.stats.StatisticsTracker
 import com.soldierofheaven.ui.*
 import com.soldierofheaven.util.*
@@ -74,6 +77,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private lateinit var ammoDisplay: AmmoDisplay
     private lateinit var weaponSlots: List<WeaponSlot>
     private lateinit var scoreDisplay: ScoreDisplay
+    private lateinit var currencyDisplay: CurrencyDisplay
 
     private var playerEntityId by Delegates.notNull<Int>()
 
@@ -194,6 +198,9 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         stage.addActors(exitToMenuDialog, pauseDialog)
         scoreDisplay = ScoreDisplay(defaultSkin)
         scoreDisplay.setPosition(Gdx.graphics.widthF() - scoreDisplay.width, Gdx.graphics.heightF() - scoreDisplay.height)
+        currencyDisplay = CurrencyDisplay(game.assetManager.get("gfx/angelic-coin.png"), /*48f, 48f,*/ defaultSkin)
+        currencyDisplay.setPosition(Gdx.graphics.widthF() - currencyDisplay.width, Gdx.graphics.heightF() - currencyDisplay.height - scoreDisplay.height)
+        stage.addActor(currencyDisplay)
         stage.addActor(scoreDisplay)
     }
 
@@ -284,8 +291,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
                     moveDirection.set(e.directionX, e.directionY)
                 } else {
                     moveDirection.set(
-                        (e.directionX + Random.nextDouble((-e.weapon.bulletSpread).toDouble(), e.weapon.bulletSpread.toDouble())).toFloat(),
-                        (e.directionY + Random.nextDouble((-e.weapon.bulletSpread).toDouble(), e.weapon.bulletSpread.toDouble())).toFloat()
+                        (e.directionX + Random.nextFloat(-e.weapon.bulletSpread, e.weapon.bulletSpread)),
+                        (e.directionY + Random.nextFloat(-e.weapon.bulletSpread, e.weapon.bulletSpread))
                     )
                 }
                 explosionTimer = e.weapon.bulletData.explosionTimer
@@ -362,15 +369,15 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
     @Subscribe
     private fun handleEnemyKilled(e: EnemyKilledEvent) {
-        //todo: update currency here
         //this is a sum because StatisticsTracker is updated after this listener runs
         scoreDisplay.update(StatisticsTracker.score + e.score)
+        currencyDisplay.update(StatisticsTracker.currency + e.currency)
     }
 
     @Subscribe
     private fun handlePlayerDamageEvent(e: DamageEvent) {
         if (e.entityId == playerEntityId) {
-            healthBar.updateDisplay(healthMapper.get(e.entityId).health.toInt())
+            healthBar.updateDisplay((healthMapper.get(e.entityId).health - e.damage).toInt())
         }
     }
     //</editor-fold>

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.math.Vector3
 import com.soldierofheaven.ecs.components.Transform
 import com.soldierofheaven.ecs.events.CameraShakeEvent
+import com.soldierofheaven.util.nextFloat
 import net.mostlyoriginal.api.event.common.Subscribe
 import kotlin.random.Random
 
@@ -60,8 +61,8 @@ class CameraPositioningSystem(private val gameCamera: Camera) : BaseSystem() {
 
         if (shaking) {
             actualPosition.add(
-                Random.nextDouble(-shakeMagnitude.toDouble(), shakeMagnitude.toDouble()).toFloat(),
-                Random.nextDouble(-shakeMagnitude.toDouble(), shakeMagnitude.toDouble()).toFloat(),
+                Random.nextFloat(-shakeMagnitude, shakeMagnitude),
+                Random.nextFloat(-shakeMagnitude, shakeMagnitude),
                 0f
             )
         }

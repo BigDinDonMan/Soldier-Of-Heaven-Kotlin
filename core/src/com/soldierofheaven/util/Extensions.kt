@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import kotlin.math.abs
+import kotlin.random.Random
 
 fun Graphics.widthF() = Gdx.graphics.width.toFloat()
 fun Graphics.heightF() = Gdx.graphics.height.toFloat()
@@ -30,4 +31,8 @@ fun EcsWorld.removeAllEntities(removalCallback: (Int) -> Unit = {_ ->}) {
 
 fun Body.applyImpulseToCenter(impulseX: Float, impulseY: Float, wake: Boolean) {
     this.applyLinearImpulse(impulseX, impulseY, this.position.x, this.position.y, wake)
+}
+
+fun Random.nextFloat(from: Float, until: Float): Float {
+    return from + this.nextFloat() * (until - from)
 }
