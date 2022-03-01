@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.soldierofheaven.util.`interface`.Resettable
+import com.soldierofheaven.util.formatWithThousandsSeparator
 import com.soldierofheaven.util.heightF
 import com.soldierofheaven.util.widthF
 import java.text.DecimalFormat
@@ -32,7 +33,7 @@ class ScoreDisplay(skin: Skin) : Actor(), Resettable {
     }
 
     fun update(score: Int) {
-        scoreLabel.setText("Score: ${String.format("%,d", score)}")
+        scoreLabel.setText("Score: ${formatWithThousandsSeparator(score)}")
         scoreLabel.pack()
     }
 

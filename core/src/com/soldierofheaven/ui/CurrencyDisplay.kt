@@ -2,19 +2,16 @@ package com.soldierofheaven.ui
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
-import com.badlogic.gdx.utils.Align
-import java.text.DecimalFormat
-import java.text.NumberFormat
-import java.util.*
+import com.soldierofheaven.util.`interface`.Resettable
+import com.soldierofheaven.util.formatWithThousandsSeparator
 
-class CurrencyDisplay(private val icon: Texture, skin: Skin) : HorizontalGroup() {
+class CurrencyDisplay(private val icon: Texture, skin: Skin) : HorizontalGroup(), Resettable {
     private val currencyImage = Image(icon)
-    private val currencyLabel = Label("0", skin)
+    private val currencyLabel = Label("0$", skin)
 
     init {
         currencyImage.pack()
@@ -47,11 +44,7 @@ class CurrencyDisplay(private val icon: Texture, skin: Skin) : HorizontalGroup()
     }
 
     fun update(currency: Int) {
-        val formatter = NumberFormat.getInstance(Locale.US) as DecimalFormat
-        val symbols = formatter.decimalFormatSymbols
-        symbols.groupingSeparator = ',';
-        formatter.decimalFormatSymbols = symbols
-        currencyLabel.setText(formatter.format(currency))
+        currencyLabel.setText("${formatWithThousandsSeparator(currency)}$")
         invalidateCurrency()
     }
 
@@ -67,5 +60,10 @@ class CurrencyDisplay(private val icon: Texture, skin: Skin) : HorizontalGroup()
         currencyLabel.pack()
         val labelX = currencyImage.x - currencyLabel.width - 5f
         currencyLabel.x = labelX
+    }
+
+    override fun reset() {
+        currencyLabel.setText("0$")
+        invalidateCurrency()
     }
 }
