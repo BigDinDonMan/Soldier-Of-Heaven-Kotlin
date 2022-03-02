@@ -86,6 +86,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private val fireballPrefab = FireballPrefab(ecsWorld, physicsWorld, game.assetManager)
 
     private val healthMapper = ecsWorld.getMapper(Health::class.java)
+    private val fpsCounter = Label("60", defaultSkin).apply { isVisible = false }
 
     init {
         setupScene(setupUi = true)
@@ -202,8 +203,10 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         scoreDisplay.setPosition(Gdx.graphics.widthF() - scoreDisplay.width, Gdx.graphics.heightF() - scoreDisplay.height)
         currencyDisplay = CurrencyDisplay(game.assetManager.get("gfx/angelic-coin.png"), /*48f, 48f,*/ defaultSkin)
         currencyDisplay.setPosition(Gdx.graphics.widthF() - currencyDisplay.width, Gdx.graphics.heightF() - currencyDisplay.height - scoreDisplay.height)
+        fpsCounter.setPosition(Gdx.graphics.widthF() - fpsCounter.width - 5f, 0f)
         stage.addActor(currencyDisplay)
         stage.addActor(scoreDisplay)
+        stage.addActor(fpsCounter)
     }
 
     override fun show() {
@@ -212,6 +215,12 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
     override fun render(delta: Float) {
         ecsWorld.update(delta)
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
+            fpsCounter.isVisible = !fpsCounter.isVisible
+        }
+
+        updateFPS()
 
         if (debug) {
             debugRenderer.render(
@@ -228,6 +237,12 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         }
 
         stage.update()
+    }
+
+    private fun updateFPS() {
+        if (fpsCounter.isVisible) {
+            fpsCounter.setText(Gdx.graphics.framesPerSecond)
+        }
     }
 
     override fun resize(width: Int, height: Int) = viewport.update(width, height)

@@ -9,8 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import kotlin.math.abs
 import kotlin.random.Random
 
-fun Graphics.widthF() = Gdx.graphics.width.toFloat()
-fun Graphics.heightF() = Gdx.graphics.height.toFloat()
+fun Graphics.widthF() = this.width.toFloat()
+fun Graphics.heightF() = this.height.toFloat()
 
 fun Double.isCloseTo(_val: Double, eps: Double = 0.0001) = abs(this - _val) <= eps
 fun Float.isCloseTo(_val: Float, eps: Float = 0.0001f) = abs(this - _val) <= eps
