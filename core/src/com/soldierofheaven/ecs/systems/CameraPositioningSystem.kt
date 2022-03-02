@@ -45,7 +45,7 @@ class CameraPositioningSystem(private val gameCamera: Camera) : BaseSystem() {
             shakeCountDown -= world.delta
         } else shaking = false
 
-        val transform = transformMapper!!.get(playerEntityId)
+        val transform = transformMapper!!.get(playerEntityId) ?: return
 
         val z = gameCamera.position.z
         val mx = Gdx.input.x.toFloat()

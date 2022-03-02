@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.soldierofheaven.*
 import com.soldierofheaven.ecs.PlayerInputHandler
 import com.soldierofheaven.ecs.components.*
+import com.soldierofheaven.ecs.components.enums.PickUpType
 import com.soldierofheaven.ecs.events.*
 import com.soldierofheaven.ecs.events.ui.WeaponChangedUiEvent
 import com.soldierofheaven.ecs.systems.AnimationSystem
@@ -381,8 +382,37 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     @Subscribe
     private fun handlePlayerDamageEvent(e: DamageEvent) {
         if (e.entityId == playerEntityId) {
-            healthBar.updateDisplay((healthMapper.get(e.entityId).health - e.damage).toInt())
+            val playerHealth = healthMapper.get(e.entityId)
+            healthBar.updateDisplay((playerHealth.health - e.damage).toInt())
+            if (playerHealth.health - e.damage <= 0f) {
+                EventQueue.dispatch(PlayerDeathEvent())
+            }
+            //todo: show damage popup label
         }
+    }
+
+    @Subscribe
+    private fun handlePickUp(e: PickUpEvent) {
+        when (e.pickUp.pickUpType) {
+            PickUpType.HEALTH -> {
+                //todo: add player health & update player health bar
+            }
+            PickUpType.AMMO -> {
+                //find weapon and add ammo value
+                //if selected weapon is the same as picked up ammo then also update ui
+            }
+            PickUpType.EXPLOSIVES -> {
+
+            }
+        }
+    }
+
+    @Subscribe
+    private fun handlePlayerDeath(_e: PlayerDeathEvent) {
+        //todo: stop all pausable systems, show game over dialog with stats and stop all sounds
+        //while waiting for final implementation, just reset this screen and switch game screen
+        game.setScreen<MenuScene>()
+        //todo: call reset after the whole simulation (maybe add a post-simulation callback?)
     }
     //</editor-fold>
 

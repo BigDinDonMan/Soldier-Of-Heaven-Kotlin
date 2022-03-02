@@ -51,6 +51,7 @@ class RemovalSystem() : IteratingSystem() {
             val rigidBody = rigidBodyMapper!!.get(id)
             if (rigidBody?.physicsBody != null) {
                 physicsWorld!!.destroyBody(rigidBody.physicsBody)
+                rigidBody.physicsBody = null
             }
             val particleEffect = particleEffectMapper!!.get(id)
             if (particleEffect?.particleEffect != null) {
