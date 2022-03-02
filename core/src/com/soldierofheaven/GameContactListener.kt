@@ -19,40 +19,19 @@ class GameContactListener(private val ecsWorld: EcsWorld) : ContactListener {
     private val lifeCycleMapper = ecsWorld.getMapper(LifeCycle::class.java)
     private val damageMapper = ecsWorld.getMapper(Damage::class.java)
 
+    //this function is a huge stinker but I don't think there is any other way to handle collisions unless I store callbacks in entities
     override fun beginContact(contact: Contact) {
         val entityAId = contact.fixtureA.body.userData as Int
         val entityBId = contact.fixtureB.body.userData as Int
         val tagA = tagMapper.get(entityAId)
         val tagB = tagMapper.get(entityBId)
         if (tagA.value == Tags.BULLET) {
-            val bullet = bulletMapper[entityAId]
-            val lifeCycle = lifeCycleMapper[entityAId]
-            val damage = damageMapper[entityAId]
-            if (tagB.value in damage.damageableTags) {
-                lifeCycle.lifeTime = -1f
-
-                if (bullet.isExplosive()) {
-                    val bulletBody = contact.fixtureA.body
-                    EventQueue.dispatch(ExplosionEvent(bulletBody.position.x, bulletBody.position.y, damage.value, bullet.explosionRange!!, bullet.explosionStrength!!))
-                } else {
-                    EventQueue.dispatch(DamageEvent(entityBId, damage.value))
-                }
-            }
+            handleBulletCollisionWithEntity(contact, entityAId, entityBId, tagB.value)
         } else if (tagB.value == Tags.BULLET) {
-            val bullet = bulletMapper[entityBId]
-            val lifeCycle = lifeCycleMapper[entityBId]
-            val damage = damageMapper[entityBId]
-            if (tagA.value in damage.damageableTags) {
-                lifeCycle.lifeTime = -1f
-
-                if (bullet.isExplosive()) {
-                    val bulletBody = contact.fixtureA.body
-                    EventQueue.dispatch(ExplosionEvent(bulletBody.position.x, bulletBody.position.y, damage.value, bullet.explosionRange!!, bullet.explosionStrength!!))
-                } else {
-                    EventQueue.dispatch(DamageEvent(entityAId, damage.value))
-                }
-            }
+            handleBulletCollisionWithEntity(contact, entityBId, entityAId, tagA.value)
         }
+
+
     }
 
     override fun endContact(contact: Contact) {
@@ -62,5 +41,21 @@ class GameContactListener(private val ecsWorld: EcsWorld) : ContactListener {
     }
 
     override fun postSolve(contact: Contact, impulse: ContactImpulse) {
+    }
+
+    private fun handleBulletCollisionWithEntity(contact: Contact, bulletId: Int, entityId: Int, entityTag: String) {
+        val bullet = bulletMapper[bulletId]
+        val lifeCycle = lifeCycleMapper[bulletId]
+        val damage = damageMapper[bulletId]
+        if (entityTag in damage.damageableTags) {
+            lifeCycle.lifeTime = -1f
+
+            if (bullet.isExplosive()) {
+                val bulletBody = contact.fixtureA.body
+                EventQueue.dispatch(ExplosionEvent(bulletBody.position.x, bulletBody.position.y, damage.value, bullet.explosionRange!!, bullet.explosionStrength!!))
+            } else {
+                EventQueue.dispatch(DamageEvent(entityId, damage.value))
+            }
+        }
     }
 }

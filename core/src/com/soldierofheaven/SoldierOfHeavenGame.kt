@@ -79,6 +79,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
 
         val ecsWorldConfig = WorldConfigurationBuilder().with(
             PhysicsSystem(physicsWorld),
+            LightsProcessingSystem(),
             InputSystem(),
             AnimationSystem(),
             RenderSystem(),
