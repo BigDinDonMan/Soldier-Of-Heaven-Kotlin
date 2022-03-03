@@ -8,7 +8,13 @@ import com.soldierofheaven.util.PhysicsWorld
 
 abstract class Prefab(protected val ecsWorld: EcsWorld,protected val physicsWorld: PhysicsWorld, protected val assetManager: AssetManager) {
     protected val prefabParams = ObjectMap<String, Any>()
+
     abstract fun instantiate(): Int //returns created entity id
     abstract fun instantiate(x: Float, y: Float): Int
     fun instantiate(position: Vector2) = instantiate(position.x, position.y)
+
+    fun addParam(name: String, value: Any): Prefab {
+        prefabParams.put(name, value)
+        return this
+    }
 }
