@@ -8,12 +8,14 @@ import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
 import com.badlogic.gdx.physics.box2d.FixtureDef
 import com.badlogic.gdx.physics.box2d.PolygonShape
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
@@ -30,6 +32,7 @@ import com.soldierofheaven.ecs.systems.RenderSystem
 import com.soldierofheaven.ecs.systems.WeaponSystem
 import com.soldierofheaven.events.PauseEvent
 import com.soldierofheaven.prototypes.bullets.FireballPrefab
+import com.soldierofheaven.prototypes.general.PlayerPrefab
 import com.soldierofheaven.stats.StatisticsTracker
 import com.soldierofheaven.ui.*
 import com.soldierofheaven.util.*
@@ -84,8 +87,12 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private var playerEntityId by Delegates.notNull<Int>()
 
     private val fireballPrefab = FireballPrefab(ecsWorld, physicsWorld, game.assetManager)
+    private val playerPrefab = PlayerPrefab(ecsWorld, physicsWorld, game.assetManager)
 
+    /*MAPPERS*/
     private val healthMapper = ecsWorld.getMapper(Health::class.java)
+    private val rigidBodyMapper = ecsWorld.getMapper(RigidBody::class.java)
+
     private val fpsCounter = Label("60", defaultSkin).apply { isVisible = false }
 
     init {
@@ -113,18 +120,17 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
         stage.addActor(reloadBar)
 
-        val ammoIcon = game.assetManager.get("gfx/bullet-basic.png", Texture::class.java)
-        ammoDisplay = AmmoDisplay(ammoIcon, defaultSkin).apply {
-            setPosition(healthPad, Gdx.graphics.heightF() - healthHeight - healthPad * 2 - ammoIcon.height * 2)
-        }
-        ammoDisplay.update(ecsWorld.getSystem(WeaponSystem::class.java).weapons.first())
-        stage.addActor(ammoDisplay)
-
         val slotsX = 15f
         val slotsStartY = 560f
         val slotSize = 72f
         val slotPadding = 15f
         val weaponSystem = ecsWorld.getSystem(WeaponSystem::class.java)
+        val ammoIcon = weaponSystem.weapons.first().ammoIcon
+        ammoDisplay = AmmoDisplay(ammoIcon, defaultSkin).apply {
+            setPosition(healthPad, Gdx.graphics.heightF() - healthHeight - healthPad * 2 - ammoIcon.height * 2)
+        }
+        ammoDisplay.update(ecsWorld.getSystem(WeaponSystem::class.java).weapons.first())
+        stage.addActor(ammoDisplay)
         var firstSlotMarkedAsSelected = false
         val slotsSkin = Skin(Gdx.files.internal("skins/weapon-slot-skin.json"))
         weaponSlots = weaponSystem.weapons.mapIndexed { index, weapon -> kotlin.run {
@@ -204,9 +210,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         currencyDisplay = CurrencyDisplay(game.assetManager.get("gfx/angelic-coin.png"), /*48f, 48f,*/ defaultSkin)
         currencyDisplay.setPosition(Gdx.graphics.widthF() - currencyDisplay.width, Gdx.graphics.heightF() - currencyDisplay.height - scoreDisplay.height)
         fpsCounter.setPosition(Gdx.graphics.widthF() - fpsCounter.width - 5f, 0f)
-        stage.addActor(currencyDisplay)
-        stage.addActor(scoreDisplay)
-        stage.addActor(fpsCounter)
+        stage.addActors(currencyDisplay, scoreDisplay, fpsCounter)
     }
 
     override fun show() {
@@ -395,14 +399,18 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     }
 
     @Subscribe
-    private fun handlePlayerDamageEvent(e: DamageEvent) {
+    private fun handleDamageEvent(e: DamageEvent) {
         if (e.entityId == playerEntityId) {
             val playerHealth = healthMapper.get(e.entityId)
             healthBar.updateDisplay((playerHealth.health - e.damage).toInt())
             if (playerHealth.health - e.damage <= 0f) {
                 EventQueue.dispatch(PlayerDeathEvent())
             }
-            //todo: show damage popup label
+        }
+
+        val damageTakenLabel = Label(e.damage.toString(), defaultSkin)
+        val rigidBody = rigidBodyMapper.get(e.entityId)
+        if (rigidBody?.physicsBody != null) {
         }
     }
 
@@ -430,8 +438,6 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     @Subscribe
     private fun handlePlayerDeath(_e: PlayerDeathEvent) {
         //todo: stop all pausable systems, show game over dialog with stats and stop all sounds
-        //while waiting for final implementation, just reset this screen and switch game screen
-        game.setScreen<MenuScene>()
         //todo: call reset after the whole simulation (maybe add a post-simulation callback?)
     }
     //</editor-fold>
@@ -461,32 +467,10 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     }
 
     private fun setupScene(setupUi: Boolean = false) {
-        playerEntityId = ecsWorld.create()
+        playerEntityId = playerPrefab.instantiate()
         ecsWorld.getSystem(CameraPositioningSystem::class.java).playerEntityId = playerEntityId
         ecsWorld.getSystem(WeaponSystem::class.java).setPlayerEntityId(playerEntityId)
-        val playerWidth = 48f
-        val playerHeight = 48f
-        val editor = ecsWorld.edit(playerEntityId)
-        editor.add(Player()).create(Tag::class.java).apply { value = Tags.PLAYER }
-        editor.add(RigidBody().apply {
-            val playerBodyDef = BodyDef().apply {
-                gravityScale = 0f
-                linearDamping = 5f
-                type = BodyDef.BodyType.DynamicBody
-            }
-            val playerBodyShape = PolygonShape().apply { setAsBox(playerWidth / 2, playerHeight / 2) }
-            val playerBodyFixtureDef = FixtureDef().apply {
-                shape = playerBodyShape
-                friction = 2f
-            }
-            physicsBody = physicsWorld.createBody(playerBodyDef).apply {
-                createFixture(playerBodyFixtureDef)
-                userData = playerEntityId
-            }
-            playerBodyShape.dispose()
-        }).create(Transform::class.java)
-        editor.create(Speed::class.java).apply { value = 25f }
-        editor.create(Health::class.java)
+
         if (setupUi) {
             initUi(ecsWorld.getEntity(playerEntityId).getComponent(Transform::class.java).position)
         }

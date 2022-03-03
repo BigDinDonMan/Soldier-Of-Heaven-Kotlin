@@ -64,7 +64,7 @@ class FireballPrefab(ecsWorld: EcsWorld, physicsWorld: PhysicsWorld, assetManage
 
     override fun instantiate(x: Float, y: Float): Int {
         val id = instantiate()
-        val rigidBody = ecsWorld.getEntity(id).getComponent(RigidBody::class.java)
+        val rigidBody = rigidBodyMapper.get(id)
         rigidBody.physicsBody!!.setTransform(x, y, rigidBody.physicsBody!!.angle)
         return id
     }

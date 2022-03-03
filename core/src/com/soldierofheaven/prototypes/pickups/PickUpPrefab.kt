@@ -24,7 +24,7 @@ class PickUpPrefab(ecsWorld: EcsWorld, physicsWorld: PhysicsWorld, assetManager:
 
     override fun instantiate(x: Float, y: Float): Int {
         val id = this.instantiate()
-        ecsWorld.getEntity(id).getComponent(RigidBody::class.java).apply {
+        rigidBodyMapper.get(id).apply {
             physicsBody!!.setTransform(x, y, physicsBody!!.angle)
         }
         return id
