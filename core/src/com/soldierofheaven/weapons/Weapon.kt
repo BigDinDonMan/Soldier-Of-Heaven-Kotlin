@@ -29,7 +29,7 @@ class Weapon(
     var reloadTimer = GameTimer(reloadTime, false) { EventQueue.dispatch(ReloadFinishedEvent(this)) }
     var shotCooldown = 0f
     var currentAmmo = clipSize
-    var storedAmmo: Int
+    var storedAmmo: Int //todo: add clamping of stored ammo to not exceed max ammo
     var unlocked: Boolean = false
 
     init {

@@ -2,12 +2,15 @@ package com.soldierofheaven.ecs.components
 
 import com.artemis.PooledComponent
 import com.soldierofheaven.ecs.components.enums.PickUpType
+import com.soldierofheaven.weapons.Weapon
 
 class PickUp : PooledComponent() {
+    data class AmmoInfo(val amount: Int, val weapon: Weapon)
     var pickUpType = PickUpType.HEALTH
-    //todo: come up with payload... either an Any object with different structs as actual payload or something else, like class with implemented interface
+    var pickUpPayload: Any? = null //either an int or an AmmoInfo instance
 
     override fun reset() {
         pickUpType = PickUpType.HEALTH
+        pickUpPayload = null
     }
 }

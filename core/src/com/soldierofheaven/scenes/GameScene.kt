@@ -410,14 +410,19 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private fun handlePickUp(e: PickUpEvent) {
         when (e.pickUp.pickUpType) {
             PickUpType.HEALTH -> {
-                //todo: add player health & update player health bar
+                val playerHealth = healthMapper.get(playerEntityId)
+                playerHealth.health += e.pickUp.pickUpPayload as Int
+                healthBar.updateDisplay(playerHealth.health.toInt())
             }
             PickUpType.AMMO -> {
                 //find weapon and add ammo value
                 //if selected weapon is the same as picked up ammo then also update ui
+                val (ammoAmount, weapon) = e.pickUp.pickUpPayload as PickUp.AmmoInfo
+                val targetWeapon = ecsWorld.getSystem(WeaponSystem::class.java).weapons.first { it.name == weapon.name }
+                targetWeapon.storedAmmo += ammoAmount
             }
             PickUpType.EXPLOSIVES -> {
-
+                //todo: add explosives to player
             }
         }
     }
