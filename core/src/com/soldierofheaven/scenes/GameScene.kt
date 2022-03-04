@@ -44,8 +44,11 @@ import kotlin.random.Random
 //NOTE: call reset on particle effect after loading or else it might behave weirdly for the first couple of times
 class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: EcsWorld, private val physicsWorld: PhysicsWorld) : ScreenAdapter(), Resettable {
 
+    private val gameCamera: Camera = ecsWorld.getSystem(RenderSystem::class.java).gameCamera!!
     private val viewport = StretchViewport(Gdx.graphics.widthF(), Gdx.graphics.heightF())
+    private val worldSpaceViewport = StretchViewport(Gdx.graphics.widthF(), Gdx.graphics.heightF(), gameCamera)
     private val stage = Stage(viewport)
+    private val worldSpaceStage = Stage(worldSpaceViewport)
 
     private var debug = true
     private val debugRenderer = Box2DDebugRenderer()
@@ -76,7 +79,6 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private lateinit var pauseDialog: Dialog
     private lateinit var exitToMenuDialog: Dialog
 
-    private val gameCamera: Camera = ecsWorld.getSystem(RenderSystem::class.java).gameCamera!!
     private lateinit var healthBar: HealthBar
     private lateinit var reloadBar: ReloadBar
     private lateinit var ammoDisplay: AmmoDisplay
@@ -108,17 +110,13 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             height = healthHeight
             setPosition(healthPad, Gdx.graphics.heightF() - healthHeight - healthPad)
         }
-        stage.addActor(healthBar)
 
         val crosshair = Crosshair(game.assetManager["gfx/crosshair.png"])
-        stage.addActor(crosshair)
-
         val reloadIcon = game.assetManager.get("gfx/reload-bar.png", Texture::class.java)
         reloadBar = ReloadBar(reloadIcon, playerPositionVector, gameCamera, 50f)
         reloadBar.setBarSize(reloadBar.barWidth, 15f)
         reloadBar.barPaddingX = 5f
 
-        stage.addActor(reloadBar)
 
         val slotsX = 15f
         val slotsStartY = 560f
@@ -130,7 +128,6 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             setPosition(healthPad, Gdx.graphics.heightF() - healthHeight - healthPad * 2 - ammoIcon.height * 2)
         }
         ammoDisplay.update(ecsWorld.getSystem(WeaponSystem::class.java).weapons.first())
-        stage.addActor(ammoDisplay)
         var firstSlotMarkedAsSelected = false
         val slotsSkin = Skin(Gdx.files.internal("skins/weapon-slot-skin.json"))
         weaponSlots = weaponSystem.weapons.mapIndexed { index, weapon -> kotlin.run {
@@ -168,7 +165,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             centerAbsolute()
         }.button("Resume", { paused = false; }).button("Exit", this::showExitToMenuDialog)
 
-        val dialog = object : Dialog("", defaultSkin){
+        exitToMenuDialog = object : Dialog("", defaultSkin){
             override fun result(`object`: Any) {
                 (`object` as? () -> Unit)?.invoke()
             }
@@ -193,8 +190,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             pack()
             centerAbsolute()
         }
-        dialog.button("Yes", {
-            dialog.hide()
+        exitToMenuDialog.button("Yes", {
+            exitToMenuDialog.hide()
             val oldScreen = game.shownScreen
             game.setScreen<MenuScene>()
             (oldScreen as? GameScene)?.reset()
@@ -203,14 +200,13 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             pauseDialog.show(stage)
             return@button
         })
-        exitToMenuDialog = dialog
-        stage.addActors(exitToMenuDialog, pauseDialog)
         scoreDisplay = ScoreDisplay(defaultSkin)
         scoreDisplay.setPosition(Gdx.graphics.widthF() - scoreDisplay.width, Gdx.graphics.heightF() - scoreDisplay.height)
         currencyDisplay = CurrencyDisplay(game.assetManager.get("gfx/angelic-coin.png"), /*48f, 48f,*/ defaultSkin)
         currencyDisplay.setPosition(Gdx.graphics.widthF() - currencyDisplay.width, Gdx.graphics.heightF() - currencyDisplay.height - scoreDisplay.height)
         fpsCounter.setPosition(Gdx.graphics.widthF() - fpsCounter.width - 5f, 0f)
-        stage.addActors(currencyDisplay, scoreDisplay, fpsCounter)
+        stage.addActors(healthBar, reloadBar, crosshair, ammoDisplay, exitToMenuDialog,
+            pauseDialog, currencyDisplay, scoreDisplay, fpsCounter)
     }
 
     override fun show() {
@@ -241,6 +237,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         }
 
         stage.update()
+        worldSpaceStage.update()
     }
 
     private fun updateFPS() {
@@ -249,13 +246,17 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         }
     }
 
-    override fun resize(width: Int, height: Int) = viewport.update(width, height)
+    override fun resize(width: Int, height: Int) {
+        viewport.update(width, height)
+        worldSpaceViewport.update(width, height)
+    }
 
     override fun dispose() {
         reloadBar.dispose()
         healthBar.dispose()
         defaultSkin.dispose()
         stage.dispose()
+        worldSpaceStage.dispose()
     }
 
     //<editor-fold desc="Event listeners">
