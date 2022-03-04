@@ -15,10 +15,14 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
 import com.badlogic.gdx.physics.box2d.FixtureDef
 import com.badlogic.gdx.physics.box2d.PolygonShape
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.actions.Actions.moveToAligned
+import com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut
+import com.badlogic.gdx.scenes.scene2d.actions.Actions.removeActor
+import com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.soldierofheaven.*
 import com.soldierofheaven.ecs.PlayerInputHandler
@@ -85,6 +89,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private lateinit var weaponSlots: List<WeaponSlot>
     private lateinit var scoreDisplay: ScoreDisplay
     private lateinit var currencyDisplay: CurrencyDisplay
+    private lateinit var weaponUnlockWindow: WeaponUnlockWindow
 
     private var playerEntityId by Delegates.notNull<Int>()
 
@@ -207,6 +212,10 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         fpsCounter.setPosition(Gdx.graphics.widthF() - fpsCounter.width - 5f, 0f)
         stage.addActors(healthBar, reloadBar, crosshair, ammoDisplay, exitToMenuDialog,
             pauseDialog, currencyDisplay, scoreDisplay, fpsCounter)
+
+        weaponUnlockWindow = WeaponUnlockWindow(weaponSystem.weapons, defaultSkin).apply { isVisible = false }
+        weaponUnlockWindow.centerAbsolute()
+        stage.addActor(weaponUnlockWindow)
     }
 
     override fun show() {
@@ -233,6 +242,10 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 //            }
             if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
                 EventQueue.dispatch(EnemyKilledEvent(40, 250))
+            }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.J)) {
+                weaponUnlockWindow.isVisible = !weaponUnlockWindow.isVisible
             }
         }
 
@@ -409,9 +422,10 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             }
         }
 
-        val damageTakenLabel = Label(e.damage.toString(), defaultSkin)
         val rigidBody = rigidBodyMapper.get(e.entityId)
         if (rigidBody?.physicsBody != null) {
+            val damageTakenLabel = buildPopupLabel(e.damage.toString(), rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y, 50f)
+            worldSpaceStage.addActor(damageTakenLabel)
         }
     }
 
@@ -555,5 +569,12 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
     private fun showExitToMenuDialog() {
         exitToMenuDialog.show(stage)
+    }
+
+    private fun buildPopupLabel(s: String, x: Float, y: Float, maxYOffset: Float): Label {
+        val label = Label(s, defaultSkin)
+        label.setPosition(x, y, Align.center)
+        label.addAction(sequence(moveToAligned(x, y + maxYOffset, Align.center, 0.1f), fadeOut(1f), removeActor()))
+        return label
     }
 }

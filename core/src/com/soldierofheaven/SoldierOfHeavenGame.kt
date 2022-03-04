@@ -142,20 +142,20 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
                 BulletData(baseBulletSpeed, 0f, null, null,
                     null, null, null, null, assetManager.get(Resources.BASIC_BULLET)),
                 assetManager.get("sfx/rifle-shot.wav"), assetManager.get("sfx/rifle-reload.wav")
-            ).apply { unlocked = true },
+            ).apply { unlocked = false },
             Weapon("Gate Guardian", 6, 100, 4.25f, 5f, 1.25f, 1200,
                 assetManager.get(Resources.BASIC_BULLET), assetManager.get("gfx/shotgun-ammo.png"),
                 BulletData(baseBulletSpeed, 0f, null, null,
                     null, null, null, null, assetManager.get(Resources.BASIC_BULLET)),
                 assetManager.get("sfx/shotgun-shot.wav"), assetManager.get("sfx/shotgun-reload.wav"),
                 bulletSpread = 0.25f, bulletsPerShot = 10
-            ).apply { unlocked = true },
+            ).apply { unlocked = false },
             //smg should have very high fire rate and also small bullet spread
             Weapon("Demon Shredder", 45, 900, 2.5f, 5f, 0.05f, 2500,
                 assetManager.get(Resources.BASIC_BULLET), assetManager.get(Resources.BASIC_BULLET),
                 BulletData(baseBulletSpeed, 0f, null, null,
                     null, null, null, null, assetManager.get(Resources.BASIC_BULLET)),
-                assetManager.get("sfx/smg-shot.wav"), assetManager.get("sfx/smg-reload.wav"), bulletSpread = 0.1f).apply { unlocked=true }
+                assetManager.get("sfx/smg-shot.wav"), assetManager.get("sfx/smg-reload.wav"), bulletSpread = 0.1f).apply { unlocked=false }
 //            Weapon("Heretic's Bane", 3, 15, 4f, 75f, 2.5f, 5000,
 //                assetManager.get(Resources.BASIC_BULLET), assetManager.get(Resources.BASIC_BULLET),
 //                BulletData(baseBulletSpeed, assetManager.get(Resources.BASIC_BULLET)),

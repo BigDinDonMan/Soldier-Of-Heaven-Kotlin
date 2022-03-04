@@ -1,14 +1,59 @@
 package com.soldierofheaven.ui
 
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
-import com.badlogic.gdx.scenes.scene2d.ui.Window
+import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.soldierofheaven.stats.StatisticsTracker
+import com.soldierofheaven.util.`interface`.Resettable
 import com.soldierofheaven.weapons.Weapon
+import net.mostlyoriginal.api.event.common.Subscribe
 
-class WeaponUnlockWindow(private val weapons: List<Weapon>, skin: Skin) : Window("", skin) {
+class WeaponUnlockWindow(private val weapons: List<Weapon>, skin: Skin) : Window("", skin), Resettable {
 
     init {
         initUi()
     }
 
-    private fun initUi() {}
+    private fun initUi() {
+        val lockedWeapons = weapons.filter { !it.unlocked }
+        lockedWeapons.forEach { weapon -> kotlin.run {
+            //weapon entry widget should contain:
+            //weapon icon with button and weapon name label underneath (button changes appearance & functionality after unlocking the weapon)
+            val buyButton = ImageTextButton("Unlock (${weapon.price}$)", skin)
+            val nameLabel = Label(weapon.name, skin)
+            val weaponImage = Image(weapon.weaponIcon)
+            val widgetsGroup = VerticalGroup()
+
+            buyButton.addListener(object : ClickListener(){
+                override fun clicked(event: InputEvent, x: Float, y: Float) {
+                    if (weapon.unlocked) {
+                        buyAmmoForWeapon(weapon)
+                        buyButton.isDisabled = StatisticsTracker.currency < weapon.ammoPrice
+                    } else {
+                        unlockWeapon(weapon)
+                        buyButton.text = "Buy 10% of max ammo (${weapon.ammoPrice}$)"
+                        buyButton.isDisabled = StatisticsTracker.currency < weapon.ammoPrice
+                    }
+                }
+            })
+            widgetsGroup.addActor(weaponImage)
+            widgetsGroup.addActor(nameLabel)
+            widgetsGroup.addActor(buyButton)
+            add(widgetsGroup)
+        } }
+        pack()
+    }
+
+    private fun buyAmmoForWeapon(w: Weapon) {
+
+    }
+
+    private fun unlockWeapon(w: Weapon) {
+
+    }
+
+    override fun reset() {
+        super.reset()
+        initUi()
+    }
 }

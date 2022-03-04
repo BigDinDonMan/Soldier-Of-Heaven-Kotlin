@@ -31,6 +31,8 @@ class Weapon(
     var currentAmmo = clipSize
     var storedAmmo: Int //todo: add clamping of stored ammo to not exceed max ammo
     var unlocked: Boolean = false
+    val ammoPrice: Int
+        get() = 2 * price / 10
 
     init {
         storedAmmo = if (maxStoredAmmo == INFINITE_AMMO) INFINITE_AMMO else maxStoredAmmo / 2
