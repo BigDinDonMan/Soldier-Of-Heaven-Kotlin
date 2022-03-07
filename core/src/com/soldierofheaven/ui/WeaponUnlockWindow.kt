@@ -16,13 +16,17 @@ import net.mostlyoriginal.api.event.common.Subscribe
 class WeaponUnlockWindow(private val weapons: List<Weapon>, skin: Skin) : Window("", skin), Resettable {
 
     private val buyButtons: MutableList<ImageTextButton> = ArrayList()
+    private lateinit var nextWaveButton: ImageTextButton
+
+    companion object {
+        const val MAX_ROW_ITEMS = 3
+    }
 
     init {
         initUi()
     }
 
     private fun initUi() {
-        val slotsTable = Table()
         val lockedWeapons = weapons.filter { !it.unlocked }
         lockedWeapons.forEach { weapon -> kotlin.run {
             //weapon entry widget should contain:
@@ -54,6 +58,11 @@ class WeaponUnlockWindow(private val weapons: List<Weapon>, skin: Skin) : Window
 
             buyButtons += buyButton
         } }
+        row()
+        nextWaveButton = ImageTextButton("Next wave!", skin)
+
+        val buttonPadding = 15f
+        add(nextWaveButton).center().bottom().expand(true, false).colspan(3).padTop(buttonPadding).padBottom(buttonPadding)
         pack()
     }
 
@@ -100,5 +109,14 @@ class WeaponUnlockWindow(private val weapons: List<Weapon>, skin: Skin) : Window
         super.setVisible(visible)
 
         updateButtons()
+    }
+
+    fun setWaveCallback(callback: () -> Unit) {
+        nextWaveButton.clearListeners()
+        nextWaveButton.addListener(object : ClickListener() {
+            override fun clicked(event: InputEvent, x: Float, y: Float) {
+                callback.invoke()
+            }
+        })
     }
 }

@@ -62,7 +62,6 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
                 addListener(object : ClickListener() {
                     override fun clicked(event: InputEvent, x: Float, y: Float) {
                         Gdx.app.exit()
-                        exitProcess(0)
                     }
                 })
             }
