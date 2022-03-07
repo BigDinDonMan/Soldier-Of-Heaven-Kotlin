@@ -66,8 +66,6 @@ class WeaponUnlockWindow(private val weapons: List<Weapon>, skin: Skin) : Window
         pack()
     }
 
-    //todo: these 2 methods will need a listener/event handler to update UI
-    //listeners should update both currency and ammo display
     private fun buyAmmoForWeapon(w: Weapon) {
         if (StatisticsTracker.currency < w.ammoPrice) return
 
@@ -91,6 +89,7 @@ class WeaponUnlockWindow(private val weapons: List<Weapon>, skin: Skin) : Window
     }
 
     private fun updateButtons() {
+        //we skip the first weapon because thats the pistol with infinite ammo
         for (i in 1 until weapons.size) {
             val button = buyButtons[i - 1]
             val weapon = weapons[i]
