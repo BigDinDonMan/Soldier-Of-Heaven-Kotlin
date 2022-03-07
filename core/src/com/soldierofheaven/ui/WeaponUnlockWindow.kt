@@ -65,13 +65,8 @@ class WeaponUnlockWindow(private val weapons: List<Weapon>, skin: Skin) : Window
     override fun setVisible(visible: Boolean) {
         super.setVisible(visible)
 
-        val lockedWeapons = weapons.filter { !it.unlocked }
-        for (i in lockedWeapons.indices) {
-            if (lockedWeapons[i].unlocked) {
-                buyButtons[i].isDisabled = StatisticsTracker.currency < lockedWeapons[i].ammoPrice
-            } else {
-                buyButtons[i].isDisabled = StatisticsTracker.currency < lockedWeapons[i].price
-            }
+        weapons.filter { !it.unlocked }.forEachIndexed { index, weapon ->
+            buyButtons[index].isDisabled = StatisticsTracker.currency < (if (weapon.unlocked) weapon.ammoPrice else weapon.price)
         }
     }
 }
