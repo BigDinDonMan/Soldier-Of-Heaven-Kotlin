@@ -30,6 +30,8 @@ import com.soldierofheaven.ecs.PlayerInputHandler
 import com.soldierofheaven.ecs.components.*
 import com.soldierofheaven.ecs.components.enums.PickUpType
 import com.soldierofheaven.ecs.events.*
+import com.soldierofheaven.ecs.events.ui.CurrencyChangedEvent
+import com.soldierofheaven.ecs.events.ui.StoredAmmoChangedEvent
 import com.soldierofheaven.ecs.events.ui.WeaponChangedUiEvent
 import com.soldierofheaven.ecs.systems.AnimationSystem
 import com.soldierofheaven.ecs.systems.CameraPositioningSystem
@@ -456,6 +458,18 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         //todo: stop all pausable systems, show game over dialog with stats and stop all sounds
         //todo: call reset after the whole simulation (maybe add a post-simulation callback?)
     }
+
+    @Subscribe
+    private fun handleCurrencyChanged(e: CurrencyChangedEvent) {
+        currencyDisplay.update(e.newCurrency)
+    }
+
+    @Subscribe
+    private fun handleAmmoChanged(e: StoredAmmoChangedEvent) {
+        if (e.weapon.name == ecsWorld.getSystem(WeaponSystem::class.java).currentWeapon.name) {
+            ammoDisplay.update(e.weapon)
+        }
+    }
     //</editor-fold>
 
     override fun reset() {
@@ -576,7 +590,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         val label = Label(s, defaultSkin)
         label.setPosition(x, y, Align.center)
         label.addAction(sequence(
-            moveToAligned(x, y + maxYOffset, Align.center, 0.1f, Interpolation.smooth),
+            moveToAligned(x, y + maxYOffset, Align.center, 0.3f, Interpolation.smooth),
             fadeOut(1f),
             removeActor()
         ))

@@ -18,7 +18,7 @@ import net.mostlyoriginal.api.event.common.Subscribe
 
 class WeaponSystem(val weapons: List<Weapon> = ArrayList()) : BaseSystem() {
     private var shooting = false
-    private var currentWeapon: Weapon = weapons.first()
+    var currentWeapon: Weapon = weapons.first()
 
     @Wire(name = "gameCamera")
     private var camera: Camera? = null

@@ -1,10 +1,15 @@
 package com.soldierofheaven.ui
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.soldierofheaven.EventQueue
+import com.soldierofheaven.ecs.events.ui.CurrencyChangedEvent
+import com.soldierofheaven.ecs.events.ui.StoredAmmoChangedEvent
 import com.soldierofheaven.stats.StatisticsTracker
 import com.soldierofheaven.util.`interface`.Resettable
+import com.soldierofheaven.util.centerAbsolute
 import com.soldierofheaven.weapons.Weapon
 import net.mostlyoriginal.api.event.common.Subscribe
 
@@ -29,13 +34,16 @@ class WeaponUnlockWindow(private val weapons: List<Weapon>, skin: Skin) : Window
 
             buyButton.addListener(object : ClickListener(){
                 override fun clicked(event: InputEvent, x: Float, y: Float) {
+                    //todo: play unlock/ammo buy sound (ammo buy is maybe the same as weapon swap? and unlock is sth like a choir)
                     if (weapon.unlocked) {
                         buyAmmoForWeapon(weapon)
                     } else {
                         unlockWeapon(weapon)
                         buyButton.text = "Buy 10% of max ammo (${weapon.ammoPrice}$)"
                     }
-                    buyButton.isDisabled = StatisticsTracker.currency < weapon.ammoPrice
+                    updateButtons()
+                    pack()
+                    centerAbsolute()
                 }
             })
             //todo: make all these widget groups the same size in the end
@@ -49,12 +57,38 @@ class WeaponUnlockWindow(private val weapons: List<Weapon>, skin: Skin) : Window
         pack()
     }
 
+    //todo: these 2 methods will need a listener/event handler to update UI
+    //listeners should update both currency and ammo display
     private fun buyAmmoForWeapon(w: Weapon) {
+        if (StatisticsTracker.currency < w.ammoPrice) return
 
+        val oldCurrency = StatisticsTracker.currency
+        w.storedAmmo += w.maxStoredAmmo / 10
+        StatisticsTracker.currency -= w.ammoPrice
+        EventQueue.dispatchMultiple(
+            StoredAmmoChangedEvent(w),
+            CurrencyChangedEvent(oldCurrency, StatisticsTracker.currency)
+        )
     }
 
     private fun unlockWeapon(w: Weapon) {
+        if (StatisticsTracker.currency < w.price) return
+        if (w.unlocked) return
 
+        w.unlocked = true
+        val oldCurrency = StatisticsTracker.currency
+        StatisticsTracker.currency -= w.price
+        EventQueue.dispatchMultiple(CurrencyChangedEvent(oldCurrency, StatisticsTracker.currency))
+    }
+
+    private fun updateButtons() {
+        for (i in 1 until weapons.size) {
+            val button = buyButtons[i - 1]
+            val weapon = weapons[i]
+            val disabled = StatisticsTracker.currency < (if (weapon.unlocked) weapon.ammoPrice else weapon.price) || weapon.storedAmmo == weapon.maxStoredAmmo
+            button.isDisabled = disabled
+            button.touchable = if (disabled) Touchable.disabled else Touchable.enabled
+        }
     }
 
     override fun reset() {
@@ -65,8 +99,6 @@ class WeaponUnlockWindow(private val weapons: List<Weapon>, skin: Skin) : Window
     override fun setVisible(visible: Boolean) {
         super.setVisible(visible)
 
-        weapons.filter { !it.unlocked }.forEachIndexed { index, weapon ->
-            buyButtons[index].isDisabled = StatisticsTracker.currency < (if (weapon.unlocked) weapon.ammoPrice else weapon.price)
-        }
+        updateButtons()
     }
 }

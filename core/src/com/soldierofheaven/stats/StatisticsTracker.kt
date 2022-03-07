@@ -1,8 +1,10 @@
 package com.soldierofheaven.stats
 
+import com.soldierofheaven.EventQueue
 import com.soldierofheaven.ecs.events.DamageEvent
 import com.soldierofheaven.ecs.events.EnemyKilledEvent
 import com.soldierofheaven.ecs.events.ShotEvent
+import com.soldierofheaven.ecs.events.ui.CurrencyChangedEvent
 import com.soldierofheaven.util.`interface`.Resettable
 import net.mostlyoriginal.api.event.common.Subscribe
 
@@ -12,6 +14,11 @@ object StatisticsTracker : Resettable {
     var enemiesKilled: Int = 0
     var score: Int = 0
     var currency: Int = 0
+        set(value) {
+            val old = field
+            field = value
+            EventQueue.dispatch(CurrencyChangedEvent(old, field))
+        }
     var shotsFired: Int = 0
     var totalCurrency: Int = 0
 

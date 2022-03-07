@@ -7,6 +7,7 @@ import com.soldierofheaven.EventQueue
 import com.soldierofheaven.SoundManager
 import com.soldierofheaven.ecs.events.ReloadFinishedEvent
 import com.soldierofheaven.util.GameTimer
+import com.soldierofheaven.util.math.clamp
 
 // this class might turn out as a bit of a code smell but eh, whatever goes
 //todo: if implementing upgrades: add added[VarName] fields that will store added parameters (e.g. increased fire rate)
@@ -29,7 +30,10 @@ class Weapon(
     var reloadTimer = GameTimer(reloadTime, false) { EventQueue.dispatch(ReloadFinishedEvent(this)) }
     var shotCooldown = 0f
     var currentAmmo = clipSize
-    var storedAmmo: Int //todo: add clamping of stored ammo to not exceed max ammo
+    var storedAmmo: Int = 0 //todo: add clamping of stored ammo to not exceed max ammo
+        set(value) {
+            field = clamp(value, 0, maxStoredAmmo)
+        }
     var unlocked: Boolean = false
     val ammoPrice: Int
         get() = 2 * price / 10

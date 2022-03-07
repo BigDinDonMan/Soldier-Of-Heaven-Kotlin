@@ -143,7 +143,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
                 BulletData(baseBulletSpeed, 0f, null, null,
                     null, null, null, null, assetManager.get(Resources.BASIC_BULLET)),
                 assetManager.get("sfx/rifle-shot.wav"), assetManager.get("sfx/rifle-reload.wav")
-            ).apply { unlocked = true },
+            ).apply { unlocked = false },
             Weapon("Gate Guardian", 6, 100, 4.25f, 5f, 1.25f, 1200,
                 assetManager.get(Resources.BASIC_BULLET), assetManager.get("gfx/shotgun-ammo.png"),
                 BulletData(baseBulletSpeed, 0f, null, null,
