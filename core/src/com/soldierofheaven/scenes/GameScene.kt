@@ -8,6 +8,7 @@ import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.physics.box2d.BodyDef
@@ -574,7 +575,11 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private fun buildPopupLabel(s: String, x: Float, y: Float, maxYOffset: Float): Label {
         val label = Label(s, defaultSkin)
         label.setPosition(x, y, Align.center)
-        label.addAction(sequence(moveToAligned(x, y + maxYOffset, Align.center, 0.1f), fadeOut(1f), removeActor()))
+        label.addAction(sequence(
+            moveToAligned(x, y + maxYOffset, Align.center, 0.1f, Interpolation.smooth),
+            fadeOut(1f),
+            removeActor()
+        ))
         return label
     }
 }

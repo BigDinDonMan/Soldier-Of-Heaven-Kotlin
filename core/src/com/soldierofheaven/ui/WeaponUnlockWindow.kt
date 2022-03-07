@@ -15,6 +15,7 @@ class WeaponUnlockWindow(private val weapons: List<Weapon>, skin: Skin) : Window
     }
 
     private fun initUi() {
+        val slotsTable = Table()
         val lockedWeapons = weapons.filter { !it.unlocked }
         lockedWeapons.forEach { weapon -> kotlin.run {
             //weapon entry widget should contain:
@@ -22,20 +23,20 @@ class WeaponUnlockWindow(private val weapons: List<Weapon>, skin: Skin) : Window
             val buyButton = ImageTextButton("Unlock (${weapon.price}$)", skin)
             val nameLabel = Label(weapon.name, skin)
             val weaponImage = Image(weapon.weaponIcon)
-            val widgetsGroup = VerticalGroup()
+            val widgetsGroup = VerticalGroup().apply { space(10f) }
 
             buyButton.addListener(object : ClickListener(){
                 override fun clicked(event: InputEvent, x: Float, y: Float) {
                     if (weapon.unlocked) {
                         buyAmmoForWeapon(weapon)
-                        buyButton.isDisabled = StatisticsTracker.currency < weapon.ammoPrice
                     } else {
                         unlockWeapon(weapon)
                         buyButton.text = "Buy 10% of max ammo (${weapon.ammoPrice}$)"
-                        buyButton.isDisabled = StatisticsTracker.currency < weapon.ammoPrice
                     }
+                    buyButton.isDisabled = StatisticsTracker.currency < weapon.ammoPrice
                 }
             })
+            //todo: make all these widget groups the same size in the end
             widgetsGroup.addActor(weaponImage)
             widgetsGroup.addActor(nameLabel)
             widgetsGroup.addActor(buyButton)

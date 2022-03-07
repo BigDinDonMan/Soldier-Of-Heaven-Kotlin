@@ -57,6 +57,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         assetManager.load("gfx/crosshair.png", Texture::class.java)
         assetManager.load("gfx/shotgun-ammo.png", Texture::class.java)
         assetManager.load("gfx/rifle-ammo.png", Texture::class.java)
+        assetManager.load("gfx/pistol-ammo.png", Texture::class.java)
         assetManager.load("gfx/angelic-coin.png", Texture::class.java)
         assetManager.load("sfx/pistol-shot.wav", Sound::class.java)
         assetManager.load("sfx/pistol-reload.wav", Sound::class.java)
@@ -131,7 +132,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         return ArrayList(listOf(
             Weapon("Peacemaker", 10, Weapon.INFINITE_AMMO, 1f, 10f,
                 0.25f, -1, assetManager.get(Resources.BASIC_BULLET),
-                assetManager.get(Resources.BASIC_BULLET),
+                assetManager.get("gfx/pistol-ammo.png"),
                 BulletData(baseBulletSpeed, 0f, null, null,
                     null, null, null, null, assetManager.get(Resources.BASIC_BULLET)),
                 assetManager.get("sfx/pistol-shot.wav"),
