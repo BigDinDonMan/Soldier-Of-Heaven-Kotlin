@@ -27,9 +27,10 @@ class AmmoDisplay(private var ammoIcon: Texture, skin: Skin) : Actor() {
     override fun act(delta: Float) {
         super.act(delta)
         val padding = 10f
+        val labelsSpacing = 7.5f
         val xPos = x + ammoIcon.width + padding
-        storedAmmoLabel.setPosition(xPos, y)
-        clipLabel.setPosition(xPos, y + ammoIcon.height)
+        storedAmmoLabel.setPosition(xPos, y + labelsSpacing)
+        clipLabel.setPosition(xPos, y + ammoIcon.height - labelsSpacing)
     }
 
     fun update(weapon: Weapon) {

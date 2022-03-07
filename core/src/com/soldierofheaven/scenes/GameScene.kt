@@ -131,7 +131,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         val weaponSystem = ecsWorld.getSystem(WeaponSystem::class.java)
         val ammoIcon = weaponSystem.weapons.first().ammoIcon
         ammoDisplay = AmmoDisplay(ammoIcon, defaultSkin).apply {
-            setPosition(healthPad, Gdx.graphics.heightF() - healthHeight - healthPad * 2 - ammoIcon.height * 2)
+            setPosition(healthPad, Gdx.graphics.heightF() - healthHeight - healthPad * 2 - ammoIcon.height)
         }
         ammoDisplay.update(ecsWorld.getSystem(WeaponSystem::class.java).weapons.first())
         var firstSlotMarkedAsSelected = false
