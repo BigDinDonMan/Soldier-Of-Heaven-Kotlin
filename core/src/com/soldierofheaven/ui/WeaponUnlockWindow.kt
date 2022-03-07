@@ -10,6 +10,8 @@ import net.mostlyoriginal.api.event.common.Subscribe
 
 class WeaponUnlockWindow(private val weapons: List<Weapon>, skin: Skin) : Window("", skin), Resettable {
 
+    private val buyButtons: MutableList<ImageTextButton> = ArrayList()
+
     init {
         initUi()
     }
@@ -41,6 +43,8 @@ class WeaponUnlockWindow(private val weapons: List<Weapon>, skin: Skin) : Window
             widgetsGroup.addActor(nameLabel)
             widgetsGroup.addActor(buyButton)
             add(widgetsGroup)
+
+            buyButtons += buyButton
         } }
         pack()
     }
@@ -56,5 +60,18 @@ class WeaponUnlockWindow(private val weapons: List<Weapon>, skin: Skin) : Window
     override fun reset() {
         super.reset()
         initUi()
+    }
+
+    override fun setVisible(visible: Boolean) {
+        super.setVisible(visible)
+
+        val lockedWeapons = weapons.filter { !it.unlocked }
+        for (i in lockedWeapons.indices) {
+            if (lockedWeapons[i].unlocked) {
+                buyButtons[i].isDisabled = StatisticsTracker.currency < lockedWeapons[i].ammoPrice
+            } else {
+                buyButtons[i].isDisabled = StatisticsTracker.currency < lockedWeapons[i].price
+            }
+        }
     }
 }
