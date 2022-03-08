@@ -53,6 +53,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         physicsWorld = PhysicsWorld(Vector2.Zero, false)
 
         assetManager.load("gfx/reload-bar.png", Texture::class.java)
+        assetManager.load("gfx/padlock.png", Texture::class.java)
         assetManager.load("gfx/bullet-basic.png", Texture::class.java)
         assetManager.load("gfx/crosshair.png", Texture::class.java)
         assetManager.load("gfx/shotgun-ammo.png", Texture::class.java)
