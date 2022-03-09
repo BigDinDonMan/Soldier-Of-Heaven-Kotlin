@@ -31,27 +31,19 @@ class WeaponSlot(private val weapon: Weapon, private val slotSkin: Skin, private
         weaponIconImage.drawable = TextureRegionDrawable(weapon.weaponIcon)
         background = slotSkin.getDrawable("weapon-slot-idle")
         addActor(numberLabel)
-        addActor(weaponIconImage)
+        add(weaponIconImage).center()
     }
 
     override fun setSize(width: Float, height: Float) {
         super.setSize(width, height)
-        changeChildrenPositions()
-    }
-
-    private fun changeChildrenPositions() {
-        val paddingX = 5f
-        numberLabel.setPosition(x + paddingX, y + height - numberLabel.height)
-        weaponIconImage.pack()
-        weaponIconImage.setPosition(
-            x + width / 2 - weaponIconImage.width / 2,
-            y + height / 2 - weaponIconImage.height / 2
-        )
+        val paddingY = 2f
+        val paddingX = 7.5f
+        numberLabel.setPosition(paddingX, height - numberLabel.height - paddingY)
     }
 
     fun update() {
         if (selected) {
-          background = slotSkin.getDrawable("weapon-slot-selected")
+            background = slotSkin.getDrawable("weapon-slot-selected")
         } else if (weapon.unlocked) {
             background = slotSkin.getDrawable("weapon-slot-idle")
             weaponIconImage.drawable = TextureRegionDrawable(weapon.weaponIcon)
@@ -59,8 +51,5 @@ class WeaponSlot(private val weapon: Weapon, private val slotSkin: Skin, private
             background = slotSkin.getDrawable("weapon-slot-disabled")
             weaponIconImage.drawable = TextureRegionDrawable(lockedIcon)
         }
-
-        invalidate()
-        weaponIconImage.invalidate()
     }
 }
