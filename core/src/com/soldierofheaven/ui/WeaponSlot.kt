@@ -1,23 +1,29 @@
 package com.soldierofheaven.ui
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.soldierofheaven.weapons.Weapon
 
 //slot skin is temporary; everything will be inside skin parameter later on down the line (but it works for now)
-class WeaponSlot(private val weapon: Weapon, private val slotSkin: Skin, weaponIndex: Int, skin: Skin) : Table(skin) {
+class WeaponSlot(private val weapon: Weapon, private val slotSkin: Skin, private val lockedIcon: Texture, weaponIndex: Int, skin: Skin) : Table(skin) {
+
+    class WeaponSlotStyle(var background: Drawable?) {
+        constructor() : this(null) {}
+    }
 
     private val numberLabel = Label(weaponIndex.toString(), skin)
     private val weaponIconImage = Image()
     var selected = false
         set(value) {
             field = value
-            background = slotSkin.getDrawable(if (value) "weapon-slot-selected" else "weapon-slot-idle")
+            update()
         }
 
     init {
@@ -36,10 +42,25 @@ class WeaponSlot(private val weapon: Weapon, private val slotSkin: Skin, weaponI
     private fun changeChildrenPositions() {
         val paddingX = 5f
         numberLabel.setPosition(x + paddingX, y + height - numberLabel.height)
-        weaponIconImage.setPosition(
-            x + width / 2 - weapon.weaponIcon.width / 2,
-            y + height / 2 - weapon.weaponIcon.height / 2
-        )
         weaponIconImage.pack()
+        weaponIconImage.setPosition(
+            x + width / 2 - weaponIconImage.width / 2,
+            y + height / 2 - weaponIconImage.height / 2
+        )
+    }
+
+    fun update() {
+        if (selected) {
+          background = slotSkin.getDrawable("weapon-slot-selected")
+        } else if (weapon.unlocked) {
+            background = slotSkin.getDrawable("weapon-slot-idle")
+            weaponIconImage.drawable = TextureRegionDrawable(weapon.weaponIcon)
+        } else {
+            background = slotSkin.getDrawable("weapon-slot-disabled")
+            weaponIconImage.drawable = TextureRegionDrawable(lockedIcon)
+        }
+
+        invalidate()
+        weaponIconImage.invalidate()
     }
 }

@@ -1,10 +1,13 @@
 {
-com.badlogic.gdx.scenes.scene2d.ui.Table: {
+com.soldierofheaven.ui.WeaponSlot$WeaponSlotStyle: {
 	default: {
 		background: weapon-slot-idle
-	},
+	}
 	selected: {
 		background: weapon-slot-selected
+	}
+	disabled: {
+		background: weapon-slot-disabled
 	}
 }
 }

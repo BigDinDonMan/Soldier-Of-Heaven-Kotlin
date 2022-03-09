@@ -13,6 +13,7 @@ import com.soldierofheaven.util.centerAbsolute
 import com.soldierofheaven.weapons.Weapon
 import net.mostlyoriginal.api.event.common.Subscribe
 
+//todo: add weapon buy callback
 class WeaponUnlockWindow(private val weapons: List<Weapon>, skin: Skin) : Window("", skin), Resettable {
 
     private val buyButtons: MutableList<ImageTextButton> = ArrayList()
@@ -90,8 +91,9 @@ class WeaponUnlockWindow(private val weapons: List<Weapon>, skin: Skin) : Window
 
     private fun updateButtons() {
         //we skip the first weapon because thats the pistol with infinite ammo
-        for (i in 1 until weapons.size) {
-            val button = buyButtons[i - 1]
+        val start = 1 //1
+        for (i in start until weapons.size) {
+            val button = buyButtons[i - start]
             val weapon = weapons[i]
             val disabled = StatisticsTracker.currency < (if (weapon.unlocked) weapon.ammoPrice else weapon.price) || weapon.storedAmmo == weapon.maxStoredAmmo
             button.isDisabled = disabled

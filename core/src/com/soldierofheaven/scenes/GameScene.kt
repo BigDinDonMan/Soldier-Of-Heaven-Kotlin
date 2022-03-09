@@ -138,13 +138,16 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         ammoDisplay.update(ecsWorld.getSystem(WeaponSystem::class.java).weapons.first())
         var firstSlotMarkedAsSelected = false
         val slotsSkin = Skin(Gdx.files.internal("skins/weapon-slot-skin.json"))
+        val lockedIcon = game.assetManager.get("gfx/padlock.png", Texture::class.java)
         weaponSlots = weaponSystem.weapons.mapIndexed { index, weapon -> kotlin.run {
-            val slot = WeaponSlot(weapon, slotsSkin, index + 1, defaultSkin)
+            val slot = WeaponSlot(weapon, slotsSkin, lockedIcon, index + 1, defaultSkin)
             slot.setSize(slotSize, slotSize)
             slot.setPosition(slotsX, slotsStartY - (slotSize + slotPadding) * index)
             if (!firstSlotMarkedAsSelected) {
                 firstSlotMarkedAsSelected = true
                 slot.selected = true
+            } else {
+                slot.selected = false
             }
             slot
         } }
