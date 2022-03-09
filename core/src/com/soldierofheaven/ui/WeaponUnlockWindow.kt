@@ -11,7 +11,6 @@ import com.soldierofheaven.stats.StatisticsTracker
 import com.soldierofheaven.util.`interface`.Resettable
 import com.soldierofheaven.util.centerAbsolute
 import com.soldierofheaven.weapons.Weapon
-import net.mostlyoriginal.api.event.common.Subscribe
 
 //todo: add weapon buy callback
 class WeaponUnlockWindow(private val weapons: List<Weapon>, skin: Skin) : Window("", skin), Resettable {

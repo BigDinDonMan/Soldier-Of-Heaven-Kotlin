@@ -9,9 +9,6 @@ import com.soldierofheaven.util.`interface`.Resettable
 import com.soldierofheaven.util.formatWithThousandsSeparator
 import com.soldierofheaven.util.heightF
 import com.soldierofheaven.util.widthF
-import java.text.DecimalFormat
-import java.text.NumberFormat
-import java.util.*
 
 class ScoreDisplay(skin: Skin) : Actor(), Resettable {
     private val scoreLabel = Label("Score: 0", skin)

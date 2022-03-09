@@ -8,11 +8,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.soldierofheaven.weapons.Weapon
 
 //ammo icons need to be the same size
-//todo: add icons for all ammo types because the size changes between shotgun and other ammo now, after adding the icon
 class AmmoDisplay(private var ammoIcon: Texture, skin: Skin) : Actor() {
 
     companion object {
-        val INFINITE_AMMO_STR = "N/A"//'\u221e'.toString()
+        const val INFINITE_AMMO_STR = "N/A"//'\u221e'.toString()
     }
 
     private val clipLabel = Label("", skin)

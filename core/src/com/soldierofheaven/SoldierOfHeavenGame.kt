@@ -1,11 +1,8 @@
 package com.soldierofheaven
 
 import com.artemis.WorldConfigurationBuilder
-import com.artemis.managers.WorldSerializationManager
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
-import com.badlogic.gdx.ai.GdxAI
-import com.badlogic.gdx.assets.AssetLoaderParameters
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.assets.loaders.ParticleEffectLoader
 import com.badlogic.gdx.audio.Sound
@@ -14,25 +11,21 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Box2D
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.soldierofheaven.ai.sm.state.EnemyState
-import com.soldierofheaven.ecs.components.Bullet
-import com.soldierofheaven.ecs.components.ParticleEffect
-import com.soldierofheaven.ecs.components.enums.ExplosiveType
 import com.soldierofheaven.ecs.systems.*
 import com.soldierofheaven.scenes.GameScene
 import com.soldierofheaven.scenes.MenuScene
 import com.soldierofheaven.stats.StatisticsTracker
-import com.soldierofheaven.util.*
+import com.soldierofheaven.util.EcsWorld
+import com.soldierofheaven.util.PhysicsWorld
+import com.soldierofheaven.util.heightF
 import com.soldierofheaven.util.serialization.WeaponJsonConverter
+import com.soldierofheaven.util.widthF
 import com.soldierofheaven.weapons.BulletData
 import com.soldierofheaven.weapons.Weapon
 import ktx.app.KtxGame
 import java.io.File
-import kotlin.random.Random
 
-//todo: monitor performance of the game with the current amount of event dispatching; if it suffers, implement pooling or switch to callbacks
 //todo: maybe add skills? e.g. summoning an angel to help (like those circles with eyes)
 //todo: download and set up LibGDX physics editor (to reduce boilerplate)
 //todo: create skin files for game and main menu

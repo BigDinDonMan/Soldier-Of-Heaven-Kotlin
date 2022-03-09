@@ -1,8 +1,6 @@
 package com.soldierofheaven
 
 import com.artemis.ComponentMapper
-import com.badlogic.gdx.math.MathUtils
-import com.badlogic.gdx.math.Vector2
 import com.soldierofheaven.ecs.components.RigidBody
 import com.soldierofheaven.ecs.systems.PhysicsSystem
 import com.soldierofheaven.util.EcsWorld

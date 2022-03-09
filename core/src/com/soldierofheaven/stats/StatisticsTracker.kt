@@ -1,7 +1,6 @@
 package com.soldierofheaven.stats
 
 import com.soldierofheaven.EventQueue
-import com.soldierofheaven.ecs.events.DamageEvent
 import com.soldierofheaven.ecs.events.EnemyKilledEvent
 import com.soldierofheaven.ecs.events.ShotEvent
 import com.soldierofheaven.ecs.events.ui.CurrencyChangedEvent

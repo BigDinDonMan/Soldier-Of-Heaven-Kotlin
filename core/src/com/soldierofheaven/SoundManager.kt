@@ -1,8 +1,6 @@
 package com.soldierofheaven
 
 import com.badlogic.gdx.audio.Sound
-import java.util.*
-import kotlin.collections.HashSet
 
 //this should have a list of all currently playing sounds and should be able to stop them by id
 object SoundManager {

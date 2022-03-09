@@ -68,7 +68,6 @@ class ExplosivesSystem : IteratingSystem() {
             if (rigidBody?.physicsBody == null) continue
 
             //direction needs to be normalized because knockback strength is not constant when not normalized
-            //todo: add explosion strength to bullet
             val entityPosition = rigidBody.physicsBody!!.position
             calculationVector.set(entityPosition.x - e.centerX, entityPosition.y - e.centerY)
             calculationVector.nor()

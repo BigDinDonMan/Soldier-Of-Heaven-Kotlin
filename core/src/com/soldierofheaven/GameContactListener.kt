@@ -5,7 +5,6 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse
 import com.badlogic.gdx.physics.box2d.ContactListener
 import com.badlogic.gdx.physics.box2d.Manifold
 import com.soldierofheaven.ecs.components.*
-import com.soldierofheaven.ecs.components.enums.PickUpType
 import com.soldierofheaven.ecs.events.DamageEvent
 import com.soldierofheaven.ecs.events.ExplosionEvent
 import com.soldierofheaven.ecs.events.PickUpEvent
