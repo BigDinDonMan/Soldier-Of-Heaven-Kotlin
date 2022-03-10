@@ -25,6 +25,7 @@ object StatisticsTracker : Resettable {
     override fun reset() {
         shotsFired = 0
         totalCurrency = 0
+        currency = 0
         accuracy = 0f
         score = 0
         enemiesKilled = 0

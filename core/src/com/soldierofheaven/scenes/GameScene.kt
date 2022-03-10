@@ -479,6 +479,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         gameCamera.position.set(Vector3.Zero)
         val weaponSystem = ecsWorld.getSystem(WeaponSystem::class.java)
         weaponSystem.weapons.forEach { it.reset() }
+        weaponSystem.weapons.first().unlocked = true
         weaponSystem.resetCurrentWeapon()
         val rigidbodyMapper = ecsWorld.getMapper(RigidBody::class.java)
         ecsWorld.removeAllEntities { id ->
@@ -489,11 +490,18 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             }
         }
         ammoDisplay.update(weaponSystem.weapons.first())
+        weaponSlots.forEach {
+            it.selected = false
+        }
+        weaponSlots[0].selected = true
         paused = false
         setupScene()
         reloadBar.playerPositionVector = ecsWorld.getEntity(playerEntityId).getComponent(Transform::class.java).position
         reloadBar.setEnabled(false)
         healthBar.updateDisplay(150)
+        weaponUnlockWindow.reset()
+        scoreDisplay.reset()
+        currencyDisplay.reset()
         StatisticsTracker.reset()
         SoundManager.stopAll()
         SoundManager.clearQueue()
