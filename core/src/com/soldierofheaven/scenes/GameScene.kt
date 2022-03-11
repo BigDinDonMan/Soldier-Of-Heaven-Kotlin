@@ -253,6 +253,10 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             if (Gdx.input.isKeyJustPressed(Input.Keys.J)) {
                 weaponUnlockWindow.isVisible = !weaponUnlockWindow.isVisible
             }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                EventQueue.dispatch(CameraShakeEvent(5f, 2f))
+            }
         }
 
         stage.update()

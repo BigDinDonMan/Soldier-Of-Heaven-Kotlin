@@ -107,7 +107,6 @@ class WeaponUnlockWindow(private val weapons: List<Weapon>, skin: Skin) : Window
 
     override fun setVisible(visible: Boolean) {
         super.setVisible(visible)
-
         updateButtons()
     }
 

@@ -5,6 +5,7 @@ import com.artemis.ComponentMapper
 import com.artemis.annotations.Wire
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Camera
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector3
 import com.soldierofheaven.ecs.components.Transform
 import com.soldierofheaven.ecs.events.CameraShakeEvent
@@ -65,6 +66,7 @@ class CameraPositioningSystem(private val gameCamera: Camera) : BaseSystem() {
                 Random.nextFloat(-shakeMagnitude, shakeMagnitude),
                 0f
             )
+            shakeMagnitude = MathUtils.lerp(shakeMagnitude, 0f, 0.05f)
         }
 
         gameCamera.position.set(actualPosition)
