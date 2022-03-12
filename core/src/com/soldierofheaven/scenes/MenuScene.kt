@@ -29,10 +29,12 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
         val controlsWindow = Window("Controls", defaultSkin)
         controlsWindow.isVisible = false
         controlsWindow.setSize(600f, 400f)
+        setupControlsWindow(controlsWindow)
         controlsWindow.centerAbsolute()
         val creditsWindow = Window("Credits", defaultSkin)
         creditsWindow.isVisible = false
         creditsWindow.setSize(600f, 400f)
+        setupAboutWindow(creditsWindow)
         creditsWindow.centerAbsolute()
         val returnButton = ImageButton(defaultSkin).apply { isVisible = false }
         returnButton.setSize(40f, 40f)
@@ -40,6 +42,7 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
         val optionsWindow = Window("Options", defaultSkin)
         optionsWindow.isVisible = false
         optionsWindow.setSize(700f, 450f)
+        setupOptionsWindow(optionsWindow)
         optionsWindow.centerAbsolute()
         stage.addActors(creditsWindow, controlsWindow, optionsWindow, returnButton)
 
@@ -137,7 +140,29 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
 
     override fun resize(width: Int, height: Int) = viewport.update(width, height)
 
-    private fun setupControlsWindow(window: Window) {}
+    private fun setupControlsWindow(window: Window) {
+        //use two tables to create 2 columns if controls cannot fit in one column
+        val leftSideTable = Table()
+        val rightSideTable = Table()
+        val parentTable = Table()
+        val scroll = ScrollPane(parentTable)
+        parentTable.add(leftSideTable).left()
+        parentTable.add(rightSideTable).right()
+        window.add(scroll)
+        leftSideTable.row().left()
+        leftSideTable.add(Image())
+        leftSideTable.add(Label("Move around", defaultSkin))
+        leftSideTable.row().left()
+        leftSideTable.add(Image())
+        leftSideTable.add(Label("Reload", defaultSkin))
+        leftSideTable.row().left()
+        leftSideTable.add(Image())
+        leftSideTable.add(Label("Shoot", defaultSkin))
+        leftSideTable.row().left()
+        leftSideTable.add(Image())
+        leftSideTable.add(Label("Swap weapons", defaultSkin))
+    }
+
     private fun setupOptionsWindow(window: Window) {}
     private fun setupAboutWindow(window: Window) {}
 }
