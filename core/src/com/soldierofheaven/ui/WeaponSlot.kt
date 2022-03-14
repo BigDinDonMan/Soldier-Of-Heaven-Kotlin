@@ -12,7 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.soldierofheaven.weapons.Weapon
 
 //slot skin is temporary; everything will be inside skin parameter later on down the line (but it works for now)
-class WeaponSlot(private val weapon: Weapon, private val slotSkin: Skin, private val lockedIcon: Texture, weaponIndex: Int, skin: Skin) : Table(skin) {
+class WeaponSlot(val weapon: Weapon, private val slotSkin: Skin, private val lockedIcon: Texture, weaponIndex: Int, skin: Skin) : Table(skin) {
 
     class WeaponSlotStyle(var background: Drawable?) {
         constructor() : this(null) {}

@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.soldierofheaven.EventQueue
 import com.soldierofheaven.ecs.events.ui.CurrencyChangedEvent
 import com.soldierofheaven.ecs.events.ui.StoredAmmoChangedEvent
+import com.soldierofheaven.ecs.events.ui.WeaponUnlockedEvent
 import com.soldierofheaven.stats.StatisticsTracker
 import com.soldierofheaven.util.`interface`.Resettable
 import com.soldierofheaven.util.centerAbsolute
@@ -85,7 +86,10 @@ class WeaponUnlockWindow(private val weapons: List<Weapon>, skin: Skin) : Window
         w.unlocked = true
         val oldCurrency = StatisticsTracker.currency
         StatisticsTracker.currency -= w.price
-        EventQueue.dispatchMultiple(CurrencyChangedEvent(oldCurrency, StatisticsTracker.currency))
+        EventQueue.dispatchMultiple(
+            CurrencyChangedEvent(oldCurrency, StatisticsTracker.currency),
+            WeaponUnlockedEvent(w)
+        )
     }
 
     private fun updateButtons() {

@@ -16,10 +16,8 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
 import com.badlogic.gdx.physics.box2d.FixtureDef
 import com.badlogic.gdx.physics.box2d.PolygonShape
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.scenes.scene2d.actions.Actions.moveToAligned
-import com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut
-import com.badlogic.gdx.scenes.scene2d.actions.Actions.removeActor
-import com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.actions.Actions.*
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
@@ -33,6 +31,7 @@ import com.soldierofheaven.ecs.events.*
 import com.soldierofheaven.ecs.events.ui.CurrencyChangedEvent
 import com.soldierofheaven.ecs.events.ui.StoredAmmoChangedEvent
 import com.soldierofheaven.ecs.events.ui.WeaponChangedUiEvent
+import com.soldierofheaven.ecs.events.ui.WeaponUnlockedEvent
 import com.soldierofheaven.ecs.systems.AnimationSystem
 import com.soldierofheaven.ecs.systems.CameraPositioningSystem
 import com.soldierofheaven.ecs.systems.RenderSystem
@@ -44,6 +43,7 @@ import com.soldierofheaven.stats.StatisticsTracker
 import com.soldierofheaven.ui.*
 import com.soldierofheaven.util.*
 import com.soldierofheaven.util.`interface`.Resettable
+import com.soldierofheaven.weapons.Weapon
 import net.mostlyoriginal.api.event.common.Subscribe
 import kotlin.properties.Delegates
 import kotlin.random.Random
@@ -93,6 +93,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private lateinit var scoreDisplay: ScoreDisplay
     private lateinit var currencyDisplay: CurrencyDisplay
     private lateinit var weaponUnlockWindow: WeaponUnlockWindow
+    private lateinit var weaponNameLabel: WeaponNameLabel
 
     private var playerEntityId by Delegates.notNull<Int>()
 
@@ -222,6 +223,9 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         weaponUnlockWindow = WeaponUnlockWindow(weaponSystem.weapons, defaultSkin).apply { isVisible = false }
         weaponUnlockWindow.centerAbsolute()
         stage.addActor(weaponUnlockWindow)
+
+        weaponNameLabel = WeaponNameLabel(rigidBodyMapper.get(playerEntityId).physicsBody!!.position, defaultSkin)
+        worldSpaceStage.addActor(weaponNameLabel)
     }
 
     override fun show() {
@@ -302,6 +306,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
         weaponSlots.forEach { it.selected = false }
         weaponSlots[index].selected = true
+
+        weaponNameLabel.update(e.weapon)
     }
 
     @Subscribe
@@ -477,6 +483,11 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             ammoDisplay.update(e.weapon)
         }
     }
+
+    @Subscribe
+    private fun handleWeaponUnlock(e: WeaponUnlockedEvent) {
+        weaponSlots.first { it.weapon.name == e.weapon.name }.update()
+    }
     //</editor-fold>
 
     override fun reset() {
@@ -502,6 +513,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         setupScene()
         reloadBar.playerPositionVector = ecsWorld.getEntity(playerEntityId).getComponent(Transform::class.java).position
         reloadBar.setEnabled(false)
+        weaponNameLabel.playerPositionRef = ecsWorld.getEntity(playerEntityId).getComponent(RigidBody::class.java).physicsBody!!.position
         healthBar.updateDisplay(150)
         weaponUnlockWindow.reset()
         scoreDisplay.reset()

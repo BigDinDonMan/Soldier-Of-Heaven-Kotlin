@@ -39,17 +39,11 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
         val returnButton = ImageButton(defaultSkin).apply { isVisible = false }
         returnButton.setSize(40f, 40f)
         returnButton.setPosition(5f, Gdx.graphics.heightF() - returnButton.height - 5f)
-        val optionsWindow = Window("Options", defaultSkin)
-        optionsWindow.isVisible = false
-        optionsWindow.setSize(700f, 450f)
-        setupOptionsWindow(optionsWindow)
-        optionsWindow.centerAbsolute()
-        stage.addActors(creditsWindow, controlsWindow, optionsWindow, returnButton)
+        stage.addActors(creditsWindow, controlsWindow, returnButton)
 
         val titleLabel = Label("Soldier of Heaven", defaultSkin)
         val howToPlayButton = ImageTextButton("How to play", defaultSkin)
         val aboutButton = ImageTextButton("About", defaultSkin)
-        val optionsButton = ImageTextButton("Options", defaultSkin)
         val buttons = arrayOf(
             ImageTextButton("New Game", defaultSkin).apply {
                 addListener(object : ClickListener() {
@@ -59,7 +53,6 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
                 })
             },
             howToPlayButton,
-            optionsButton,
             aboutButton,
             ImageTextButton("Exit", defaultSkin).apply {
                 addListener(object : ClickListener() {
@@ -87,7 +80,6 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
             override fun clicked(event: InputEvent?, x: Float, y: Float) {
                 controlsWindow.isVisible = true
                 creditsWindow.isVisible = false
-                optionsWindow.isVisible = false
                 buttons.forEach { it.isVisible = false }
                 titleLabel.isVisible = false
                 returnButton.isVisible = true
@@ -96,7 +88,6 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
         aboutButton.addListener(object : ClickListener() {
             override fun clicked(event: InputEvent?, x: Float, y: Float) {
                 controlsWindow.isVisible = false
-                optionsWindow.isVisible = false
                 creditsWindow.isVisible = true
                 buttons.forEach { it.isVisible = false }
                 titleLabel.isVisible = false
@@ -108,20 +99,9 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
             override fun clicked(event: InputEvent, x: Float, y: Float) {
                 controlsWindow.isVisible = false
                 creditsWindow.isVisible = false
-                optionsWindow.isVisible = false
                 buttons.forEach { it.isVisible = true }
                 titleLabel.isVisible = true
                 returnButton.isVisible = false
-            }
-        })
-        optionsButton.addListener(object : ClickListener() {
-            override fun clicked(event: InputEvent, x: Float, y: Float) {
-                controlsWindow.isVisible = false
-                optionsWindow.isVisible = true
-                creditsWindow.isVisible = false
-                buttons.forEach { it.isVisible = false }
-                titleLabel.isVisible = false
-                returnButton.isVisible = true
             }
         })
     }
@@ -163,6 +143,5 @@ class MenuScene(private val game: SoldierOfHeavenGame) : ScreenAdapter() {
         leftSideTable.add(Label("Swap weapons", defaultSkin))
     }
 
-    private fun setupOptionsWindow(window: Window) {}
     private fun setupAboutWindow(window: Window) {}
 }
