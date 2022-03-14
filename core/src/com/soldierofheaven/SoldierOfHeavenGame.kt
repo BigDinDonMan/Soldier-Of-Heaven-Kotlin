@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Box2D
+import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.soldierofheaven.ai.sm.state.EnemyState
 import com.soldierofheaven.ecs.systems.*
 import com.soldierofheaven.scenes.GameScene
@@ -62,6 +63,8 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         assetManager.load("sfx/weapon-swap.wav", Sound::class.java)
         assetManager.load("sfx/smg-shot.wav", Sound::class.java)
         assetManager.load("sfx/smg-reload.wav", Sound::class.java)
+        assetManager.load("skins/uiskin.json", Skin::class.java)
+        assetManager.load("skins/weapon-slot-skin.json", Skin::class.java)
 
         assetManager.load("gfx/particles/explosion.p", com.badlogic.gdx.graphics.g2d.ParticleEffect::class.java, ParticleEffectLoader.ParticleEffectParameter().apply {
             imagesDir = Gdx.files.internal("gfx/particles")

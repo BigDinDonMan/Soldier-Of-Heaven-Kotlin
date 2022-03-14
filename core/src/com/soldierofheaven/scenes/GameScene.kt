@@ -82,7 +82,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
     private val inputHandler = PlayerInputHandler()
 
-    private val defaultSkin = Skin(Gdx.files.internal("skins/uiskin.json"))
+    private val defaultSkin = game.assetManager.get("skins/uiskin.json", Skin::class.java)
     private lateinit var pauseDialog: Dialog
     private lateinit var exitToMenuDialog: Dialog
 
@@ -138,7 +138,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         }
         ammoDisplay.update(ecsWorld.getSystem(WeaponSystem::class.java).weapons.first())
         var firstSlotMarkedAsSelected = false
-        val slotsSkin = Skin(Gdx.files.internal("skins/weapon-slot-skin.json"))
+        val slotsSkin = game.assetManager.get("skins/weapon-slot-skin.json", Skin::class.java)
         val lockedIcon = game.assetManager.get("gfx/padlock.png", Texture::class.java)
         weaponSlots = weaponSystem.weapons.mapIndexed { index, weapon -> kotlin.run {
             val slot = WeaponSlot(weapon, slotsSkin, lockedIcon, index + 1, defaultSkin)
@@ -281,7 +281,6 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     override fun dispose() {
         reloadBar.dispose()
         healthBar.dispose()
-        defaultSkin.dispose()
         stage.dispose()
         worldSpaceStage.dispose()
     }
