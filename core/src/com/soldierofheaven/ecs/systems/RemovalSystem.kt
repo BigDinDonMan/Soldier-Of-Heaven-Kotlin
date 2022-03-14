@@ -61,7 +61,7 @@ class RemovalSystem() : IteratingSystem() {
             }
             val enemy = enemyMapper!!.get(id)
             if (enemy != null) {
-                EventQueue.dispatch(EnemyKilledEvent(enemy.scoreOnKill, enemy.currencyOnKill))
+                EventQueue.dispatch(EnemyKilledEvent(id, enemy.scoreOnKill, enemy.currencyOnKill))
             }
         } }
         removalQueue.clear()

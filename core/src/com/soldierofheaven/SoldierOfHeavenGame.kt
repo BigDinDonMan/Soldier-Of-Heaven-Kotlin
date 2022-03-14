@@ -86,6 +86,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
             ExplosivesSystem(),
             KnockbackSystem(),
             DamageSystem(),
+            PickUpManagementSystem(),
             RemovalSystem()
         ).build()
         ecsWorldConfig.register("physicsWorld", physicsWorld)

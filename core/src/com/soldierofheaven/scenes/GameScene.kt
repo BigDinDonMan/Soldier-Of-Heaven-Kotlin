@@ -251,7 +251,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 //                EventQueue.dispatch(ExplosionEvent(150f , 150f, 0f, 100f, 500f))
 //            }
             if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
-                EventQueue.dispatch(EnemyKilledEvent(40, 250))
+                EventQueue.dispatch(EnemyKilledEvent(-1, 40, 250))
             }
 
             if (Gdx.input.isKeyJustPressed(Input.Keys.J)) {
