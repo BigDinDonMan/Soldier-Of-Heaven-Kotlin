@@ -3,7 +3,9 @@ package com.soldierofheaven.ecs.components
 import com.artemis.PooledComponent
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.ObjectMap
 import com.soldierofheaven.ai.sm.state.EnemyState
+import com.soldierofheaven.ecs.components.enums.PickUpType
 import com.soldierofheaven.prototypes.Prefab
 
 //todo: seeking bullet (e.g. flaming skull chasing the player) could be made using an enemy that is destroyed on contact
@@ -28,6 +30,9 @@ class Enemy : PooledComponent() {
     var scoreOnKill = 0
     var currencyOnKill = 0
 
+    val pickUpDropMap = ObjectMap<PickUpType, Pair<Float, Float>>() //stores weights of each pickup type (e.g. if probability is from range 0 to 5, drop health. from 5 to 25, drop ammo, from 25 to 100, drop explosive)
+    var pickUpDropChance = 0f
+
     val isRanged: Boolean
         get() = shotStopRange != null
 
@@ -43,5 +48,7 @@ class Enemy : PooledComponent() {
         enemyStateMachine.changeState(EnemyState.CHASING)
         scoreOnKill = 0
         currencyOnKill = 0
+        pickUpDropMap.clear()
+        pickUpDropChance = 0f
     }
 }

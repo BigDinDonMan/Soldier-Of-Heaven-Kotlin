@@ -496,9 +496,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         weaponSystem.weapons.forEach { it.reset() }
         weaponSystem.weapons.first().unlocked = true
         weaponSystem.resetCurrentWeapon()
-        val rigidbodyMapper = ecsWorld.getMapper(RigidBody::class.java)
         ecsWorld.removeAllEntities { id ->
-            val body = rigidbodyMapper.get(id)
+            val body = rigidBodyMapper.get(id)
             if (body?.physicsBody != null) {
                 physicsWorld.destroyBody(body.physicsBody)
                 body.physicsBody = null
