@@ -6,13 +6,16 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.assets.loaders.ParticleEffectLoader
 import com.badlogic.gdx.audio.Sound
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Box2D
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.soldierofheaven.ai.sm.state.EnemyState
+import com.soldierofheaven.ecs.events.debug.DebugLineEvent
 import com.soldierofheaven.ecs.systems.*
 import com.soldierofheaven.scenes.GameScene
 import com.soldierofheaven.scenes.MenuScene
@@ -25,6 +28,7 @@ import com.soldierofheaven.util.widthF
 import com.soldierofheaven.weapons.BulletData
 import com.soldierofheaven.weapons.Weapon
 import ktx.app.KtxGame
+import net.mostlyoriginal.api.event.common.Subscribe
 import java.io.File
 
 //todo: maybe add skills? e.g. summoning an angel to help (like those circles with eyes)
@@ -32,6 +36,8 @@ import java.io.File
 //todo: create skin files for game and main menu
 //todo: add an interval for damaging the player (e.g. player can only be damaged every 0.5 or 1 second)
 class SoldierOfHeavenGame : KtxGame<Screen>() {
+//    private lateinit var debugRenderer: ShapeRenderer
+//    private val lines = ArrayList<Pair<Pair<Float, Float>, Pair<Float, Float>>>()
     private lateinit var batch: SpriteBatch
     private lateinit var physicsWorld: PhysicsWorld
     private lateinit var ecsWorld: EcsWorld
@@ -41,6 +47,7 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
     override fun create() {
         Box2D.init()
         batch = SpriteBatch()
+//        debugRenderer = ShapeRenderer()
         camera = OrthographicCamera(Gdx.graphics.widthF(), Gdx.graphics.heightF())
         assetManager = AssetManager()
         // we do not need any gravity in this game
@@ -111,9 +118,24 @@ class SoldierOfHeavenGame : KtxGame<Screen>() {
         addScreen(GameScene(this, ecsWorld, physicsWorld))
 
         screens.forEach { EventQueue.register(it.value) }
+        EventQueue.register(this)
         EventQueue.register(StatisticsTracker)
 
         setScreen<MenuScene>()
+    }
+
+    override fun render() {
+        super.render()
+//        debugRenderer.color = Color.WHITE
+//        debugRenderer.projectionMatrix = camera.combined
+//        debugRenderer.begin(ShapeRenderer.ShapeType.Filled)
+//        lines.forEach { debugRenderer.line(it.first.first, it.first.second, it.second.first, it.second.second) }
+//        debugRenderer.end()
+    }
+
+    @Subscribe
+    private fun addLine(e: DebugLineEvent) {
+//        lines.add(Pair(Pair(e.startX, e.startY), Pair(e.endX, e.endY)))
     }
 
     override fun dispose() {

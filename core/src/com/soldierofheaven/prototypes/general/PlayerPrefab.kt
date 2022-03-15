@@ -20,7 +20,13 @@ class PlayerPrefab(ecsWorld: EcsWorld,physicsWorld: PhysicsWorld, assetManager: 
         edit.create(RigidBody::class.java).apply {
             physicsBody = Physics.newSquareBody(id, playerSize, gravityScale = 0f, linearDamping = 5f, friction = 2f)
         }
-        edit.create(Player::class.java)
+        edit.create(Player::class.java).apply {
+            kickStrength = 50f
+            kickDamage = 2.5f
+            hitTimer = 0.5f
+            kickTimer = 0.75f
+            kickRange = 100f
+        }
         edit.create(Tag::class.java).apply { value = Tags.PLAYER }
         edit.create(Health::class.java)
         edit.create(Speed::class.java).apply { value = 25f }
