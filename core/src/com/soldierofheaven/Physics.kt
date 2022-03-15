@@ -1,6 +1,7 @@
 package com.soldierofheaven
 
 import com.artemis.ComponentMapper
+import com.badlogic.gdx.physics.box2d.*
 import com.soldierofheaven.ecs.components.RigidBody
 import com.soldierofheaven.ecs.systems.PhysicsSystem
 import com.soldierofheaven.util.EcsWorld
@@ -61,5 +62,60 @@ object Physics {
             }
         }
         return currentIndex
+    }
+
+    fun newBoxBody(ownerId: Int, width: Float, height: Float, gravityScale: Float = 1f, bodyType: BodyDef.BodyType = BodyDef.BodyType.DynamicBody, bullet: Boolean = false,
+                   linearDamping: Float = 0f, active: Boolean = true, angularDamping: Float = 0f, fixedRotation: Boolean = false,
+                   friction: Float = 0.2f, isSensor: Boolean = false, density: Float = 0f, restitution: Float = 0f): Body {
+        val shape = PolygonShape().apply { setAsBox(width / 2, height / 2) }
+        return newBodyFromShape(ownerId, shape, gravityScale, bodyType, bullet, linearDamping, active,
+                                angularDamping, fixedRotation, friction, isSensor, density, restitution)
+                                .also { shape.dispose() }
+    }
+
+    fun newSquareBody(ownerId: Int, size: Float, gravityScale: Float = 1f, bodyType: BodyDef.BodyType = BodyDef.BodyType.DynamicBody, bullet: Boolean = false,
+                      linearDamping: Float = 0f, active: Boolean = true, angularDamping: Float = 0f, fixedRotation: Boolean = false,
+                      friction: Float = 0.2f, isSensor: Boolean = false, density: Float = 0f, restitution: Float = 0f): Body {
+        val mid = size / 2f
+        val shape = PolygonShape().apply { setAsBox(mid, mid) }
+        return newBodyFromShape(ownerId, shape, gravityScale, bodyType, bullet, linearDamping, active,
+            angularDamping, fixedRotation, friction, isSensor, density, restitution)
+            .also { shape.dispose() }
+    }
+
+    fun newCircleBody(ownerId: Int, radius: Float, gravityScale: Float = 1f, bodyType: BodyDef.BodyType = BodyDef.BodyType.DynamicBody, bullet: Boolean = false,
+                      linearDamping: Float = 0f, active: Boolean = true, angularDamping: Float = 0f, fixedRotation: Boolean = false,
+                      friction: Float = 0.2f, isSensor: Boolean = false, density: Float = 0f, restitution: Float = 0f): Body {
+        val shape = CircleShape().apply { this.radius = radius }
+        return newBodyFromShape(ownerId, shape, gravityScale, bodyType, bullet, linearDamping, active,
+            angularDamping, fixedRotation, friction, isSensor, density, restitution)
+            .also { shape.dispose() }
+    }
+
+    private fun newBodyFromShape(ownerId: Int, bodyShape: Shape, gravityScale: Float = 1f, bodyType: BodyDef.BodyType = BodyDef.BodyType.DynamicBody, bullet: Boolean = false,
+                                 linearDamping: Float = 0f, active: Boolean = true, angularDamping: Float = 0f, fixedRotation: Boolean = false,
+                                 friction: Float = 0.2f, isSensor: Boolean = false, density: Float = 0f, restitution: Float = 0f): Body {
+        val bodyDef = BodyDef().apply {
+            this.gravityScale = gravityScale
+            this.type = bodyType
+            this.bullet = bullet
+            this.linearDamping = linearDamping
+            this.active = active
+            this.angularDamping = angularDamping
+            this.fixedRotation = fixedRotation
+        }
+
+        val fixtureDef = FixtureDef().apply {
+            this.shape = bodyShape
+            this.friction = friction
+            this.isSensor = isSensor
+            this.density = density
+            this.restitution = restitution
+        }
+
+        return physicsWorld.createBody(bodyDef).apply {
+            createFixture(fixtureDef)
+            userData = ownerId
+        }
     }
 }

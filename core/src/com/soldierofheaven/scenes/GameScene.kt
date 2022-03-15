@@ -320,23 +320,9 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             val bulletId = ecsWorld.create()
             val editor = ecsWorld.edit(bulletId)
             val bullet = editor.add(RigidBody().apply {
-                val bulletBodyDef = BodyDef().apply {
-                    gravityScale = 0f
-                    type = BodyDef.BodyType.DynamicBody
-                    bullet = true
-                }
-                val bulletBodyShape = PolygonShape().apply { setAsBox(e.weapon.bulletData.icon.width / 2f, e.weapon.bulletData.icon.height / 2f) }
-                val bulletFixtureDef = FixtureDef().apply {
-                    shape = bulletBodyShape
-                    friction = 0f
-                    isSensor = true
-                }
-                physicsBody = physicsWorld.createBody(bulletBodyDef).apply {
-                    createFixture(bulletFixtureDef)
-                    userData = bulletId
-                }
+                physicsBody = Physics.newCircleBody(bulletId, e.weapon.bulletData.icon.width / 2f,
+                    gravityScale = 1f, bullet = true, friction = 0f, isSensor = true)
                 physicsBody!!.setTransform(e.x, e.y, 0f)
-                bulletBodyShape.dispose()
             }).add(TextureDisplay().apply {
                 texture = e.weapon.bulletData.icon
             }).create(Bullet::class.java).apply {
@@ -399,7 +385,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         val explosionEffectId = ecsWorld.create()
         val edit = ecsWorld.edit(explosionEffectId)
         edit.create(Transform::class.java).apply { position.set(e.centerX, e.centerY, 0f) }
-        val part = edit.create(com.soldierofheaven.ecs.components.ParticleEffect::class.java).apply {
+        val part = edit.create(ParticleEffect::class.java).apply {
             particleEffect = ParticlePools.obtain("Explosion").apply {
                 reset()
                 start()
@@ -547,21 +533,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         }
         edit.create(Tag::class.java).apply { value = Tags.ENEMY }
         edit.add(RigidBody().apply {
-            val playerBodyDef = BodyDef().apply {
-                gravityScale = 0f
-                linearDamping = 5f
-                type = BodyDef.BodyType.DynamicBody
-            }
-            val playerBodyShape = PolygonShape().apply { setAsBox(transform.size.x / 2, transform.size.y / 2) }
-            val playerBodyFixtureDef = FixtureDef().apply {
-                shape = playerBodyShape
-                friction = 2f
-            }
-            physicsBody = physicsWorld.createBody(playerBodyDef).apply {
-                createFixture(playerBodyFixtureDef)
-                userData = testEnemyId
-            }
-            playerBodyShape.dispose()
+            physicsBody = Physics.newBoxBody(testEnemyId, transform.size.x / 2, transform.size.y / 2,
+                gravityScale = 0f, linearDamping = 5f, friction = 2f)
         }).create(Health::class.java).apply { maxHealth = 50f }
 
         val aiEnemyId = ecsWorld.create()
@@ -571,21 +544,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             size.set(40f, 40f)
         }
         aiEdit.create(RigidBody::class.java).apply {
-            val playerBodyDef = BodyDef().apply {
-                gravityScale = 0f
-                linearDamping = 5f
-                type = BodyDef.BodyType.DynamicBody
-            }
-            val playerBodyShape = PolygonShape().apply { setAsBox(aiTransform.size.x / 2, aiTransform.size.y / 2) }
-            val playerBodyFixtureDef = FixtureDef().apply {
-                shape = playerBodyShape
-                friction = 2f
-            }
-            physicsBody = physicsWorld.createBody(playerBodyDef).apply {
-                createFixture(playerBodyFixtureDef)
-                userData = aiEnemyId
-            }
-            playerBodyShape.dispose()
+            physicsBody = Physics.newBoxBody(aiEnemyId, aiTransform.size.x / 2, aiTransform.size.y / 2,
+                gravityScale = 0f, linearDamping = 5f, friction = 2f)
         }
         aiEdit.create(Tag::class.java).apply { value = Tags.ENEMY }
         aiEdit.create(Enemy::class.java).apply {
