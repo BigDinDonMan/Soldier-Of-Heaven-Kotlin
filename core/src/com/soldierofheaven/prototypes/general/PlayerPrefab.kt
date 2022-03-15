@@ -21,7 +21,7 @@ class PlayerPrefab(ecsWorld: EcsWorld,physicsWorld: PhysicsWorld, assetManager: 
             physicsBody = Physics.newSquareBody(id, playerSize, gravityScale = 0f, linearDamping = 5f, friction = 2f)
         }
         edit.create(Player::class.java).apply {
-            kickStrength = 50f
+            kickStrength = 300f
             kickDamage = 2.5f
             hitTimer = 0.5f
             kickTimer = 0.75f

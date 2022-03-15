@@ -22,6 +22,7 @@ class GameContactListener(private val ecsWorld: EcsWorld) : ContactListener {
     private val rigidBodyMapper = ecsWorld.getMapper(RigidBody::class.java)
     private val contactDamageMapper = ecsWorld.getMapper(ContactDamage::class.java)
     private val enemyMapper = ecsWorld.getMapper(Enemy::class.java)
+    private val playerMapper = ecsWorld.getMapper(Player::class.java)
 
 
     private val calculationVector = Vector2()
@@ -89,6 +90,8 @@ class GameContactListener(private val ecsWorld: EcsWorld) : ContactListener {
         val enemyDamage = contactDamageMapper.get(enemyId) ?: return
         val enemyRigidBody = rigidBodyMapper.get(enemyId)
         if (enemyRigidBody?.physicsBody == null) return
+        val player = playerMapper.get(playerId)
+        if (player.currentHitTimer > 0f) return
 
         calculationVector.set(enemyComp.playerPositionRef!!).sub(enemyRigidBody.physicsBody!!.position)
 

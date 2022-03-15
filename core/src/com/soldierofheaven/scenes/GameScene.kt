@@ -549,16 +549,20 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         aiEdit.create(Enemy::class.java).apply {
             ownerId = aiEnemyId
             playerPositionRef = ecsWorld.getEntity(playerEntityId).getComponent(RigidBody::class.java).physicsBody!!.position
-            shotStopRange = 240f
-            runAwayDistance = 150f
-            shotInterval = 0.5f
-            bulletPrefab = fireballPrefab
+//            shotStopRange = 240f
+//            runAwayDistance = 150f
+//            shotInterval = 0.5f
+//            bulletPrefab = fireballPrefab
             currencyOnKill = 25
             scoreOnKill = 100
         }
         aiEdit.create(Speed::class.java).apply { value = 25f }
         aiEdit.create(Health::class.java).apply { maxHealth = 80f }
         aiEdit.create(Damage::class.java).apply { value = 10f }
+        aiEdit.create(ContactDamage::class.java).apply {
+            value = 10f
+            knockback = 15f
+        }
     }
 
     private fun switchSystemsWorking(working: Boolean) {

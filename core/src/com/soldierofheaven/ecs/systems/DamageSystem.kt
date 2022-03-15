@@ -7,6 +7,7 @@ import com.artemis.annotations.Wire
 import com.soldierofheaven.EventQueue
 import com.soldierofheaven.ecs.components.Health
 import com.soldierofheaven.ecs.components.LifeCycle
+import com.soldierofheaven.ecs.components.Player
 import com.soldierofheaven.ecs.events.DamageEvent
 import net.mostlyoriginal.api.event.common.Subscribe
 import java.util.*
@@ -16,6 +17,9 @@ class DamageSystem : BaseSystem() {
 
     @Wire
     var healthMapper: ComponentMapper<Health>? = null
+
+    @Wire
+    var playerMapper: ComponentMapper<Player>? = null
 
     private val damageEventQueue = LinkedList<DamageEvent>()
 
@@ -35,6 +39,13 @@ class DamageSystem : BaseSystem() {
 
     @Subscribe
     private fun receiveDamageEvent(e: DamageEvent) {
-        damageEventQueue.add(e)
+        val player = playerMapper!!.get(e.entityId)
+        if (player == null) { //add it as usual, its not a player
+            damageEventQueue.add(e)
+        } else {
+            if (player.currentHitTimer > 0f) return
+            damageEventQueue.add(e)
+            player.currentHitTimer = player.hitTimer
+        }
     }
 }

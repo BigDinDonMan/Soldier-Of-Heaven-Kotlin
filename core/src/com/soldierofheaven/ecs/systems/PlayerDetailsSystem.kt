@@ -55,6 +55,14 @@ class PlayerDetailsSystem : BaseSystem(), PlayerSystem {
     }
 
     @Subscribe
+    private fun handlePlayerDamageEvent(e: DamageEvent) {
+        if (e.entityId == playerEntityId) {
+            val player = playerMapper!!.get(playerEntityId)
+            player.currentHitTimer = player.hitTimer
+        }
+    }
+
+    @Subscribe
     private fun handleShoveEvent(e: ShoveEvent) {
         val player = playerMapper!!.get(playerEntityId)
         if (player.currentKickTimer > 0f) return
@@ -83,6 +91,8 @@ class PlayerDetailsSystem : BaseSystem(), PlayerSystem {
                 KnockbackEvent(entityId, player.kickStrength, dirX, dirY)
             )
         }
+
+        player.currentKickTimer = player.kickTimer
     }
 
     override fun setPlayerEntityId(id: Int) {
