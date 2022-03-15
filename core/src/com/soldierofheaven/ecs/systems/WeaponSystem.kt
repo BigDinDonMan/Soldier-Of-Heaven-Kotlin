@@ -12,11 +12,12 @@ import com.soldierofheaven.ecs.components.Transform
 import com.soldierofheaven.weapons.Weapon
 import com.soldierofheaven.ecs.events.*
 import com.soldierofheaven.ecs.events.ui.WeaponChangedUiEvent
+import com.soldierofheaven.util.`interface`.PlayerSystem
 import com.soldierofheaven.util.math.directionTowards
 import com.soldierofheaven.util.math.rotationTowards
 import net.mostlyoriginal.api.event.common.Subscribe
 
-class WeaponSystem(val weapons: List<Weapon> = ArrayList()) : BaseSystem() {
+class WeaponSystem(val weapons: List<Weapon> = ArrayList()) : BaseSystem(), PlayerSystem {
     private var shooting = false
     var currentWeapon: Weapon = weapons.first()
 
@@ -58,7 +59,7 @@ class WeaponSystem(val weapons: List<Weapon> = ArrayList()) : BaseSystem() {
         }
     }
 
-    fun setPlayerEntityId(id: Int) {
+    override fun setPlayerEntityId(id: Int) {
         this.playerEntityId = id
     }
 

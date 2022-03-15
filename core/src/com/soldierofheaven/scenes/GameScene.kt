@@ -32,16 +32,14 @@ import com.soldierofheaven.ecs.events.ui.CurrencyChangedEvent
 import com.soldierofheaven.ecs.events.ui.StoredAmmoChangedEvent
 import com.soldierofheaven.ecs.events.ui.WeaponChangedUiEvent
 import com.soldierofheaven.ecs.events.ui.WeaponUnlockedEvent
-import com.soldierofheaven.ecs.systems.AnimationSystem
-import com.soldierofheaven.ecs.systems.CameraPositioningSystem
-import com.soldierofheaven.ecs.systems.RenderSystem
-import com.soldierofheaven.ecs.systems.WeaponSystem
+import com.soldierofheaven.ecs.systems.*
 import com.soldierofheaven.events.PauseEvent
 import com.soldierofheaven.prototypes.bullets.FireballPrefab
 import com.soldierofheaven.prototypes.general.PlayerPrefab
 import com.soldierofheaven.stats.StatisticsTracker
 import com.soldierofheaven.ui.*
 import com.soldierofheaven.util.*
+import com.soldierofheaven.util.`interface`.PlayerSystem
 import com.soldierofheaven.util.`interface`.Resettable
 import com.soldierofheaven.weapons.Weapon
 import net.mostlyoriginal.api.event.common.Subscribe
@@ -509,8 +507,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
     private fun setupScene(setupUi: Boolean = false) {
         playerEntityId = playerPrefab.instantiate()
-        ecsWorld.getSystem(CameraPositioningSystem::class.java).playerEntityId = playerEntityId
-        ecsWorld.getSystem(WeaponSystem::class.java).setPlayerEntityId(playerEntityId)
+
+        ecsWorld.systems.filterIsInstance<PlayerSystem>().forEach { it.setPlayerEntityId(playerEntityId) }
 
         if (setupUi) {
             initUi(ecsWorld.getEntity(playerEntityId).getComponent(Transform::class.java).position)

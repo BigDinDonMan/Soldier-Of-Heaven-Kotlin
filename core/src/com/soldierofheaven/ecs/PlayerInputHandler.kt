@@ -3,10 +3,7 @@ package com.soldierofheaven.ecs
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.soldierofheaven.EventQueue
-import com.soldierofheaven.ecs.events.MoveEvent
-import com.soldierofheaven.ecs.events.ReloadRequestEvent
-import com.soldierofheaven.ecs.events.ShotRequestEvent
-import com.soldierofheaven.ecs.events.WeaponChangeEvent
+import com.soldierofheaven.ecs.events.*
 import com.soldierofheaven.events.PauseEvent
 import ktx.app.KtxInputAdapter
 
@@ -71,6 +68,9 @@ class PlayerInputHandler() : KtxInputAdapter {
 
         return if (button == Input.Buttons.LEFT){
             EventQueue.dispatch(ShotRequestEvent(false))
+            true
+        } else if (button == Input.Buttons.RIGHT) {
+            EventQueue.dispatch(ShoveEvent())
             true
         } else false
     }

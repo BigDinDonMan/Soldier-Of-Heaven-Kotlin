@@ -9,13 +9,14 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector3
 import com.soldierofheaven.ecs.components.Transform
 import com.soldierofheaven.ecs.events.CameraShakeEvent
+import com.soldierofheaven.util.`interface`.PlayerSystem
 import com.soldierofheaven.util.nextFloat
 import net.mostlyoriginal.api.event.common.Subscribe
 import kotlin.random.Random
 
-class CameraPositioningSystem(private val gameCamera: Camera) : BaseSystem() {
+class CameraPositioningSystem(private val gameCamera: Camera) : BaseSystem(), PlayerSystem {
 
-    var playerEntityId: Int = 0
+    private var playerEntityId: Int = 0
 
     @Wire
     var transformMapper: ComponentMapper<Transform>? = null
@@ -70,5 +71,9 @@ class CameraPositioningSystem(private val gameCamera: Camera) : BaseSystem() {
         }
 
         gameCamera.position.set(actualPosition)
+    }
+
+    override fun setPlayerEntityId(id: Int) {
+        this.playerEntityId = id
     }
 }
