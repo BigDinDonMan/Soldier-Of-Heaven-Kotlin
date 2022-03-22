@@ -10,7 +10,7 @@ import com.soldierofheaven.ecs.components.Health
 import com.soldierofheaven.util.roundedRect
 
 //note: enemyId will be a key by which we will be searching through the health bars to remove them when enemy dies
-class EnemyHealthBar(val enemyId: Int, val enemyPositionRef: Vector2, val enemyHealthRef: Health, val yOffset: Float, val barWidth: Float = 100f, val barHeight: Float = 20f, val barRounding: Float = 7.5f) : Actor(), Disposable {
+class EnemyHealthBar(val enemyId: Int, val enemyPositionRef: Vector2, val enemyHealthRef: Health, val yOffset: Float = 30f, val barWidth: Float = 100f, val barHeight: Float = 10f, val barRounding: Float = 7.5f) : Actor(), Disposable {
 
     private val shapeRenderer = ShapeRenderer()
 

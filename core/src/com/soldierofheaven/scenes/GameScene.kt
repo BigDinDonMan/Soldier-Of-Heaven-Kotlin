@@ -113,6 +113,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
     private val fpsCounter = Label("60", defaultSkin).apply { isVisible = false }
 
+    //todo: after adding pickup textures/animations then add them to prefab params here
     private val pickUpPrefabs = ObjectMap<PickUpType, Prefab>().apply {
         put(PickUpType.HEALTH, PickUpPrefab(ecsWorld, physicsWorld, game.assetManager).apply {
             prefabParams.put("payload", 25)
@@ -435,6 +436,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         scoreDisplay.update(StatisticsTracker.score + e.score)
         currencyDisplay.update(StatisticsTracker.currency + e.currency)
 
+        removeEnemyHealthBar(e.enemyId)
+
         val enemyComp = enemyMapper.get(e.enemyId) ?: return
         val transform = transformMapper.get(e.enemyId) ?: return
         val shouldDropPickUp = Random.nextFloat() < enemyComp.pickUpDropChance
@@ -458,8 +461,6 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
                 pickUp.pickUpPayload = PickUp.AmmoInfo(ammoGained, weapon)
             }
         }
-
-        removeEnemyHealthBar(e.enemyId)
     }
 
     private fun removeEnemyHealthBar(enemyId: Int) {
@@ -480,8 +481,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
         val rigidBody = rigidBodyMapper.get(e.entityId)
         if (rigidBody?.physicsBody != null) {
-            val damageTakenLabel = buildPopupLabel(e.damage.toString(), rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y, 50f)
-            worldSpaceStage.addActor(damageTakenLabel)
+//            val damageTakenLabel = buildPopupLabel(e.damage.toString(), rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y, 50f)
+//            worldSpaceStage.addActor(damageTakenLabel)
         }
     }
 
@@ -641,7 +642,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         }
 
         worldSpaceStage.addActor(
-            EnemyHealthBar(aiEnemyId, rigidBodyMapper.get(aiEnemyId).physicsBody!!.position, healthMapper.get(aiEnemyId), 50f)
+            EnemyHealthBar(aiEnemyId, rigidBodyMapper.get(aiEnemyId).physicsBody!!.position, healthMapper.get(aiEnemyId), barRounding = 5f)
         )
     }
 
