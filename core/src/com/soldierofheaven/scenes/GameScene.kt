@@ -458,6 +458,14 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
                 pickUp.pickUpPayload = PickUp.AmmoInfo(ammoGained, weapon)
             }
         }
+
+        removeEnemyHealthBar(e.enemyId)
+    }
+
+    private fun removeEnemyHealthBar(enemyId: Int) {
+        val toRemove = worldSpaceStage.actors.filterIsInstance<EnemyHealthBar>().find { it.enemyId == enemyId }
+        toRemove?.remove()
+        toRemove?.dispose()
     }
 
     @Subscribe
@@ -631,6 +639,10 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             value = 10f
             knockback = 15f
         }
+
+        worldSpaceStage.addActor(
+            EnemyHealthBar(aiEnemyId, rigidBodyMapper.get(aiEnemyId).physicsBody!!.position, healthMapper.get(aiEnemyId), 50f)
+        )
     }
 
     private fun switchSystemsWorking(working: Boolean) {
