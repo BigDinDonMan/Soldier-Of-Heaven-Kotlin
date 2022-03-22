@@ -444,7 +444,6 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             if (matches.isEmpty()) return
 
             val type = matches.first().key
-            println("TYPE ${type.name}")
             //we need to use the transform here because at this point, enemy rigidbody is freed
             val spawnX = transform.position.x + transform.size.x / 2
             val spawnY = transform.position.y + transform.size.y / 2
