@@ -106,6 +106,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private val rigidBodyMapper = ecsWorld.getMapper(RigidBody::class.java)
     private val enemyMapper = ecsWorld.getMapper(Enemy::class.java)
     private val pickUpMapper = ecsWorld.getMapper(PickUp::class.java)
+    private val transformMapper = ecsWorld.getMapper(Transform::class.java)
+
 
     private val fpsCounter = Label("60", defaultSkin).apply { isVisible = false }
 
@@ -268,7 +270,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 //                EventQueue.dispatch(ExplosionEvent(150f , 150f, 0f, 100f, 500f))
 //            }
             if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
-                EventQueue.dispatch(EnemyKilledEvent(-1, 40, 250))
+                StatisticsTracker.currency += 2000
             }
 
             if (Gdx.input.isKeyJustPressed(Input.Keys.J)) {
@@ -430,16 +432,25 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         currencyDisplay.update(StatisticsTracker.currency + e.currency)
 
         val enemyComp = enemyMapper.get(e.enemyId) ?: return
-        val enemyRigidBody = rigidBodyMapper.get(e.enemyId) ?: return
+        val transform = transformMapper.get(e.enemyId) ?: return
         val shouldDropPickUp = Random.nextFloat() < enemyComp.pickUpDropChance
         if (shouldDropPickUp) {
             val chance = (Random.nextFloat() * 100).toInt()
-            val type = enemyComp.pickUpDropMap.first { chance in it.value.first..it.value.second }.key
-            val spawnPosition = enemyRigidBody.physicsBody!!.position
-            val pickUpId = pickUpPrefabs.get(type).instantiate(spawnPosition)
+            val matches = enemyComp.pickUpDropMap.filter { chance in it.value.first..it.value.second }
+            if (matches.isEmpty()) return
+
+            val type = matches.first().key
+            println("TYPE ${type.name}")
+            //we need to use the transform here because at this point, enemy rigidbody is freed
+            val spawnX = transform.position.x + transform.size.x / 2
+            val spawnY = transform.position.y + transform.size.y / 2
+            var weapon: Weapon? = null
+            if (type == PickUpType.AMMO) {
+                weapon = getRandomWeapon() ?: return
+            }
+            val pickUpId = pickUpPrefabs.get(type).instantiate(spawnX, spawnY)
             if (type == PickUpType.AMMO) {
                 val pickUp = pickUpMapper.get(pickUpId)
-                val weapon = getRandomWeapon()
                 val ammoGained = weapon!!.maxStoredAmmo / 10
                 pickUp.pickUpPayload = PickUp.AmmoInfo(ammoGained, weapon)
             }
@@ -512,7 +523,9 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     //</editor-fold>
 
     private fun getRandomWeapon(): Weapon? {
-        return null
+        //skip first weapon and get all of them that are unlocked
+        val weapons = ecsWorld.getSystem(WeaponSystem::class.java).weapons.drop(1).filter { it.unlocked }
+        return if (weapons.isEmpty()) null else weapons[Random.nextInt(0, weapons.size)]
     }
 
     override fun reset() {
@@ -597,6 +610,10 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 //            bulletPrefab = fireballPrefab
             currencyOnKill = 25
             scoreOnKill = 100
+            pickUpDropChance = 1f
+            pickUpDropMap.put(PickUpType.HEALTH, Pair(0, 10))
+            pickUpDropMap.put(PickUpType.AMMO, Pair(10, 75))
+            pickUpDropMap.put(PickUpType.EXPLOSIVES, Pair(90, 100))
         }
         aiEdit.create(Speed::class.java).apply { value = 25f }
         aiEdit.create(Health::class.java).apply { maxHealth = 80f }
