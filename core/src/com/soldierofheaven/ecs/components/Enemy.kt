@@ -30,7 +30,7 @@ class Enemy : PooledComponent() {
     var scoreOnKill = 0
     var currencyOnKill = 0
 
-    val pickUpDropMap = ObjectMap<PickUpType, Pair<Float, Float>>() //stores weights of each pickup type (e.g. if probability is from range 0 to 5, drop health. from 5 to 25, drop ammo, from 25 to 100, drop explosive)
+    val pickUpDropMap = ObjectMap<PickUpType, Pair<Int, Int>>() //stores weights of each pickup type (e.g. if probability is from range 0 to 5, drop health. from 5 to 25, drop ammo, from 25 to 100, drop explosive)
     var pickUpDropChance = 0f
 
     val isRanged: Boolean

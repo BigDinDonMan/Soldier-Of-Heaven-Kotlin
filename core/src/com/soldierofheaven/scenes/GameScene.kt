@@ -22,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Dialog
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.ObjectMap
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.soldierofheaven.*
 import com.soldierofheaven.ecs.PlayerInputHandler
@@ -34,8 +35,10 @@ import com.soldierofheaven.ecs.events.ui.WeaponChangedUiEvent
 import com.soldierofheaven.ecs.events.ui.WeaponUnlockedEvent
 import com.soldierofheaven.ecs.systems.*
 import com.soldierofheaven.events.PauseEvent
+import com.soldierofheaven.prototypes.Prefab
 import com.soldierofheaven.prototypes.bullets.FireballPrefab
 import com.soldierofheaven.prototypes.general.PlayerPrefab
+import com.soldierofheaven.prototypes.pickups.PickUpPrefab
 import com.soldierofheaven.stats.StatisticsTracker
 import com.soldierofheaven.ui.*
 import com.soldierofheaven.util.*
@@ -101,8 +104,24 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     /*MAPPERS*/
     private val healthMapper = ecsWorld.getMapper(Health::class.java)
     private val rigidBodyMapper = ecsWorld.getMapper(RigidBody::class.java)
+    private val enemyMapper = ecsWorld.getMapper(Enemy::class.java)
+    private val pickUpMapper = ecsWorld.getMapper(PickUp::class.java)
 
     private val fpsCounter = Label("60", defaultSkin).apply { isVisible = false }
+
+    private val pickUpPrefabs = ObjectMap<PickUpType, Prefab>().apply {
+        put(PickUpType.HEALTH, PickUpPrefab(ecsWorld, physicsWorld, game.assetManager).apply {
+            prefabParams.put("payload", 25)
+            prefabParams.put("pickUpType", PickUpType.HEALTH)
+        })
+        put(PickUpType.AMMO, PickUpPrefab(ecsWorld, physicsWorld, game.assetManager).apply {
+            prefabParams.put("pickUpType", PickUpType.AMMO)
+        })
+        put(PickUpType.EXPLOSIVES, PickUpPrefab(ecsWorld, physicsWorld, game.assetManager).apply {
+            prefabParams.put("pickUpType", PickUpType.EXPLOSIVES)
+            prefabParams.put("payload", 1)
+        })
+    }
 
     init {
         setupScene(setupUi = true)
@@ -409,6 +428,22 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         //this is a sum because StatisticsTracker is updated after this listener runs
         scoreDisplay.update(StatisticsTracker.score + e.score)
         currencyDisplay.update(StatisticsTracker.currency + e.currency)
+
+        val enemyComp = enemyMapper.get(e.enemyId) ?: return
+        val enemyRigidBody = rigidBodyMapper.get(e.enemyId) ?: return
+        val shouldDropPickUp = Random.nextFloat() < enemyComp.pickUpDropChance
+        if (shouldDropPickUp) {
+            val chance = (Random.nextFloat() * 100).toInt()
+            val type = enemyComp.pickUpDropMap.first { chance in it.value.first..it.value.second }.key
+            val spawnPosition = enemyRigidBody.physicsBody!!.position
+            val pickUpId = pickUpPrefabs.get(type).instantiate(spawnPosition)
+            if (type == PickUpType.AMMO) {
+                val pickUp = pickUpMapper.get(pickUpId)
+                val weapon = getRandomWeapon()
+                val ammoGained = weapon!!.maxStoredAmmo / 10
+                pickUp.pickUpPayload = PickUp.AmmoInfo(ammoGained, weapon)
+            }
+        }
     }
 
     @Subscribe
@@ -433,8 +468,10 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         when (e.pickUp.pickUpType) {
             PickUpType.HEALTH -> {
                 val playerHealth = healthMapper.get(playerEntityId)
+                val oldHealth = playerHealth.health
                 playerHealth.health += e.pickUp.pickUpPayload as Int
                 healthBar.updateDisplay(playerHealth.health.toInt())
+                EventQueue.dispatch(PlayerHealthChangeEvent(oldHealth.toInt(), playerHealth.health.toInt()))
             }
             PickUpType.AMMO -> {
                 //find weapon and add ammo value
@@ -442,6 +479,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
                 val (ammoAmount, weapon) = e.pickUp.pickUpPayload as PickUp.AmmoInfo
                 val targetWeapon = ecsWorld.getSystem(WeaponSystem::class.java).weapons.first { it.name == weapon.name }
                 targetWeapon.storedAmmo += ammoAmount
+                EventQueue.dispatch(StoredAmmoChangedEvent(targetWeapon))
             }
             PickUpType.EXPLOSIVES -> {
                 //todo: add explosives to player
@@ -472,6 +510,10 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
         weaponSlots.first { it.weapon.name == e.weapon.name }.update()
     }
     //</editor-fold>
+
+    private fun getRandomWeapon(): Weapon? {
+        return null
+    }
 
     override fun reset() {
         gameCamera.position.set(Vector3.Zero)

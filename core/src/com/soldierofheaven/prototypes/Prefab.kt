@@ -8,7 +8,7 @@ import com.soldierofheaven.util.EcsWorld
 import com.soldierofheaven.util.PhysicsWorld
 
 abstract class Prefab(protected val ecsWorld: EcsWorld,protected val physicsWorld: PhysicsWorld, protected val assetManager: AssetManager) {
-    protected val prefabParams = ObjectMap<String, Any>()
+    val prefabParams = ObjectMap<String, Any>()
     protected val rigidBodyMapper = ecsWorld.getMapper(RigidBody::class.java)
 
     abstract fun instantiate(): Int //returns created entity id
