@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.Actions.*
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.Align
@@ -95,6 +96,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private lateinit var currencyDisplay: CurrencyDisplay
     private lateinit var weaponUnlockWindow: WeaponUnlockWindow
     private lateinit var weaponNameLabel: WeaponNameLabel
+    private lateinit var shoveAttackIcon: Image
 
     private var playerEntityId by Delegates.notNull<Int>()
 
@@ -231,13 +233,15 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             pauseDialog.show(stage)
             return@button
         })
+        shoveAttackIcon = Image(game.assetManager.get(Resources.BASIC_BULLET, Texture::class.java))//placeholder for now
+        shoveAttackIcon.setPosition(healthPad + ammoDisplay.width + 65f, ammoDisplay.y + ammoDisplay.height / 2 - shoveAttackIcon.height / 2)
         scoreDisplay = ScoreDisplay(defaultSkin)
         scoreDisplay.setPosition(Gdx.graphics.widthF() - scoreDisplay.width, Gdx.graphics.heightF() - scoreDisplay.height)
         currencyDisplay = CurrencyDisplay(game.assetManager.get("gfx/angelic-coin.png"), /*48f, 48f,*/ defaultSkin)
         currencyDisplay.setPosition(Gdx.graphics.widthF() - currencyDisplay.width, Gdx.graphics.heightF() - currencyDisplay.height - scoreDisplay.height)
         fpsCounter.setPosition(Gdx.graphics.widthF() - fpsCounter.width - 5f, 0f)
         stage.addActors(healthBar, reloadBar, crosshair, ammoDisplay, exitToMenuDialog,
-            pauseDialog, currencyDisplay, scoreDisplay, fpsCounter)
+            pauseDialog, currencyDisplay, scoreDisplay, fpsCounter, shoveAttackIcon)
 
         weaponUnlockWindow = WeaponUnlockWindow(weaponSystem.weapons, defaultSkin).apply { isVisible = false }
         weaponUnlockWindow.centerAbsolute()
@@ -519,6 +523,12 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     @Subscribe
     private fun handleWeaponUnlock(e: WeaponUnlockedEvent) {
         weaponSlots.first { it.weapon.name == e.weapon.name }.update()
+    }
+
+    @Subscribe
+    private fun handleShove(_e: ShoveEvent) {
+        shoveAttackIcon.color.a = 0.3f
+        shoveAttackIcon.addAction(alpha(1f, 0.75f))
     }
     //</editor-fold>
 

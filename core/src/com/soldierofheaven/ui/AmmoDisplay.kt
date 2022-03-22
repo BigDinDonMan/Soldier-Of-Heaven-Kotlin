@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.soldierofheaven.weapons.Weapon
+import kotlin.math.max
 
 //ammo icons need to be the same size
 class AmmoDisplay(private var ammoIcon: Texture, skin: Skin) : Actor() {
@@ -30,6 +31,14 @@ class AmmoDisplay(private var ammoIcon: Texture, skin: Skin) : Actor() {
         val xPos = x + ammoIcon.width + padding
         storedAmmoLabel.setPosition(xPos, y + labelsSpacing)
         clipLabel.setPosition(xPos, y + ammoIcon.height - labelsSpacing)
+    }
+
+    override fun getWidth(): Float {
+        return ammoIcon.width + max(clipLabel.width, storedAmmoLabel.width) + 10f
+    }
+
+    override fun getHeight(): Float {
+        return ammoIcon.height.toFloat()
     }
 
     fun update(weapon: Weapon) {
