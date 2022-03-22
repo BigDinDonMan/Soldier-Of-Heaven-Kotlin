@@ -481,8 +481,8 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
         val rigidBody = rigidBodyMapper.get(e.entityId)
         if (rigidBody?.physicsBody != null) {
-//            val damageTakenLabel = buildPopupLabel(e.damage.toString(), rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y, 50f)
-//            worldSpaceStage.addActor(damageTakenLabel)
+            val damageTakenLabel = buildPopupLabel(e.damage.toString(), rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y, 50f)
+            worldSpaceStage.addActor(damageTakenLabel)
         }
     }
 
