@@ -42,14 +42,22 @@ class PlayerInputHandler() : KtxInputAdapter {
     override fun keyUp(keycode: Int): Boolean {
         if (!enabled) return false
 
+        var move = true
+
         when (keycode) {
             Input.Keys.W -> y = if (Gdx.input.isKeyPressed(Input.Keys.S)) y else 0f
             Input.Keys.S -> y = if (Gdx.input.isKeyPressed(Input.Keys.W)) y else 0f
             Input.Keys.A -> x = if (Gdx.input.isKeyPressed(Input.Keys.D)) x else 0f
             Input.Keys.D -> x = if (Gdx.input.isKeyPressed(Input.Keys.A)) x else 0f
+            Input.Keys.G -> {
+                EventQueue.dispatch(ExplosiveThrowEvent())
+                move = false
+            }
         }
 
-        EventQueue.dispatch(MoveEvent(x,y))
+        if (move) {
+            EventQueue.dispatch(MoveEvent(x,y))
+        }
 
         return true
     }

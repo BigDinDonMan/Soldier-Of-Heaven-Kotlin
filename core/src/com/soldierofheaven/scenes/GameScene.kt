@@ -386,13 +386,30 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
 
     @Subscribe
     private fun spawnExplosive(e: ExplosiveThrowEvent) {
+        if (StatisticsTracker.explosives <= 0) return
+
         val explosiveId = ecsWorld.create()
         val editor = ecsWorld.edit(explosiveId)
-        editor.create(TextureDisplay::class.java).apply {  }
-        editor.create(Transform::class.java).apply {  }
-        editor.create(Damage::class.java).apply {  }
-        editor.create(Speed::class.java).apply {  }
-        editor.create(Explosive::class.java).apply {  }
+        val tex = editor.create(TextureDisplay::class.java).apply { texture = game.assetManager.get(Resources.BASIC_BULLET) }
+        editor.create(Transform::class.java).apply { size.set(tex.texture!!.width.toFloat(), tex.texture!!.height.toFloat()) }
+        editor.create(Damage::class.java).apply { value = 150f }
+        editor.create(Speed::class.java).apply { value = 40f }
+        editor.create(Explosive::class.java).apply {
+            range = 150f
+            strength = 100f
+            damping = 5f
+            fuseTime = 3f
+//            moveDirection.set() //todo: set move direction
+        }
+        editor.create(Tag::class.java).apply { value = Tags.EXPLOSIVE }
+        editor.create(RigidBody::class.java).apply {
+            physicsBody = Physics.newCircleBody(explosiveId, tex.texture!!.width.toFloat() / 2, 0f, isSensor = true)
+            val playerRigidBody = rigidBodyMapper.get(playerEntityId)
+            physicsBody!!.setTransform(playerRigidBody.physicsBody!!.position.x, playerRigidBody.physicsBody!!.position.y, physicsBody!!.angle)
+        }
+
+        StatisticsTracker.explosives--
+        explosivesDisplay.update()
     }
 
     @Subscribe

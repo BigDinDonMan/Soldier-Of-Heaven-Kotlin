@@ -3,6 +3,7 @@ package com.soldierofheaven
 import com.artemis.ComponentMapper
 import com.badlogic.gdx.physics.box2d.*
 import com.soldierofheaven.ecs.components.RigidBody
+import com.soldierofheaven.ecs.components.Tag
 import com.soldierofheaven.ecs.systems.PhysicsSystem
 import com.soldierofheaven.util.EcsWorld
 import com.soldierofheaven.util.PhysicsWorld
@@ -14,15 +15,17 @@ object Physics {
     private lateinit var physicsWorld: PhysicsWorld
     private lateinit var ecsWorld: EcsWorld
     private lateinit var rigidbodyMapper: ComponentMapper<RigidBody>
+    private lateinit var tagMapper: ComponentMapper<Tag>
 
     fun init(physicsWorld: PhysicsWorld, ecsWorld: EcsWorld) {
         this.physicsWorld = physicsWorld
         this.ecsWorld = ecsWorld
         rigidbodyMapper = ecsWorld.getMapper(RigidBody::class.java)
+        tagMapper = ecsWorld.getMapper(Tag::class.java)
     }
 
     //gathers all physics entity ids captured inside the sphere and returns it as a list
-    fun overlapSphere(x: Float, y: Float, radius: Float): List<Int> {
+    fun overlapSphere(x: Float, y: Float, radius: Float, vararg ignoreTags: String): List<Int> {
         val result = LinkedList<Int>()
         val ids = ecsWorld.getSystem(PhysicsSystem::class.java).entityIds
         for (i in 0 until ids.size()) {
@@ -30,6 +33,8 @@ object Physics {
             val rigidBody = rigidbodyMapper.get(id)
             if (rigidBody?.physicsBody == null) continue
 
+            val tag = tagMapper.get(rigidBody.physicsBody!!.userData as Int)
+            if (tag.value in ignoreTags) continue
             val bodyDistance = euclideanDistance(x, y, rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y)
             for (fixture in rigidBody.physicsBody!!.fixtureList) {
                 val fixRadius = fixture.shape.radius //halleluyah it has a radius
@@ -43,7 +48,7 @@ object Physics {
     }
 
     //same as the above, but does not allocate a buffer, returns number of captured objects, and needs an output array as a parameter
-    fun overlapSphereNonAlloc(x: Float, y: Float, radius: Float, outputArray: IntArray): Int {
+    fun overlapSphereNonAlloc(x: Float, y: Float, radius: Float, outputArray: IntArray, vararg ignoreTags: String): Int {
         var currentIndex = 0
         val ids = ecsWorld.getSystem(PhysicsSystem::class.java).entityIds
         for (i in 0 until ids.size()) {
@@ -51,6 +56,9 @@ object Physics {
             val id = ids.get(i)
             val rigidBody = rigidbodyMapper.get(id)
             if (rigidBody?.physicsBody == null) continue
+
+            val tag = tagMapper.get(rigidBody.physicsBody!!.userData as Int)
+            if (tag.value in ignoreTags) continue
 
             val bodyDistance = euclideanDistance(x, y, rigidBody.physicsBody!!.position.x, rigidBody.physicsBody!!.position.y)
             for (fixture in rigidBody.physicsBody!!.fixtureList) {

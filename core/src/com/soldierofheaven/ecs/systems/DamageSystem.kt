@@ -25,7 +25,7 @@ class DamageSystem : BaseSystem() {
 
     override fun processSystem() {
         damageEventQueue.forEach { (id, damage) -> kotlin.run {
-            val health = healthMapper!!.get(id)
+            val health = healthMapper!!.get(id) ?: return
             health.health -= damage
             if (health.health <= 0f) {
                 world.edit(id).create(LifeCycle::class.java).apply { lifeTime = -1f }
