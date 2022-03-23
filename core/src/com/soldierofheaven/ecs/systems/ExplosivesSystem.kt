@@ -62,7 +62,8 @@ class ExplosivesSystem : IteratingSystem() {
                 )
         }
 
-        if (rigidBody?.physicsBody != null) {
+        if (rigidBody?.physicsBody != null && rigidBody.physicsBody!!.linearVelocity == Vector2.Zero) {
+            rigidBody.physicsBody!!.linearDamping = explosive.damping
             rigidBody.physicsBody!!.applyImpulseToCenter(explosive.moveDirection.x * speed.value, explosive.moveDirection.y * speed.value, true)
         }
     }

@@ -99,6 +99,9 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private lateinit var shoveAttackIcon: Image
     private lateinit var explosivesDisplay: ExplosivesDisplay
 
+    private val calculationVector = Vector2()
+    private val projectionVector = Vector3()
+
     private var playerEntityId by Delegates.notNull<Int>()
 
     private val fireballPrefab = FireballPrefab(ecsWorld, physicsWorld, game.assetManager)
@@ -388,23 +391,32 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private fun spawnExplosive(e: ExplosiveThrowEvent) {
         if (StatisticsTracker.explosives <= 0) return
 
+        projectionVector.set(Gdx.input.x.toFloat(), Gdx.input.y.toFloat(), 0f)
+        gameCamera.unproject(projectionVector)
+
+        val playerRigidBody = rigidBodyMapper.get(playerEntityId)
+
+        calculationVector.set(projectionVector.x, projectionVector.y).
+            sub(playerRigidBody.physicsBody!!.position.x, playerRigidBody.physicsBody!!.position.y).
+            nor()
+
         val explosiveId = ecsWorld.create()
         val editor = ecsWorld.edit(explosiveId)
         val tex = editor.create(TextureDisplay::class.java).apply { texture = game.assetManager.get(Resources.BASIC_BULLET) }
         editor.create(Transform::class.java).apply { size.set(tex.texture!!.width.toFloat(), tex.texture!!.height.toFloat()) }
         editor.create(Damage::class.java).apply { value = 150f }
-        editor.create(Speed::class.java).apply { value = 40f }
+        editor.create(Speed::class.java).apply { value = 400f }
         editor.create(Explosive::class.java).apply {
             range = 150f
             strength = 100f
-            damping = 5f
+            damping = 3.5f
             fuseTime = 3f
-//            moveDirection.set() //todo: set move direction
+            moveDirection.set(calculationVector)
         }
         editor.create(Tag::class.java).apply { value = Tags.EXPLOSIVE }
         editor.create(RigidBody::class.java).apply {
             physicsBody = Physics.newCircleBody(explosiveId, tex.texture!!.width.toFloat() / 2, 0f, isSensor = true)
-            val playerRigidBody = rigidBodyMapper.get(playerEntityId)
+
             physicsBody!!.setTransform(playerRigidBody.physicsBody!!.position.x, playerRigidBody.physicsBody!!.position.y, physicsBody!!.angle)
         }
 
@@ -628,42 +640,42 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
                 gravityScale = 0f, linearDamping = 5f, friction = 2f)
         }).create(Health::class.java).apply { maxHealth = 50f }
 
-        val aiEnemyId = ecsWorld.create()
-        val aiEdit = ecsWorld.edit(aiEnemyId)
-        val aiTransform = aiEdit.create(Transform::class.java).apply {
-            position.set(-100f, -100f, 0f)
-            size.set(40f, 40f)
-        }
-        aiEdit.create(RigidBody::class.java).apply {
-            physicsBody = Physics.newBoxBody(aiEnemyId, aiTransform.size.x / 2, aiTransform.size.y / 2,
-                gravityScale = 0f, linearDamping = 5f, friction = 2f)
-        }
-        aiEdit.create(Tag::class.java).apply { value = Tags.ENEMY }
-        aiEdit.create(Enemy::class.java).apply {
-            ownerId = aiEnemyId
-            playerPositionRef = ecsWorld.getEntity(playerEntityId).getComponent(RigidBody::class.java).physicsBody!!.position
-//            shotStopRange = 240f
-//            runAwayDistance = 150f
-//            shotInterval = 0.5f
-//            bulletPrefab = fireballPrefab
-            currencyOnKill = 25
-            scoreOnKill = 100
-            pickUpDropChance = 1f
-            pickUpDropMap.put(PickUpType.HEALTH, Pair(0, 10))
-            pickUpDropMap.put(PickUpType.AMMO, Pair(10, 75))
-            pickUpDropMap.put(PickUpType.EXPLOSIVES, Pair(90, 100))
-        }
-        aiEdit.create(Speed::class.java).apply { value = 25f }
-        aiEdit.create(Health::class.java).apply { maxHealth = 80f }
-        aiEdit.create(Damage::class.java).apply { value = 10f }
-        aiEdit.create(ContactDamage::class.java).apply {
-            value = 10f
-            knockback = 15f
-        }
-
-        worldSpaceStage.addActor(
-            EnemyHealthBar(aiEnemyId, rigidBodyMapper.get(aiEnemyId).physicsBody!!.position, healthMapper.get(aiEnemyId), barRounding = 5f)
-        )
+//        val aiEnemyId = ecsWorld.create()
+//        val aiEdit = ecsWorld.edit(aiEnemyId)
+//        val aiTransform = aiEdit.create(Transform::class.java).apply {
+//            position.set(-100f, -100f, 0f)
+//            size.set(40f, 40f)
+//        }
+//        aiEdit.create(RigidBody::class.java).apply {
+//            physicsBody = Physics.newBoxBody(aiEnemyId, aiTransform.size.x / 2, aiTransform.size.y / 2,
+//                gravityScale = 0f, linearDamping = 5f, friction = 2f)
+//        }
+//        aiEdit.create(Tag::class.java).apply { value = Tags.ENEMY }
+//        aiEdit.create(Enemy::class.java).apply {
+//            ownerId = aiEnemyId
+//            playerPositionRef = ecsWorld.getEntity(playerEntityId).getComponent(RigidBody::class.java).physicsBody!!.position
+////            shotStopRange = 240f
+////            runAwayDistance = 150f
+////            shotInterval = 0.5f
+////            bulletPrefab = fireballPrefab
+//            currencyOnKill = 25
+//            scoreOnKill = 100
+//            pickUpDropChance = 1f
+//            pickUpDropMap.put(PickUpType.HEALTH, Pair(0, 10))
+//            pickUpDropMap.put(PickUpType.AMMO, Pair(10, 75))
+//            pickUpDropMap.put(PickUpType.EXPLOSIVES, Pair(90, 100))
+//        }
+//        aiEdit.create(Speed::class.java).apply { value = 25f }
+//        aiEdit.create(Health::class.java).apply { maxHealth = 80f }
+//        aiEdit.create(Damage::class.java).apply { value = 10f }
+//        aiEdit.create(ContactDamage::class.java).apply {
+//            value = 10f
+//            knockback = 15f
+//        }
+//
+//        worldSpaceStage.addActor(
+//            EnemyHealthBar(aiEnemyId, rigidBodyMapper.get(aiEnemyId).physicsBody!!.position, healthMapper.get(aiEnemyId), barRounding = 5f)
+//        )
     }
 
     private fun switchSystemsWorking(working: Boolean) {
