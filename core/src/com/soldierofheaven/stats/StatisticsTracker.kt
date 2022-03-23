@@ -5,6 +5,7 @@ import com.soldierofheaven.ecs.events.EnemyKilledEvent
 import com.soldierofheaven.ecs.events.ShotEvent
 import com.soldierofheaven.ecs.events.ui.CurrencyChangedEvent
 import com.soldierofheaven.util.`interface`.Resettable
+import com.soldierofheaven.util.math.clamp
 import net.mostlyoriginal.api.event.common.Subscribe
 
 //this class should be a container for player statistics and should contain event listeners (and be registered at the start)
@@ -20,6 +21,11 @@ object StatisticsTracker : Resettable {
         }
     var shotsFired: Int = 0
     var totalCurrency: Int = 0
+    var explosives: Int = 3
+        set(value) {
+            field = clamp(value, 0, maxExplosives)
+        }
+    val maxExplosives: Int = 3
 
 
     override fun reset() {
@@ -29,6 +35,7 @@ object StatisticsTracker : Resettable {
         accuracy = 0f
         score = 0
         enemiesKilled = 0
+        explosives = maxExplosives
     }
 
     @Subscribe

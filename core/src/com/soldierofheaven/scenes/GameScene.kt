@@ -97,6 +97,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
     private lateinit var weaponUnlockWindow: WeaponUnlockWindow
     private lateinit var weaponNameLabel: WeaponNameLabel
     private lateinit var shoveAttackIcon: Image
+    private lateinit var explosivesDisplay: ExplosivesDisplay
 
     private var playerEntityId by Delegates.notNull<Int>()
 
@@ -234,15 +235,17 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
             pauseDialog.show(stage)
             return@button
         })
-        shoveAttackIcon = Image(game.assetManager.get(Resources.BASIC_BULLET, Texture::class.java))//placeholder for now
-        shoveAttackIcon.setPosition(healthPad + ammoDisplay.width + 65f, ammoDisplay.y + ammoDisplay.height / 2 - shoveAttackIcon.height / 2)
+        explosivesDisplay = ExplosivesDisplay(game.assetManager.get(Resources.BASIC_BULLET), game.assetManager.get("skins/uiskin.json"))
+        explosivesDisplay.setPosition(healthPad + ammoDisplay.width + 10f + explosivesDisplay.width, ammoDisplay.y + ammoDisplay.height / 2 - explosivesDisplay.height / 2)
+        shoveAttackIcon = Image(game.assetManager.get(Resources.BASIC_BULLET, Texture::class.java))
+        shoveAttackIcon.setPosition(healthPad + ammoDisplay.width + 130f + shoveAttackIcon.width, ammoDisplay.y + ammoDisplay.height / 2 - shoveAttackIcon.height / 2)
         scoreDisplay = ScoreDisplay(defaultSkin)
         scoreDisplay.setPosition(Gdx.graphics.widthF() - scoreDisplay.width, Gdx.graphics.heightF() - scoreDisplay.height)
         currencyDisplay = CurrencyDisplay(game.assetManager.get("gfx/angelic-coin.png"), /*48f, 48f,*/ defaultSkin)
         currencyDisplay.setPosition(Gdx.graphics.widthF() - currencyDisplay.width, Gdx.graphics.heightF() - currencyDisplay.height - scoreDisplay.height)
         fpsCounter.setPosition(Gdx.graphics.widthF() - fpsCounter.width - 5f, 0f)
         stage.addActors(healthBar, reloadBar, crosshair, ammoDisplay, exitToMenuDialog,
-            pauseDialog, currencyDisplay, scoreDisplay, fpsCounter, shoveAttackIcon)
+            pauseDialog, currencyDisplay, scoreDisplay, fpsCounter, shoveAttackIcon, explosivesDisplay)
 
         weaponUnlockWindow = WeaponUnlockWindow(weaponSystem.weapons, defaultSkin).apply { isVisible = false }
         weaponUnlockWindow.centerAbsolute()
@@ -505,7 +508,7 @@ class GameScene(private val game: SoldierOfHeavenGame, private val ecsWorld: Ecs
                 EventQueue.dispatch(StoredAmmoChangedEvent(targetWeapon))
             }
             PickUpType.EXPLOSIVES -> {
-                //todo: add explosives to player
+                StatisticsTracker.explosives += e.pickUp.pickUpPayload as Int
             }
         }
     }
